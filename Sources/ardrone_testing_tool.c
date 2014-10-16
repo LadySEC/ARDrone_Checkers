@@ -39,7 +39,7 @@ C_RESULT ardrone_tool_init_custom(void)
   // ardrone_tool_input_add( &gamepad );
 
   /* Start all threads of your application */
-  START_THREAD( video_stage, NULL );
+  //START_THREAD( video_stage, NULL );
   START_THREAD( take_off, NULL ); 
   return C_OK;
 }
