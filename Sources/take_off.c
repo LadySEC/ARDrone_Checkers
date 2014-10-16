@@ -6,6 +6,12 @@
  */
 #include"take_off.h"
 
+/**
+  * @fn DEFINE_THREAD_ROUTINE
+  * @brief Fonction de test des primitives de décollage
+  * 
+  * @param data 
+  */
 DEFINE_THREAD_ROUTINE(take_off, data)
 {
         // Code de la function
