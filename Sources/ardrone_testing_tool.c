@@ -39,7 +39,7 @@ C_RESULT ardrone_tool_init_custom(void)
   // ardrone_tool_input_add( &gamepad );
 
   /* Start all threads of your application */
-  //START_THREAD( video_stage, NULL );
+  START_THREAD( video_stage, NULL );
   START_THREAD( take_off, NULL ); 
   return C_OK;
 }
@@ -73,7 +73,7 @@ C_RESULT signal_exit()
 /* Implementing thread table in which you add routines of your application and those provided by the SDK */
 BEGIN_THREAD_TABLE
   THREAD_TABLE_ENTRY( ardrone_control, 20 )
-  THREAD_TABLE_ENTRY( navdata_update, 20 )
+//  THREAD_TABLE_ENTRY( navdata_update, 20 )
   THREAD_TABLE_ENTRY( video_stage, 20 )
     THREAD_TABLE_ENTRY (take_off,20)
 END_THREAD_TABLE
