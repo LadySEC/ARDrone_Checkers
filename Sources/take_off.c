@@ -27,7 +27,7 @@ DEFINE_THREAD_ROUTINE(take_off, data)
   //                  /*psi*/0.0,
   //          /*psi_accuracy*/0.0); 
 ardrone_tool_set_ui_pad_start(1);
-sleep(2000);
+sleep(7);
 ardrone_tool_set_ui_pad_start(0);
 
     //Return (THREAD_RET) 0;
