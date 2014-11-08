@@ -7,16 +7,24 @@
 #include <sys/socket.h>		// UDP/TCP
 #include <netinet/in.h>
 #include <string.h> 
+#include <unistd.h>			// usleep
 
 #include "global.h"
 
-/* Global variables */
+/**********************************************************************************/
+/* Global variables 															  */
+/**********************************************************************************/
 
+/* Sockets */
+int socket_AT;
+
+/**********************************************************************************/
+/* Threads & Procedures														      */
+/**********************************************************************************/
 
 /* Threads */
 void* test (void* arg)
 {
-	printf("\n\rRunning Thread");
   	return NULL;
 }
 
@@ -33,7 +41,7 @@ int socket_init(protocol p, int port)
 	struct 	sockaddr_in client;
 	int 				socket_id;
 
-	// Generate a socket 
+	/* Generate a socket */
 	switch(p)
 	{
 		case TCP:
@@ -49,17 +57,17 @@ int socket_init(protocol p, int port)
    	{
    		die("socket");
    	}
-   	// Socket created
+   	/* Socket created */
    	else
    	{
-   		// zero out the structure
+   		/* zero out the structure */
     	memset((char *) &client, 0, sizeof(client));
 
    		client.sin_addr.s_addr 	= htonl(INADDR_ANY); 
 	    client.sin_family 		= AF_INET;
 	    client.sin_port 		= htons(port);
 	 
-	 	//bind socket to port
+	 	/* bind socket to port */
 	    if( bind(socket_id, (struct sockaddr*)&client, sizeof(client) ) == -1)
 	    {
 	        die("bind");
@@ -73,30 +81,14 @@ void sendFrame(int socket_id, int port_dest, char* message)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
-	char 	buf[256];
 
-	// zero out the structure
+	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
 
 	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(port_dest);
-#if 0
-   	sprintf(buf, "AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", 0, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
-	sprintf(buf, "AT*CONFIG=%d,\"custom:session_id\",\"%s\"\r", 1, ARDRONE_SESSION_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
 
-	sprintf(buf, "AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", 2, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
-	sprintf(buf, "AT*CONFIG=%d,\"custom:profile_id\",\"%s\"\r", 3, ARDRONE_PROFILE_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
-
-	sprintf(buf, "AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", 4, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
-	sprintf(buf, "AT*CONFIG=%d,\"custom:application_id\",\"%s\"\r", 5, ARDRONE_APPLOCATION_ID);
-	sendto(socket_id, buf, strlen(buf)+1, 0, (sockaddr*)&server, sizeof(server));
-#endif
 	if (sendto(socket_id, message, strlen(message)+1, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
     {
         die("sendto()");
@@ -105,7 +97,6 @@ void sendFrame(int socket_id, int port_dest, char* message)
 
 void ATcommand_generate(char* frame, ATcommands command, int* sequence_number, word32bits* array, char strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
-	
 	/* Reset the frame */
 	memset((char *) frame, 0, sizeof(frame));
 	/* Generate correct AT command */
@@ -148,48 +139,81 @@ void ATcommand_generate(char* frame, ATcommands command, int* sequence_number, w
 	*sequence_number = *sequence_number + 1u;
 }
 
-/* Main program */
-int main (int argc, char *argv[])
+void ATcommand_send(ATorders order, int* sequence)
 {
-	/* Threads initialisation */
-	pthread_t thread_id;
-	/* Sockets */
-	int socket_AT;
-	/* AT commands */
+	char 		frame[NB_MAX_BITS_COMMAND];
+	/* At commands management */
 	word32bits 	ATarguments[NB_MAX_UNION_ARG];
 	char 		ATstrings[NB_MAX_STRING_ARG][NB_MAX_CHAR];
-	char 		frame[NB_MAX_BITS_COMMAND];
+
+	switch(order)
+	{
+		case TAKEOFF:
+			ATarguments[0u].integer = TAKEOFF_COMMAND;
+			ATcommand_generate(frame, REF, sequence, ATarguments, ATstrings);
+			sendFrame(socket_AT, 5556, frame);
+			break;
+
+		case LANDING:
+			ATarguments[0u].integer = LANDING_COMMAND;
+			ATcommand_generate(frame, REF, sequence, ATarguments, ATstrings);
+			sendFrame(socket_AT, 5556, frame);
+			break;
+
+		case HOVERING:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].integer = 0u;
+			ATarguments[3u].integer = 0u;
+			ATarguments[4u].integer = 0u;
+			ATcommand_generate(frame, PCMD, sequence, ATarguments, ATstrings);
+			sendFrame(socket_AT, 5556, frame);
+			break;	
+	}
+
+	/* Echo */
+	printf("\n\rAT command sent: %s",frame);
+}
+
+void sprint1_demo(void)
+{
+	// Sequence number for AT commands
 	int 		sequence = 1u;
+	int 		cpt;
 
-	printf("Client v0.3\n\r");
-	/* Threads instantiation */
-	pthread_create (&thread_id, NULL, &test, NULL);
-	/* AT commands */
-	socket_AT = socket_init(UDP, 0);
+	/* Takeoff / hovering / landing */
+	// Create a socket
+	socket_AT = socket_init(UDP, 0u);
 
-#if 0
-	ATarguments[0u].floating = -0.8f;
-	ATarguments[1u].floating = 1.35f;
-	ATarguments[2u].floating = 15.4f;
-	ATarguments[3u].floating = -2.45f;
-	ATarguments[4u].floating = 3.987f;
-#endif
+	printf("\n\rStart demo");
+	// Takeoff
+	ATcommand_send(TAKEOFF, &sequence);
+	// Hovering
+	for(cpt = 0u; cpt < NB_CYCLES; cpt++)
+	{
+		usleep(CYCLE_TEMPO);
+		ATcommand_send(HOVERING, &sequence);
+	}
+	// Landing
+	usleep(CYCLE_TEMPO);
+	ATcommand_send(LANDING, &sequence);
+	printf("\n\rEnd");
 
-#if 0
-	/* Led animation */
-	strcpy(ATstrings[0u], "\"leds:leds_anim\"");
-	strcpy(ATstrings[1u], "\"3,1073741824,2\"");
-	ATcommand_generate(frame, CONFIG, &sequence, ATarguments, ATstrings);
-	printf("%s",frame);
-	sendFrame(socket_AT, 5556, frame);
-#endif
-
-	/* Takeoff */
-	ATarguments[0u].integer = TAKEOFF_COMMAND;
-	ATcommand_generate(frame, REF, &sequence, ATarguments, ATstrings);
-	printf("%s",frame);
-	sendFrame(socket_AT, 5556, frame);
+	// Close the socket
 	close(socket_AT);
+}
+
+/**********************************************************************************/
+/* Main program													      			  */
+/**********************************************************************************/
+int main (int argc, char *argv[])
+{
+	/* Declarations */
+	/* Client version */
+	printf("Client v0.3\n\r");
+
+	/* Launch the demo */
+	sprint1_demo();
 
 	return(0);
 }
