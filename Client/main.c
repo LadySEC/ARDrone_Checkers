@@ -9,6 +9,7 @@
 #include <string.h> 
 #include <unistd.h>			// usleep
 #include <termios.h>
+#include <sys/types.h>
 
 #include <time.h>
 #include <signal.h>
@@ -21,6 +22,7 @@
 
 /* Sockets */
 int socket_AT;
+int socket_NAV;
 /* Buffer */
 char 	commandBuffer[NB_MAX_BITS_COMMAND][NB_MAX_COMMANDS]; 
 int 	nb_received_commands 	= 0u;
@@ -99,6 +101,29 @@ void sendFrame(int socket_id, int port_dest, char* message)
     }
 }
 
+void readFrame(int socket_id, int port_dest, unsigned int* data)
+{
+	/* Declaration */
+	struct 	sockaddr_in server;
+	int 	lenght = sizeof(server);
+
+
+	/* zero out the structure */
+	memset((char *) &server, 0, sizeof(server));
+
+	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+    server.sin_family 		= AF_INET;
+    server.sin_port 		= htons(port_dest);
+
+	if (recvfrom(socket_id, data, sizeof(data), MSG_DONTWAIT, (struct sockaddr*) &server, &lenght) == -1)
+    {
+        die("recvfrom()");
+    }
+    //print details of the client/peer and the data received
+    printf("Received packet from %s:%d\n", inet_ntoa(server.sin_addr), ntohs(server.sin_port));
+    printf("Data: %x\n" , data);
+}
+
 void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
 	/* Reset the frame */
@@ -127,7 +152,7 @@ void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char
 
 		case CONFIG_IDS:
 			sprintf(frame,"%s=%d,%s,%s,%s\r",commands[command], sequence_number,
-					strings[0u], strings[1u], strings[3u]);
+					strings[0u], strings[1u], strings[2u]);
 			break;	
 
 		case COMWDG:
@@ -137,18 +162,23 @@ void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char
 		case CALIB:
 			sprintf(frame,"%s=%d,%d\r",commands[command], sequence_number, array[0u].integer);
 			break;		
+
+		case CTRL:
+			sprintf(frame,"%s=%d,%d\r",commands[command], sequence_number, array[0u].integer);
+			break;	
 	}
 
 	/* Update sequence number */
 	sequence_number++;
 }
 
-void ATcommand_sendToBuffer(ATorders order)
+void ATcommand_send(ATorders order)
 {
 	char 		frame[NB_MAX_BITS_COMMAND];
 	/* At commands management */
 	word32bits 	ATarguments[NB_MAX_UNION_ARG];
 	char 		ATstrings[NB_MAX_STRING_ARG][NB_MAX_CHAR];
+	int 		sendToBuffer = 1u;
 
 	/* Build the frame */
 	switch(order)
@@ -217,30 +247,62 @@ void ATcommand_sendToBuffer(ATorders order)
 			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
 			break;
 
+		case INIT_NAVDATA:
+			strcpy(ATstrings[0u], "\"general:navdata_demo\"");
+			strcpy(ATstrings[1u], "\"TRUE\"");
+			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			sendToBuffer = 0u;
+			sendFrame(socket_NAV,5556,frame);
+			break;
+
 		case CONFIGURATION_IDS:
 			strcpy(ATstrings[0u], session_id);
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
+			sendToBuffer = 0u;
+			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case LED_ANIMATION:
 			strcpy(ATstrings[0u], "\"leds:leds_anim\"");
 			strcpy(ATstrings[1u], "\"3,1073741824,2\"");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			sendToBuffer = 0u;
+			sendFrame(socket_AT,5556,frame);
+			break;
+
+		case ACK_COMMAND:
+			ATarguments[0u].integer = 0u;
+			ATcommand_generate(frame, CTRL, ATarguments, ATstrings);
+			sendToBuffer = 0u;
+			sendFrame(socket_NAV,5556,frame);
+			break;
+
+		case EMPTY_PACKET:
+			sendToBuffer = 0u;
+			sendFrame(socket_NAV,5554,"empty");
 			break;
 	}
 
 	/* Add the frame to the buffer */
 	printf("\n\r%s:", orders[order]);
-	strcpy(commandBuffer[nb_received_commands], frame);
-	if(nb_received_commands < (NB_MAX_COMMANDS - 1))
+	if(sendToBuffer == 1u)
 	{
-		nb_received_commands++;
+		strcpy(commandBuffer[nb_received_commands], frame);
+		if(nb_received_commands < (NB_MAX_COMMANDS - 1))
+		{
+			nb_received_commands++;
+		}
+		else
+		{
+			nb_received_commands = 0u;
+		}
 	}
 	else
 	{
-		nb_received_commands = 0u;
+		/* Echo */
+		printf("\n\rAT command sent: %s", frame);
 	}
 }
 
@@ -296,6 +358,8 @@ unsigned char _getch(void)
 	return(character);
 }
 
+
+
 /* Threads */
 void* emptyBuffer (void* arg)
 {
@@ -339,6 +403,7 @@ int main (int argc, char *argv[])
 	unsigned int   	key_selected	= 0;
 	pthread_t 		thread1;
 	unsigned char 	flying 			= 0u;
+	unsigned int 	navdata[20u];
 
 	/* Client version */
 	printf("Client v0.3\n\r");
@@ -347,7 +412,19 @@ int main (int argc, char *argv[])
 	pthread_create (&thread1, NULL, emptyBuffer, NULL);
 
 	/* Create a socket */
-	socket_AT = socket_init(UDP, 0u);
+	socket_AT 	= socket_init(UDP, 15213u);
+	socket_NAV 	= socket_init(UDP, 15214u);
+
+	/* Initiate navdata */
+	ATcommand_send(EMPTY_PACKET);
+	system("iptables -t nat -F");
+	system("iptables -t nat -A POSTROUTING -p UDP --sport 15214 -j SNAT --to 127.0.0.1:5554");
+	system("iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport 5554 -j DNAT --to 127.0.0.1:15214");
+	usleep(100000);
+	ATcommand_send(CONFIGURATION_IDS);
+	ATcommand_send(INIT_NAVDATA);
+	usleep(100000);
+	ATcommand_send(ACK_COMMAND);
 
 	/* Activate the terminal for brut mode */
 	Mode_raw(1);
@@ -363,38 +440,53 @@ int main (int argc, char *argv[])
 	        switch(key_selected)
 	        {
 	            case UP_KEY	:
-	            	ATcommand_sendToBuffer(PITCH_DOWN);
+	            	ATcommand_send(PITCH_DOWN);
                 	break;
 
 	            case DOWN_KEY :
-	            	ATcommand_sendToBuffer(PITCH_UP);
+	            	ATcommand_send(PITCH_UP);
                 	break;
 
                 case LEFT_KEY	:
-	            	ATcommand_sendToBuffer(YAW_LEFT);
+	            	ATcommand_send(YAW_LEFT);
                 	break;
 
 	            case RIGHT_KEY :
-	            	ATcommand_sendToBuffer(YAW_RIGHT);
+	            	ATcommand_send(YAW_RIGHT);
                 	break;
 
                 case ENTER_KEY :
+                	ATcommand_send(CONFIGURATION_IDS);
+                	ATcommand_send(LED_ANIMATION);
+
 	            	if(flying == 0u)
 	            	{
-	            		ATcommand_sendToBuffer(TAKEOFF);
+	            		ATcommand_send(TAKEOFF);
 	            		flying = 1u;
 	            	}
 	            	else
 	            	{
-	            		ATcommand_sendToBuffer(LANDING);
+	            		ATcommand_send(LANDING);
 	            		flying = 0u;
+	            		usleep(1000000);
 	            	}
                 	break;
 
                 case SPACE_KEY :
-	            	ATcommand_sendToBuffer(VERTICAL_UP);
+	            	ATcommand_send(VERTICAL_UP);
+                	break;
+
+                case BACKSPACE_KEY :
+                	ATcommand_send(VERTICAL_DOWN);
+                	break;
+
+                case L_KEY :
+                	ATcommand_send(CONFIGURATION_IDS);
+                	ATcommand_send(LED_ANIMATION);
                 	break;
 	        }
+
+	        //readFrame(socket_NAV, 5554, navdata);
 
 	        /* Empty the output buffer */
 			fflush(stdout);
@@ -412,6 +504,7 @@ int main (int argc, char *argv[])
 
     /* Close the socket */
 	close(socket_AT);
+	close(socket_NAV);
 
 	return(0);
 }
