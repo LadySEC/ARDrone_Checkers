@@ -163,14 +163,59 @@ void ATcommand_sendToBuffer(ATorders order)
 			ATcommand_generate(frame, REF, ATarguments, ATstrings);
 			break;
 
-		case HOVERING:
+		case YAW_RIGHT:
 			ATarguments[0u].integer = 1u;
 			ATarguments[1u].integer = 0u;
 			ATarguments[2u].integer = 0u;
 			ATarguments[3u].integer = 0u;
+			ATarguments[4u].floating = 0.5f;
+			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
+			break;	
+
+		case YAW_LEFT:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].integer = 0u;
+			ATarguments[3u].integer = 0u;
+			ATarguments[4u].floating = -0.5f;
+			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
+			break;	
+
+		case PITCH_UP:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].floating = 0.5f;
+			ATarguments[3u].integer = 0u;
 			ATarguments[4u].integer = 0u;
 			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
 			break;	
+
+		case PITCH_DOWN:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].floating = -0.5f;
+			ATarguments[3u].integer = 0u;
+			ATarguments[4u].integer = 0u;
+			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
+			break;	
+
+		case VERTICAL_UP:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].integer = 0.5f;
+			ATarguments[3u].floating = 0.5f;
+			ATarguments[4u].integer = 0u;
+			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
+			break;	
+
+		case VERTICAL_DOWN:
+			ATarguments[0u].integer = 1u;
+			ATarguments[1u].integer = 0u;
+			ATarguments[2u].integer = 0.5f;
+			ATarguments[3u].floating = 0.5f;
+			ATarguments[4u].integer = 0u;
+			ATcommand_generate(frame, PCMD, ATarguments, ATstrings);
+			break;
 
 		case CONFIGURATION_IDS:
 			strcpy(ATstrings[0u], session_id);
@@ -187,6 +232,7 @@ void ATcommand_sendToBuffer(ATorders order)
 	}
 
 	/* Add the frame to the buffer */
+	printf("\n\r%s:", orders[order]);
 	strcpy(commandBuffer[nb_received_commands], frame);
 	if(nb_received_commands < (NB_MAX_COMMANDS - 1))
 	{
@@ -251,84 +297,31 @@ unsigned char _getch(void)
 }
 
 /* Threads */
-void* test (void* arg)
+void* emptyBuffer (void* arg)
 {
 	int 	nb_sent_commands = 0u;
-	char 	hovering_command[30u];
 
 	printf("\n\rDebut du thread");
 
 	while(1)
 	{
-		if(nb_received_commands == 0u)
+		if(((nb_received_commands == 0u) && (nb_sent_commands > 0u)) || (nb_sent_commands < nb_received_commands))
 		{
-			/* Table index re-initialization */
-			if(nb_sent_commands > 0u)
+			/* Send the frame through local host */
+			sendFrame(socket_AT, 5556, commandBuffer[nb_sent_commands]);
+			/* Echo */
+			printf("\n\rAT command sent: %s", commandBuffer[nb_sent_commands]);
+			/* Update */
+			if(nb_sent_commands < (NB_MAX_COMMANDS - 1))
 			{
-				/* Send the frame through local host */
-				sendFrame(socket_AT, 5556, commandBuffer[nb_sent_commands]);
-				/* Echo */
-				printf("\n\rAT command sent: %s ", commandBuffer[nb_sent_commands]);
-				//printf("\n\r(received = %d, sent = %d)",nb_received_commands, nb_sent_commands);
-				/* Update */
-				if(nb_sent_commands < (NB_MAX_COMMANDS - 1))
-				{
-					nb_sent_commands++;
-				}
-				else
-				{
-					nb_sent_commands = 0u;
-				}
+				nb_sent_commands++;
 			}
 			else
 			{
-				/* Build the default command */
-				pthread_mutex_lock (&mutex_seqNum);
-				sprintf(hovering_command,"AT*PCMD=%d,%d,%d,%d,%d,%d\r", sequence_number, 1u, 0u, 0u, 0u, 0u);
-				sequence_number++;
-				pthread_mutex_unlock (&mutex_seqNum);
-
-				/* Send the frame through local host */
-				sendFrame(socket_AT, 5556, hovering_command);
-				/* Echo */
-				printf("\n\rAT command sent: %s", hovering_command);
+				nb_sent_commands = 0u;
 			}
 		}
-		else
-		{
-			if(nb_sent_commands < nb_received_commands)
-			{
-				/* Send the frame through local host */
-				sendFrame(socket_AT, 5556, commandBuffer[nb_sent_commands]);
-				/* Echo */
-				printf("\n\rAT command sent: %s ", commandBuffer[nb_sent_commands]);
-				//printf("\n\r(received = %d, sent = %d)",nb_received_commands, nb_sent_commands);
-				/* Update */
-				if(nb_sent_commands < (NB_MAX_COMMANDS - 1))
-				{
-					nb_sent_commands++;
-				}
-				else
-				{
-					nb_sent_commands = 0u;
-				}
-			}
-			else
-			{
-				/* Build the default command */
-				pthread_mutex_lock (&mutex_seqNum);
-				sprintf(hovering_command,"AT*PCMD=%d,%d,%d,%d,%d,%d\r", sequence_number, 1u, 0u, 0u, 0u, 0u);
-				sequence_number++;
-				pthread_mutex_unlock (&mutex_seqNum);
-
-				/* Send the frame through local host */
-				sendFrame(socket_AT, 5556, hovering_command);
-				/* Echo */
-				printf("\n\rAT command sent: %s", hovering_command);
-			}
-
-		}
-		
+	
 		/* Wait */
 		usleep(CYCLE_TEMPO);
 	}
@@ -345,12 +338,13 @@ int main (int argc, char *argv[])
 	unsigned char  	key_pressed  	= 0;
 	unsigned int   	key_selected	= 0;
 	pthread_t 		thread1;
+	unsigned char 	flying 			= 0u;
 
 	/* Client version */
 	printf("Client v0.3\n\r");
 
 	/* Initialize the thread */
-	pthread_create (&thread1, NULL, test, NULL);
+	pthread_create (&thread1, NULL, emptyBuffer, NULL);
 
 	/* Create a socket */
 	socket_AT = socket_init(UDP, 0u);
@@ -369,17 +363,36 @@ int main (int argc, char *argv[])
 	        switch(key_selected)
 	        {
 	            case UP_KEY	:
-	            	printf("\n\rUP_KEY pressed");
-	            	ATcommand_sendToBuffer(TAKEOFF);
+	            	ATcommand_sendToBuffer(PITCH_DOWN);
                 	break;
 
 	            case DOWN_KEY :
-	            	printf("\n\rDOWN_KEY pressed");
-	            	ATcommand_sendToBuffer(LANDING);
+	            	ATcommand_sendToBuffer(PITCH_UP);
+                	break;
+
+                case LEFT_KEY	:
+	            	ATcommand_sendToBuffer(YAW_LEFT);
+                	break;
+
+	            case RIGHT_KEY :
+	            	ATcommand_sendToBuffer(YAW_RIGHT);
                 	break;
 
                 case ENTER_KEY :
-	            	printf("\n\rENTER_KEY pressed");
+	            	if(flying == 0u)
+	            	{
+	            		ATcommand_sendToBuffer(TAKEOFF);
+	            		flying = 1u;
+	            	}
+	            	else
+	            	{
+	            		ATcommand_sendToBuffer(LANDING);
+	            		flying = 0u;
+	            	}
+                	break;
+
+                case SPACE_KEY :
+	            	ATcommand_sendToBuffer(VERTICAL_UP);
                 	break;
 	        }
 
