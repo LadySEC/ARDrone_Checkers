@@ -20,8 +20,6 @@ void MainWindow::open_connexion()
     C.connect_server();
 }
 
-
-
 void MainWindow::send_takeoff()
 {
     C.recoit_texte("takeoff");
