@@ -15,7 +15,6 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -30,13 +29,12 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QLineEdit *editIP;
-    QLineEdit *editMessage;
     QPushButton *button_connect;
-    QPushButton *button_send;
+    QPushButton *button_takeoff;
     QTextEdit *displayAdrIP;
-    QTextEdit *displayMessage;
     QCheckBox *checkBox_connected;
+    QPushButton *button_landing;
+    QPushButton *button_exit;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -45,39 +43,37 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(576, 394);
+        MainWindow->resize(342, 287);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        editIP = new QLineEdit(centralWidget);
-        editIP->setObjectName(QStringLiteral("editIP"));
-        editIP->setGeometry(QRect(200, 50, 201, 27));
-        editMessage = new QLineEdit(centralWidget);
-        editMessage->setObjectName(QStringLiteral("editMessage"));
-        editMessage->setGeometry(QRect(200, 190, 201, 27));
         button_connect = new QPushButton(centralWidget);
         button_connect->setObjectName(QStringLiteral("button_connect"));
-        button_connect->setEnabled(false);
-        button_connect->setGeometry(QRect(450, 50, 99, 27));
-        button_send = new QPushButton(centralWidget);
-        button_send->setObjectName(QStringLiteral("button_send"));
-        button_send->setEnabled(false);
-        button_send->setGeometry(QRect(440, 190, 99, 27));
+        button_connect->setEnabled(true);
+        button_connect->setGeometry(QRect(229, 29, 89, 27));
+        button_takeoff = new QPushButton(centralWidget);
+        button_takeoff->setObjectName(QStringLiteral("button_takeoff"));
+        button_takeoff->setEnabled(false);
+        button_takeoff->setGeometry(QRect(60, 110, 85, 27));
         displayAdrIP = new QTextEdit(centralWidget);
         displayAdrIP->setObjectName(QStringLiteral("displayAdrIP"));
         displayAdrIP->setEnabled(false);
-        displayAdrIP->setGeometry(QRect(30, 50, 141, 31));
-        displayMessage = new QTextEdit(centralWidget);
-        displayMessage->setObjectName(QStringLiteral("displayMessage"));
-        displayMessage->setEnabled(false);
-        displayMessage->setGeometry(QRect(20, 190, 141, 31));
+        displayAdrIP->setGeometry(QRect(9, 22, 181, 51));
         checkBox_connected = new QCheckBox(centralWidget);
         checkBox_connected->setObjectName(QStringLiteral("checkBox_connected"));
         checkBox_connected->setEnabled(false);
-        checkBox_connected->setGeometry(QRect(440, 100, 97, 22));
+        checkBox_connected->setGeometry(QRect(210, 60, 104, 22));
+        button_landing = new QPushButton(centralWidget);
+        button_landing->setObjectName(QStringLiteral("button_landing"));
+        button_landing->setEnabled(false);
+        button_landing->setGeometry(QRect(210, 110, 85, 27));
+        button_exit = new QPushButton(centralWidget);
+        button_exit->setObjectName(QStringLiteral("button_exit"));
+        button_exit->setEnabled(false);
+        button_exit->setGeometry(QRect(140, 170, 85, 27));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 576, 25));
+        menuBar->setGeometry(QRect(0, 0, 342, 25));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -95,18 +91,16 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         button_connect->setText(QApplication::translate("MainWindow", "Connecter", 0));
-        button_send->setText(QApplication::translate("MainWindow", "Envoyer", 0));
+        button_takeoff->setText(QApplication::translate("MainWindow", "takeoff", 0));
         displayAdrIP->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Adresse IP :</p></body></html>", 0));
-        displayMessage->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Message :</p></body></html>", 0));
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Adresse IP : 192.168.1.1</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Socket : 4000</p></body></html>", 0));
         checkBox_connected->setText(QApplication::translate("MainWindow", "Connected", 0));
+        button_landing->setText(QApplication::translate("MainWindow", "landing", 0));
+        button_exit->setText(QApplication::translate("MainWindow", "exit", 0));
     } // retranslateUi
 
 };

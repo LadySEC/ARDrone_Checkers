@@ -47,7 +47,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../Tcp_client/main.cpp \
 		../Tcp_client/mainwindow.cpp \
-		../client.cpp moc_mainwindow.cpp \
+		../Tcp_client/client.cpp moc_mainwindow.cpp \
 		moc_client.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
@@ -287,7 +287,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/Tcp_client1.0.0 || mkdir -p .tmp/Tcp_client1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/mainwindow.h ../client.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/main.cpp ../Tcp_client/mainwindow.cpp ../client.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/mainwindow.h ../Tcp_client/client.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/main.cpp ../Tcp_client/mainwindow.cpp ../Tcp_client/client.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
 
 
 clean:compiler_clean 
@@ -424,7 +424,7 @@ moc_mainwindow.cpp: /usr/include/qt5/QtWidgets/QMainWindow \
 		/usr/include/qt5/QtGui/qtouchdevice.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtGui/qicon.h \
-		../client.h \
+		../Tcp_client/client.h \
 		/usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtWidgets/qapplication.h \
 		/usr/include/qt5/QtCore/qcoreapplication.h \
@@ -435,6 +435,7 @@ moc_mainwindow.cpp: /usr/include/qt5/QtWidgets/QMainWindow \
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtCore/QDebug \
 		../Tcp_client/mainwindow.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../Tcp_client/mainwindow.h -o moc_mainwindow.cpp
 
@@ -555,8 +556,9 @@ moc_client.cpp: /usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		../client.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../client.h -o moc_client.cpp
+		/usr/include/qt5/QtCore/QDebug \
+		../Tcp_client/client.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../Tcp_client/client.h -o moc_client.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -688,7 +690,7 @@ main.o: ../Tcp_client/main.cpp ../Tcp_client/mainwindow.h \
 		/usr/include/qt5/QtGui/qtouchdevice.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtGui/qicon.h \
-		../client.h \
+		../Tcp_client/client.h \
 		/usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtWidgets/qapplication.h \
 		/usr/include/qt5/QtCore/qcoreapplication.h \
@@ -699,6 +701,7 @@ main.o: ../Tcp_client/main.cpp ../Tcp_client/mainwindow.h \
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtCore/QDebug \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
 		/usr/include/qt5/QtWidgets/qframe.h \
@@ -820,7 +823,7 @@ mainwindow.o: ../Tcp_client/mainwindow.cpp ../Tcp_client/mainwindow.h \
 		/usr/include/qt5/QtGui/qtouchdevice.h \
 		/usr/include/qt5/QtWidgets/qtabwidget.h \
 		/usr/include/qt5/QtGui/qicon.h \
-		../client.h \
+		../Tcp_client/client.h \
 		/usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtWidgets/qapplication.h \
 		/usr/include/qt5/QtCore/qcoreapplication.h \
@@ -831,53 +834,11 @@ mainwindow.o: ../Tcp_client/mainwindow.cpp ../Tcp_client/mainwindow.h \
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		ui_mainwindow.h \
-		/usr/include/qt5/QtCore/QVariant \
-		/usr/include/qt5/QtWidgets/QAction \
-		/usr/include/qt5/QtWidgets/qaction.h \
-		/usr/include/qt5/QtWidgets/qactiongroup.h \
-		/usr/include/qt5/QtWidgets/QButtonGroup \
-		/usr/include/qt5/QtWidgets/qbuttongroup.h \
-		/usr/include/qt5/QtWidgets/QHeaderView \
-		/usr/include/qt5/QtWidgets/qheaderview.h \
-		/usr/include/qt5/QtWidgets/qabstractitemview.h \
-		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
-		/usr/include/qt5/QtWidgets/qframe.h \
-		/usr/include/qt5/QtCore/qabstractitemmodel.h \
-		/usr/include/qt5/QtCore/qitemselectionmodel.h \
-		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
-		/usr/include/qt5/QtWidgets/qstyleoption.h \
-		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
-		/usr/include/qt5/QtGui/qvalidator.h \
-		/usr/include/qt5/QtCore/qregularexpression.h \
-		/usr/include/qt5/QtWidgets/qslider.h \
-		/usr/include/qt5/QtWidgets/qabstractslider.h \
-		/usr/include/qt5/QtWidgets/qstyle.h \
-		/usr/include/qt5/QtWidgets/qtabbar.h \
-		/usr/include/qt5/QtWidgets/qrubberband.h \
-		/usr/include/qt5/QtWidgets/QLineEdit \
-		/usr/include/qt5/QtWidgets/qlineedit.h \
-		/usr/include/qt5/QtGui/qtextcursor.h \
-		/usr/include/qt5/QtGui/qtextformat.h \
-		/usr/include/qt5/QtGui/qpen.h \
-		/usr/include/qt5/QtGui/qtextoption.h \
-		/usr/include/qt5/QtWidgets/QMenuBar \
-		/usr/include/qt5/QtWidgets/qmenubar.h \
-		/usr/include/qt5/QtWidgets/qmenu.h \
-		/usr/include/qt5/QtWidgets/QPushButton \
-		/usr/include/qt5/QtWidgets/qpushbutton.h \
-		/usr/include/qt5/QtWidgets/qabstractbutton.h \
-		/usr/include/qt5/QtWidgets/QStatusBar \
-		/usr/include/qt5/QtWidgets/qstatusbar.h \
-		/usr/include/qt5/QtWidgets/QTextEdit \
-		/usr/include/qt5/QtWidgets/qtextedit.h \
-		/usr/include/qt5/QtGui/qtextdocument.h \
-		/usr/include/qt5/QtWidgets/QToolBar \
-		/usr/include/qt5/QtWidgets/qtoolbar.h \
-		/usr/include/qt5/QtWidgets/QWidget
+		/usr/include/qt5/QtCore/QDebug \
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../Tcp_client/mainwindow.cpp
 
-client.o: ../client.cpp ../client.h \
+client.o: ../Tcp_client/client.cpp ../Tcp_client/client.h \
 		/usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtWidgets/qapplication.h \
 		/usr/include/qt5/QtCore/qcoreapplication.h \
@@ -994,8 +955,9 @@ client.o: ../client.cpp ../client.h \
 		/usr/include/qt5/QtGui/qinputmethod.h \
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
-		/usr/include/qt5/QtNetwork/qabstractsocket.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o client.o ../client.cpp
+		/usr/include/qt5/QtNetwork/qabstractsocket.h \
+		/usr/include/qt5/QtCore/QDebug
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o client.o ../Tcp_client/client.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
