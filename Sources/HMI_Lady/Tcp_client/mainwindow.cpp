@@ -6,15 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
-    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(editing_IP()));
-    QObject::connect(ui->editIP,SIGNAL(editingFinished()),this,SLOT(allow_connect()));
-
-    QObject::connect(ui->button_send,SIGNAL(clicked()),this,SLOT(send_message()));
-    QObject::connect(ui->editMessage,SIGNAL(editingFinished()),this,SLOT(allow_send()));
-
-    QObject::connect( &C, SIGNAL(vers_IHM_connexion_OK()), this, SLOT(mark_connection()) ) ;
+    link_connect();
 }
 
 MainWindow::~MainWindow()
@@ -22,28 +15,63 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::editing_IP()
+void MainWindow::open_connexion()
 {
-    C.recoit_IP(ui->editIP->text());
-}
-
-void MainWindow::allow_connect()
-{
-    ui->button_connect->setEnabled(true);
-}
-
-void MainWindow::allow_send()
-{
-    ui->button_send->setEnabled(true);
+    C.connect_server();
 }
 
 
-void MainWindow::send_message()
+
+void MainWindow::send_takeoff()
 {
-    C.recoit_texte(ui->editMessage->text());
+    C.recoit_texte("takeoff");
 }
 
-void MainWindow::mark_connection()
+void MainWindow::send_landing()
+{
+    C.recoit_texte("land");
+}
+
+void MainWindow::send_exit()
+{
+    C.recoit_texte("exit");
+}
+
+void MainWindow::mark_connexion()
 {
     ui->checkBox_connected->setChecked(true);
+    allow_sending();
+}
+
+void MainWindow::allow_sending()
+{
+    ui->button_takeoff->setEnabled(true);
+    ui->button_landing->setEnabled(true);
+    ui->button_exit->setEnabled(true);
+}
+
+void MainWindow::unmark_connexion()
+{
+    ui->checkBox_connected->setChecked(false);
+    forbid_sending() ;
+}
+
+void MainWindow::forbid_sending()
+{
+    ui->button_takeoff->setEnabled(false);
+    ui->button_landing->setEnabled(false);
+    ui->button_exit->setEnabled(false);
+}
+
+void MainWindow::link_connect()
+{
+    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(open_connexion()));
+
+    QObject::connect( &C, SIGNAL(socket_connected()), this, SLOT(mark_connexion()) ) ;
+    QObject::connect( &C, SIGNAL(socket_disconnected()), this, SLOT(unmark_connexion()) ) ;
+
+
+    QObject::connect(ui->button_takeoff,SIGNAL(clicked()),this,SLOT(send_takeoff()));
+    QObject::connect(ui->button_landing,SIGNAL(clicked()),this,SLOT(send_landing()));
+    QObject::connect(ui->button_exit,SIGNAL(clicked()),this,SLOT(send_exit()));
 }

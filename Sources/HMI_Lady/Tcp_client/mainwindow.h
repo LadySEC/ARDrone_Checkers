@@ -16,15 +16,20 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void link_connect() ;
+
 
 public slots:
-    void editing_IP() ;
-    void allow_connect() ;
-    void allow_send() ;
-    void send_message() ;
-    void mark_connection() ;
+    void open_connexion();
+    void send_takeoff() ;
+    void send_landing() ;
+    void send_exit() ;
+    void mark_connexion() ;
+    void unmark_connexion() ;
 
 private:
+    void allow_sending() ;
+    void forbid_sending() ;
     Ui::MainWindow *ui;
     client C ;
 };
