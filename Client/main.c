@@ -22,17 +22,18 @@
 /**********************************************************************************/
 
 /* Sockets */
-int socket_AT;
-int socket_NAV;
+int 			socket_AT;
+int 			socket_NAV;
 /* Buffer */
-char 	commandBuffer[NB_MAX_BITS_COMMAND][NB_MAX_COMMANDS]; 
-int 	nb_received_commands 	= 0u;
-int 	sequence_number 		= 1u;
+char 			commandBuffer[NB_MAX_BITS_COMMAND][NB_MAX_COMMANDS]; 
+int 			nb_received_commands 	= 0u;
+int 			sequence_number 		= 1u;
 /* Mutexes */
-pthread_mutex_t mutex_seqNum = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_seqNum 			= PTHREAD_MUTEX_INITIALIZER;
 /* States */
-unsigned char 	flying 			= 0u;
-unsigned int 	navdata[20u];
+unsigned char 	flying 					= 0u;
+//unsigned int 	navdata[20u];
+navdata_demo_t  navdata;
 
 /**********************************************************************************/
 /* Threads & Procedures														      */
@@ -103,6 +104,10 @@ void sendFrame(int socket_id, int port_dest, char* message)
     {
         die("sendto()");
     }
+    else
+    {
+    	printf("\n\r%s", message);
+    }
 }
 
 void sendBytes(int socket_id, int port_dest, unsigned char* bytes, unsigned char lenght)
@@ -123,12 +128,11 @@ void sendBytes(int socket_id, int port_dest, unsigned char* bytes, unsigned char
     }
 }
 
-unsigned char readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char lenght, function_state state)
+void readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char lenght)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
 	unsigned int 		lenght_server = sizeof(server);
-	unsigned char 		error = 0u;
 
 
 	/* zero out the structure */
@@ -138,23 +142,10 @@ unsigned char readFrame(int socket_id, int port_dest, unsigned int* data, unsign
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(port_dest);
 
-    if(state == BLOCKING)
-    {
-    		if (recvfrom(socket_id, data, lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
-    		{
-        		die("recvfrom()");
-        		error = 1u;
-    		}
-    }
-    else
-    {
-    		if (recvfrom(socket_id, data, lenght, MSG_DONTWAIT, (struct sockaddr*) &server, &lenght_server) == -1) 
-    		{
-        		error = 1u;
-    		}
-    }
-
-    return(error);
+	if (recvfrom(socket_id, data, lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
+	{
+		die("recvfrom()");
+	}
 }
 
 void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
@@ -183,12 +174,12 @@ void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char
 			break;
 
 		case CONFIG:
-			sprintf(frame,"%s=%d,%s,%s\r",commands[command], sequence_number,
+			sprintf(frame,"%s=%d,\"%s\",\"%s\"\r",commands[command], sequence_number,
 					strings[0u], strings[1u]);
 			break;
 
 		case CONFIG_IDS:
-			sprintf(frame,"%s=%d,%s,%s,%s\r",commands[command], sequence_number,
+			sprintf(frame,"%s=%d,\"%s\",\"%s\",\"%s\"\r",commands[command], sequence_number,
 					strings[0u], strings[1u], strings[2u]);
 			break;	
 
@@ -218,15 +209,15 @@ void ATcommand_send(ATorders order)
 	/* At commands management */
 	word32bits 		ATarguments[NB_MAX_UNION_ARG];
 	char 			ATstrings[NB_MAX_STRING_ARG][NB_MAX_CHAR];
-	int 			sendToBuffer = 1u, print = 1u;
+	int 			sendToBuffer 	= 1u;
 	unsigned char 	bytes[5u];
 
 	/* Build the frame */
 	switch(order)
 	{
 		case CALIBRATION:
+			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, FTRIM, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
@@ -241,21 +232,25 @@ void ATcommand_send(ATorders order)
 			break;
 
 		case EMERGENCY:
+			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = EMERGENCY_COMMAND;
 			ATcommand_generate(frame, REF, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case HOVERING:
+			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = 1u;
+			/* ROLL */
 			ATarguments[1u].integer = 0u;
+			/* PITCH */
 			ATarguments[2u].integer = 0u;
+			/* VERTICAL */
 			ATarguments[3u].integer = 0u;
+			/* YAW */
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			sendToBuffer = 0u;
 			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,frame);
 			break;
@@ -327,100 +322,116 @@ void ATcommand_send(ATorders order)
 			break;
 
 		case INIT_NAVDATA:
-			strcpy(ATstrings[0u], "\"general:navdata_demo\"");
-			strcpy(ATstrings[1u], "\"FALSE\"");
+			sendToBuffer 			= 0u;
+			strcpy(ATstrings[0u], "general:navdata_demo");
+			strcpy(ATstrings[1u], "TRUE");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case CONFIGURATION_IDS:
+			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], session_id);
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case LED_ANIMATION:
-			strcpy(ATstrings[0u], "\"leds:leds_anim\"");
-			strcpy(ATstrings[1u], "\"3,1073741824,2\"");
+			sendToBuffer 			= 0u;
+			strcpy(ATstrings[0u], "leds:leds_anim");
+			strcpy(ATstrings[1u], "3,1073741824,2");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case ACK_COMMAND:
+			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = 0u;
 			ATcommand_generate(frame, CTRL, ATarguments, ATstrings);
-			sendToBuffer = 0u;
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case NAVDATA_REQUEST:
-			bytes[0u] 		= 1u;
-			bytes[1u] 		= 0u;
-			bytes[2u] 		= 0u;
-			bytes[3u] 		= 0u;
-			bytes[4u] 		= 0u;
-			sendToBuffer 	= 0u;
-			print 			= 0u;
+			sendToBuffer 			= 0u;
+			bytes[0u] 				= 1u;
+			bytes[1u] 				= 0u;
+			bytes[2u] 				= 0u;
+			bytes[3u] 				= 0u;
+			bytes[4u] 				= 0u;
 			sendBytes(socket_NAV,5554,bytes,5u);
-			printf("\n\rData sent: 01 00 00 00 00");
 			break;
 
 		case RESET_WATCHDOG:
-			sendToBuffer = 0u;
+			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, COMWDG, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,frame);
 			break;
 
 		case INIT_CONFIG:
-			sendToBuffer 	= 0u;
-			print 			= 0u;
-			printf("\n\r%s:", orders[order]);
-			/* Build config_ids arg */
+			sendToBuffer 			= 0u;
+			/* Remove sessions */
 			strcpy(ATstrings[0u], session_id);
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
-
-			/* Session id */
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,frame);
-			printf("\n\rAT command sent: %s", frame);
-			strcpy(ATstrings[0u], "\"custom:session_id\"");
+			strcpy(ATstrings[0u], "custom:session_id");
+			strcpy(ATstrings[1u], "-all");
+			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
+			sendFrame(socket_AT,5556,sub_frame);
+			usleep(CONFIG_TEMPO);
+
+			/* Session id */
+			strcpy(ATstrings[0u], session_id);
+			strcpy(ATstrings[1u], profile_id);
+			strcpy(ATstrings[2u], application_id);
+			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
+			sendFrame(socket_AT,5556,frame);
+			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], session_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,sub_frame);
-			printf("\n\rAT command sent: %s", sub_frame);
+			usleep(CONFIG_TEMPO);
 
 			/* profile id */
+			strcpy(ATstrings[0u], session_id);
+			strcpy(ATstrings[1u], profile_id);
+			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,frame);
-			printf("\n\rAT command sent: %s", frame);
-			strcpy(ATstrings[0u], "\"custom:profile_id\"");
+			strcpy(ATstrings[0u], "custom:profile_id");
 			strcpy(ATstrings[1u], profile_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,sub_frame);
-			printf("\n\rAT command sent: %s", sub_frame);
+			usleep(CONFIG_TEMPO);
 
 			/* application id */
+			strcpy(ATstrings[0u], session_id);
+			strcpy(ATstrings[1u], profile_id);
+			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,frame);
-			printf("\n\rAT command sent: %s", frame);
-			strcpy(ATstrings[0u], "\"custom:application_id\"");
+			strcpy(ATstrings[0u], "custom:application_id");
 			strcpy(ATstrings[1u], application_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
 			sendFrame(socket_AT,5556,sub_frame);
-			printf("\n\rAT command sent: %s", sub_frame);
+			usleep(CONFIG_TEMPO);
+			break;
+
+		case CHANGE_SSID:
+			sendToBuffer 			= 0u;
+			strcpy(ATstrings[0u], "network:ssid_single_player");
+			strcpy(ATstrings[1u], "Ardrone2_Lady");
+			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			sendFrame(socket_AT,5556,frame);
 			break;
 	}
 
 	/* Add the frame to the buffer */
 	if(sendToBuffer == 1u)
 	{
-		printf("\n\r%s:", orders[order]);
 		strcpy(commandBuffer[nb_received_commands], frame);
 		if(nb_received_commands < (NB_MAX_COMMANDS - 1))
 		{
@@ -432,13 +443,67 @@ void ATcommand_send(ATorders order)
 		}
 	}
 	else
-	{	if(print == 1u)
-		{
-			/* Echo */
-			printf("\n\r%s:", orders[order]);
-			printf("\n\rAT command sent: %s", frame);
-		}
+	{
+		/* Echo the order */
+		printf(" (%s)", orders[order]);
 	}
+}
+
+unsigned char navdata_read(int socket_id, int port_dest)
+{
+	/* Declaration */
+	struct 	sockaddr_in server;
+	unsigned int 		lenght_server = sizeof(server);
+	unsigned char 		error = 0u;
+
+
+	/* zero out the structure */
+	memset((char *) &server, 0, sizeof(server));
+
+	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+    server.sin_family 		= AF_INET;
+    server.sin_port 		= htons(port_dest);
+
+	/* Extract navdata */
+	if (recvfrom(socket_id, &navdata, sizeof(navdata), MSG_DONTWAIT, (struct sockaddr*) &server, &lenght_server) == -1) 
+	{
+		error = 1u;
+	}
+	else
+	{
+		#ifdef DEBUG_NAVDATA
+		/* Echo */
+		printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
+				navdata.header, navdata.ardrone_state, navdata.sequence, navdata.vision_defined, 
+				navdata.tag, navdata.size, navdata.ctrl_state, navdata.vbat_flying_percentage, 
+				navdata.theta, navdata.phi, navdata.psi, navdata.altitude , navdata.vx, navdata.vy,
+				navdata.cks_id, navdata.cks_size, navdata.cks_data);
+		#endif
+	}
+
+	return(error);
+}
+
+void navdata_initiate(void)
+{
+	/* Initiate navdata */
+	// Send a request to port 5554
+	ATcommand_send(NAVDATA_REQUEST);
+	// Forward the port 5554 to 15214
+	system("iptables -t nat -F");
+	system("iptables -t nat -A POSTROUTING -p UDP --sport 15214 -j SNAT --to 127.0.0.1:5554");
+	system("iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport 5554 -j DNAT --to 127.0.0.1:15214");
+	usleep(100000);
+	// Read the received packet
+	navdata_read(socket_NAV, 15214u);
+	// Init navdata demo
+	ATcommand_send(CONFIGURATION_IDS);
+	ATcommand_send(INIT_NAVDATA);
+	usleep(100000);
+	// Read the received packet
+	navdata_read(socket_NAV, 15214u);
+	// Send Ack paquet
+	ATcommand_send(ACK_COMMAND);
 }
 
 void Mode_raw(int Activer)
@@ -496,11 +561,11 @@ unsigned char _getch(void)
 
 
 /* Threads */
-void* empty_commandBuffer(void* arg)
+void* droneMoves_management(void* arg)
 {
 	int 	nb_sent_commands = 0u;
 
-	printf("\n\rDebut du thread");
+	printf("\n\rStarting droneMoves_management thread");
 
 	while(1)
 	{
@@ -508,8 +573,7 @@ void* empty_commandBuffer(void* arg)
 		{
 			/* Send the frame through local host */
 			sendFrame(socket_AT, 5556, commandBuffer[nb_sent_commands]);
-			/* Echo */
-			printf("\n\rAT command sent: %s", commandBuffer[nb_sent_commands]);
+			printf(" (%s %d/%d)", "BUFFER", nb_sent_commands, nb_received_commands);
 			/* Update */
 			if(nb_sent_commands < (NB_MAX_COMMANDS - 1))
 			{
@@ -537,15 +601,21 @@ void* empty_commandBuffer(void* arg)
   	return NULL;
 }
 
-void* reset_watchdog (void* arg)
+void* navdata_management(void* arg)
 {
+	printf("\n\rStarting navdata_management thread");
+
 	while(1)
 	{
-		/* Wait */
-		usleep(WATCHDOG_TEMPO);
+		/* Read Navdata */
+		navdata_read(socket_NAV, 15214u);
 		/* Reset Watchdog */
 		ATcommand_send(RESET_WATCHDOG);
+		/* Wait */
+		usleep(WATCHDOG_TEMPO);
 	}
+
+	return NULL;
 }
 
 /**********************************************************************************/
@@ -562,50 +632,30 @@ int main (int argc, char *argv[])
 	pthread_t 		thread2;
 
 	/* Client version */
-	printf("Client v0.3\n\r");
+	printf("Start\n\r");
 
 	/* Create a socket */
+	// AT command socket
 	socket_AT 	= socket_init(UDP, 15213u);
+	// Navdata socket with non blocking reception
 	socket_NAV 	= socket_init(UDP, 15214u);
 	flags 		= fcntl(socket_NAV, F_GETFL);
 	fcntl(socket_NAV, F_SETFL, flags | O_NONBLOCK);
 
-	/* Initiate the identifiers */
+	/* Initiate the configuration */
 	ATcommand_send(INIT_CONFIG);
 	ATcommand_send(CONFIGURATION_IDS);
-	ATcommand_send(LED_ANIMATION);
+	ATcommand_send(CHANGE_SSID);
 
-	/* Initiate navdata */
-	ATcommand_send(NAVDATA_REQUEST);
-	system("iptables -t nat -F");
-	system("iptables -t nat -A POSTROUTING -p UDP --sport 15214 -j SNAT --to 127.0.0.1:5554");
-	system("iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport 5554 -j DNAT --to 127.0.0.1:15214");
-	usleep(100000);
-	readFrame(socket_NAV, 15214u, navdata, 16u, NON_BLOCKING);
-
-	printf("\n\rNAVDATA: %x %x %x %x | %x | %x %x %f %f %f %x %f %f %f | %x %x", 
-			navdata[0u], navdata[1u], navdata[2u], navdata[3u], 
-			navdata[4u], navdata[5u], navdata[6u], (double)navdata[7u], (double)navdata[8u], (double)navdata[9u], navdata[10u],
-			(double)navdata[11u], (double)navdata[12u], (double)navdata[13u], navdata[14u], navdata[15u]);
-
-	ATcommand_send(CONFIGURATION_IDS);
-	ATcommand_send(INIT_NAVDATA);
-	usleep(100000);
-	readFrame(socket_NAV, 15214u, navdata, 16u, NON_BLOCKING);
-
-	printf("\n\rNAVDATA: %x %x %x %x | %x | %x %x %f %f %f %x %f %f %f | %x %x", 
-			navdata[0u], navdata[1u], navdata[2u], navdata[3u], 
-			navdata[4u], navdata[5u], navdata[6u], (double)navdata[7u], (double)navdata[8u], (double)navdata[9u], navdata[10u],
-			(double)navdata[11u], (double)navdata[12u], (double)navdata[13u], navdata[14u], navdata[15u]);
-
-	ATcommand_send(ACK_COMMAND);
+	/* Initiate navdata reception */
+	navdata_initiate();
 
 	/* Initialize the thread */
-	pthread_create (&thread1, NULL, empty_commandBuffer, NULL);
-	pthread_create (&thread2, NULL, reset_watchdog, NULL);
+	pthread_create (&thread1, NULL, droneMoves_management, NULL);
+	pthread_create (&thread2, NULL, navdata_management, NULL);
 
 	/* Activate the terminal for brut mode */
-	Mode_raw(1);
+	Mode_raw(1u);
 
 	do
 	{
@@ -669,15 +719,6 @@ int main (int argc, char *argv[])
 	        }
         }
 
-        /* Try to read a navdata */
-		if(readFrame(socket_NAV, 15214u, navdata, 16u, NON_BLOCKING) == 0u)
-		{
-			printf("\n\rNAVDATA: %x %x %x %x | %x | %x %x %f %f %f %x %f %f %f | %x %x", 
-			navdata[0u], navdata[1u], navdata[2u], navdata[3u], 
-			navdata[4u], navdata[5u], navdata[6u], (double)navdata[7u], (double)navdata[8u], (double)navdata[9u], navdata[10u],
-			(double)navdata[11u], (double)navdata[12u], (double)navdata[13u], navdata[14u], navdata[15u]);
-		}
-
         /* Empty the output buffer */
 		fflush(stdout);
 	}
@@ -686,7 +727,7 @@ int main (int argc, char *argv[])
 	printf("\n\rEnd");
 
 	/* Activate the terminal for brut mode */
-	Mode_raw(0);
+	Mode_raw(0u);
 
 	/* Close current threads */
    	pthread_cancel(thread1);

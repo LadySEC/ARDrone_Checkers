@@ -49,7 +49,8 @@ typedef enum
 	ACK_COMMAND,
 	NAVDATA_REQUEST,
 	RESET_WATCHDOG,
-	INIT_CONFIG
+	INIT_CONFIG,
+	CHANGE_SSID
 }ATorders;
 
 typedef union 
@@ -64,6 +65,35 @@ typedef enum
 	NON_BLOCKING
 } function_state;
 
+typedef struct _navdata_demo_t 
+{
+	/* State */
+	uint32_t    header;				/*!< Always set to NAVDATA_HEADER */
+	uint32_t    ardrone_state;    	/*!< Bit mask built from def_ardrone_state_mask_t */
+	uint32_t    sequence;         	/*!< Sequence number, incremented for each sent packet */
+	uint32_t    vision_defined;
+
+	/* Option */
+    // Common part
+    uint16_t    tag;
+    uint16_t    size;
+
+    // Specialize part
+    uint32_t    ctrl_state;
+    uint32_t    vbat_flying_percentage;
+    float   	theta;
+    float   	phi;
+    float   	psi;
+    int32_t     altitude;
+    float   	vx;
+    float   	vy;
+
+    /* Checksum */
+    uint16_t    cks_id;
+    uint16_t    cks_size;
+    uint32_t    cks_data;
+  } navdata_demo_t;
+
 /**********************************************************************************/
 /* Constants														      		  */
 /**********************************************************************************/
@@ -73,23 +103,24 @@ typedef enum
 #define NB_MAX_CHAR			30u
 #define NB_AT_COMMANDS		9u
 #define NB_MAX_COMMANDS		20u
-#define NB_ORDERS			18u
+#define NB_ORDERS			19u
 const char* commands[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
 const char* orders[NB_ORDERS] 			= { "CALIBRATION", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "PITCH_UP", "PITCH_DOWN", "VERTICAL_UP", "VERTICAL_DOWN",
-											"CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", "RESET_WATCHDOG", "INIT_CONFIG" };
+											"CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", "RESET_WATCHDOG", "INIT_CONFIG", "CHANGE_SSID"};
 /* REF command */
 #define TAKEOFF_COMMAND		290718208
 #define LANDING_COMMAND		290717696
 #define EMERGENCY_COMMAND 	290717952
 
 /* CONFIG command */
-const char* session_id 		= "\"01234567\"";
-const char* profile_id 		= "\"ladyTeam\"";
-const char* application_id 	= "\"89abcdef\""; 
+const char* session_id 		= "00000000";
+const char* profile_id 		= "00000000";
+const char* application_id 	= "00000000"; 
 
 /* Temporisations */
 #define BUFFER_TEMPO		(unsigned int)30000
 #define WATCHDOG_TEMPO		(unsigned int)1000000
+#define CONFIG_TEMPO		(unsigned int)200000
 
 /* Keyboard */
 #define UP_KEY			    0x41
@@ -107,5 +138,7 @@ const char* application_id 	= "\"89abcdef\"";
 #define RED_FONT			1
 #define BLUE_FONT			4
 
+/* Debug */
+#define DEBUG_NAVDATA
 
 #endif //! _GLOBAL_H_
