@@ -59,12 +59,6 @@ typedef union
 	float 	floating;
 }word32bits;
 
-typedef enum 
-{  
-	BLOCKING =0,
-	NON_BLOCKING
-} function_state;
-
 typedef struct _navdata_demo_t 
 {
 	/* State */
@@ -72,12 +66,10 @@ typedef struct _navdata_demo_t
 	uint32_t    ardrone_state;    	/*!< Bit mask built from def_ardrone_state_mask_t */
 	uint32_t    sequence;         	/*!< Sequence number, incremented for each sent packet */
 	uint32_t    vision_defined;
-
 	/* Option */
     // Common part
     uint16_t    tag;
     uint16_t    size;
-
     // Specialize part
     uint32_t    ctrl_state;
     uint32_t    vbat_flying_percentage;
@@ -87,7 +79,6 @@ typedef struct _navdata_demo_t
     int32_t     altitude;
     float   	vx;
     float   	vy;
-
     /* Checksum */
     uint16_t    cks_id;
     uint16_t    cks_size;
@@ -140,5 +131,6 @@ const char* application_id 	= "00000000";
 
 /* Debug */
 #define DEBUG_NAVDATA
+//#define ENABLE_HOVERING
 
 #endif //! _GLOBAL_H_

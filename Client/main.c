@@ -24,7 +24,7 @@
 /* Sockets */
 int 			socket_AT;
 int 			socket_NAV;
-/* Buffer */
+/* Buffer management */
 char 			commandBuffer[NB_MAX_BITS_COMMAND][NB_MAX_COMMANDS]; 
 int 			nb_received_commands 	= 0u;
 int 			sequence_number 		= 1u;
@@ -134,7 +134,6 @@ void readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char l
 	struct 	sockaddr_in server;
 	unsigned int 		lenght_server = sizeof(server);
 
-
 	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
 
@@ -196,8 +195,8 @@ void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char
 			break;	
 	}
 
-	pthread_mutex_lock(&mutex_seqNum);
 	/* Update sequence number */
+	pthread_mutex_lock(&mutex_seqNum);
 	sequence_number++;
 	pthread_mutex_unlock(&mutex_seqNum);
 }
@@ -213,6 +212,7 @@ void ATcommand_send(ATorders order)
 	unsigned char 	bytes[5u];
 
 	/* Build the frame */
+	printf("\n\r[%s]", orders[order]);
 	switch(order)
 	{
 		case CALIBRATION:
@@ -433,6 +433,7 @@ void ATcommand_send(ATorders order)
 	if(sendToBuffer == 1u)
 	{
 		strcpy(commandBuffer[nb_received_commands], frame);
+		printf("\n\rBuffer %d updated (%s)", nb_received_commands, orders[order]);
 		if(nb_received_commands < (NB_MAX_COMMANDS - 1))
 		{
 			nb_received_commands++;
@@ -441,11 +442,6 @@ void ATcommand_send(ATorders order)
 		{
 			nb_received_commands = 0u;
 		}
-	}
-	else
-	{
-		/* Echo the order */
-		printf(" (%s)", orders[order]);
 	}
 }
 
@@ -586,7 +582,7 @@ void* droneMoves_management(void* arg)
 		}
 		else
 		{
-			#if 1
+			#ifdef ENABLE_HOVERING
 			if(flying == 1u)
 			{
 				ATcommand_send(HOVERING);
@@ -644,17 +640,16 @@ int main (int argc, char *argv[])
 
 	/* Initiate the configuration */
 	ATcommand_send(INIT_CONFIG);
+	/* Change the Wifi name */
 	ATcommand_send(CONFIGURATION_IDS);
 	ATcommand_send(CHANGE_SSID);
-
 	/* Initiate navdata reception */
 	navdata_initiate();
-
 	/* Initialize the thread */
 	pthread_create (&thread1, NULL, droneMoves_management, NULL);
 	pthread_create (&thread2, NULL, navdata_management, NULL);
 
-	/* Activate the terminal for brut mode */
+	/* Activate the terminal for raw mode */
 	Mode_raw(1u);
 
 	do
@@ -726,13 +721,12 @@ int main (int argc, char *argv[])
 
 	printf("\n\rEnd");
 
-	/* Activate the terminal for brut mode */
+	/* Disable the raw mode */
 	Mode_raw(0u);
 
 	/* Close current threads */
    	pthread_cancel(thread1);
    	pthread_cancel(thread2);
-
     /* Close the socket */
 	close(socket_AT);
 	close(socket_NAV);
