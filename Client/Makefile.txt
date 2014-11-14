@@ -1,0 +1,24 @@
+CC=arm-none-linux-gnueabi-gcc
+CFLAGS=-W -Wall -mthumb -march=armv7-a -lpthread
+LDFLAGS=
+EXEC=Sprint1_demo
+SRC= $(wildcard *.c)
+OBJ= $(SRC:.c=.o)
+
+all: $(EXEC)
+
+Sprint1_demo: $(OBJ)
+	@$(CC) -o $@ $^ $(LDFLAGS)
+
+main.o: global.h
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+.PHONY: clean mrproper
+
+clean:
+	@rm -rf *.o
+
+mrproper: clean
+	@rm -rf $(EXEC)
