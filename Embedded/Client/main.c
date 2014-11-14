@@ -1,9 +1,5 @@
 #include "global.h"
 #include <pthread.h>		// POSIX library for thread management
-//#include <semaphore.h>	
-#include <sys/types.h>
-#include <time.h>
-#include <signal.h>
 
 /* Lady team libraries */
 #include "keyboard.h"
@@ -26,7 +22,7 @@ pthread_mutex_t mutex_seqNum 			= PTHREAD_MUTEX_INITIALIZER;
 /* States */
 unsigned char 	flying 					= 0u;
 //unsigned int 	navdata[20u];
-navdata_demo_t  navdata;
+T_navdata_demo  navdata;
 
 /**********************************************************************************/
 /* Threads & Procedures														      */
@@ -331,41 +327,6 @@ void ATcommand_send(ATorders order)
 	}
 }
 
-unsigned char navdata_read(int socket_id, int port_dest)
-{
-	/* Declaration */
-	struct 	sockaddr_in server;
-	unsigned int 		lenght_server = sizeof(server);
-	unsigned char 		error = 0u;
-
-
-	/* zero out the structure */
-	memset((char *) &server, 0, sizeof(server));
-
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
-    server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
-
-	/* Extract navdata */
-	if (recvfrom(socket_id, &navdata, sizeof(navdata), MSG_DONTWAIT, (struct sockaddr*) &server, &lenght_server) == -1) 
-	{
-		error = 1u;
-	}
-	else
-	{
-		#ifdef DEBUG_NAVDATA
-		/* Echo */
-		printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
-				navdata.header, navdata.ardrone_state, navdata.sequence, navdata.vision_defined, 
-				navdata.tag, navdata.size, navdata.ctrl_state, navdata.vbat_flying_percentage, 
-				navdata.theta, navdata.phi, navdata.psi, navdata.altitude , navdata.vx, navdata.vy,
-				navdata.cks_id, navdata.cks_size, navdata.cks_data);
-		#endif
-	}
-
-	return(error);
-}
-
 void navdata_initiate(void)
 {
 	/* Initiate navdata */
@@ -377,13 +338,26 @@ void navdata_initiate(void)
 	system("iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport 5554 -j DNAT --to 127.0.0.1:15214");
 	usleep(100000);
 	// Read the received packet
-	navdata_read(socket_NAV, 15214u);
+	socket_readPaquet(socket_NAV, 15214u, &navdata, sizeof(navdata), NON_BLOCKING);
+	/* Echo */
+		printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
+				navdata.header, navdata.ardrone_state, navdata.sequence, navdata.vision_defined, 
+				navdata.tag, navdata.size, navdata.ctrl_state, navdata.vbat_flying_percentage, 
+				navdata.theta, navdata.phi, navdata.psi, navdata.altitude , navdata.vx, navdata.vy,
+				navdata.cks_id, navdata.cks_size, navdata.cks_data);
+
 	// Init navdata demo
 	ATcommand_send(CONFIGURATION_IDS);
 	ATcommand_send(INIT_NAVDATA);
 	usleep(100000);
 	// Read the received packet
-	navdata_read(socket_NAV, 15214u);
+	socket_readPaquet(socket_NAV, 15214u, &navdata, sizeof(navdata), NON_BLOCKING);
+	/* Echo */
+		printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
+				navdata.header, navdata.ardrone_state, navdata.sequence, navdata.vision_defined, 
+				navdata.tag, navdata.size, navdata.ctrl_state, navdata.vbat_flying_percentage, 
+				navdata.theta, navdata.phi, navdata.psi, navdata.altitude , navdata.vx, navdata.vy,
+				navdata.cks_id, navdata.cks_size, navdata.cks_data);
 	// Send Ack paquet
 	ATcommand_send(ACK_COMMAND);
 }
@@ -436,7 +410,7 @@ void* navdata_management(void* arg)
 	while(1)
 	{
 		/* Read Navdata */
-		navdata_read(socket_NAV, 15214u);
+		socket_readPaquet(socket_NAV, 15214u, &navdata, sizeof(navdata), NON_BLOCKING);
 		/* Reset Watchdog */
 		ATcommand_send(RESET_WATCHDOG);
 		/* Wait */

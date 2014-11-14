@@ -11,24 +11,28 @@
 /* Constants													      			  */
 /**********************************************************************************/
 /* Keyboard keys */
-#define UP_KEY			    0x41
-#define DOWN_KEY			0x42
-#define LEFT_KEY			68
-#define RIGHT_KEY			67
-#define ENTER_KEY			0x0D
-#define SPACE_KEY			32		
-#define CTRL_C_KEY			0x03
-#define L_KEY    			108
-#define BACKSPACE_KEY    	8
+
 
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
+typedef enum
+{
+	UP_KEY 				= 0x41u,
+	DOWN_KEY 			= 0x42u,
+	LEFT_KEY 			= 68u,
+	RIGHT_KEY			= 67u,
+ 	ENTER_KEY			= 0x0Du,
+	SPACE_KEY			= 32u,		
+	CTRL_C_KEY			= 0x03u,
+	L_KEY    			= 108u,
+	BACKSPACE_KEY    	= 8u
+} T_keys;
 
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-void 			keyboard_rawMode(int enable);
+void 			keyboard_rawMode(int I_enable);
 int 			keyboard_hit(void);
 unsigned char 	keyboard_getchar(void);
 

@@ -8,16 +8,16 @@
 /* Threads & Procedures														      */
 /**********************************************************************************/
 /* Enbale user inputs */
-void keyboard_rawMode(int enable)
+void keyboard_rawMode(int I_enable)
 {
     static struct termios Cooked;
     static int            Raw_enabled = 0u;
     struct termios 		  Raw;
 
-    if(Raw_enabled == enable)
+    if(Raw_enabled == I_enable)
         return;
 
-    if(enable)
+    if(I_enable)
     {
         tcgetattr(STDIN_FILENO, &Cooked);
 
@@ -28,7 +28,7 @@ void keyboard_rawMode(int enable)
     else
         tcsetattr(STDIN_FILENO, TCSANOW, &Cooked);
 
-    Raw_enabled = enable;
+    Raw_enabled = I_enable;
 }
 
 /* Detect if a keyboard key has been pressed */

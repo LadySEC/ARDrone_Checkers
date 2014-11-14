@@ -14,7 +14,7 @@
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
-typedef struct _navdata_demo_t 
+typedef struct 
 {
 	/* State */
 	uint32_t    header;				/*!< Always set to NAVDATA_HEADER */
@@ -38,6 +38,6 @@ typedef struct _navdata_demo_t
     uint16_t    cks_id;
     uint16_t    cks_size;
     uint32_t    cks_data;
-  } navdata_demo_t;
+  } T_navdata_demo;
 
 #endif //! _NAVDATA_H_

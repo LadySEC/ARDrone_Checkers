@@ -55,8 +55,8 @@ int socket_initiate(T_protocol I_protocol, int I_port, T_state I_state)
 	    /* Set the socket as non-blocking */
 	    if(I_state ==  NON_BLOCKING)
 	   	{
-	   		flags 		= fcntl(socket_NAV, F_GETFL);
-			fcntl(socket_NAV, F_SETFL, flags | O_NONBLOCK);
+	   		flags 		= fcntl(socket_id, F_GETFL);
+			fcntl(socket_id, F_SETFL, flags | O_NONBLOCK);
 	   	}
    	}
 
@@ -103,11 +103,12 @@ void socket_sendBytes(int I_socket_id, int I_port_dest, unsigned char* O_bytes, 
     }
 }
 
-void socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data)
+unsigned char socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data, int I_lenght, T_state I_state)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
-	unsigned int 		lenght_server = sizeof(server);
+	unsigned int 		lenght_server 	= sizeof(server);
+	unsigned char		error 			= 0u;
 
 	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
@@ -116,8 +117,22 @@ void socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data)
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(I_port_dest);
 
-	if (recvfrom(I_socket_id, O_data, sizeof(O_data), 0u, (struct sockaddr*) &server, &lenght_server) == -1)
-	{
-		socket_die("recvfrom()");
-	}
+    switch(I_state)
+    {
+    	case BLOCKING:
+    		if (recvfrom(I_socket_id, O_data, I_lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
+			{
+				error = 1u;
+			}
+    		break;
+
+    	case NON_BLOCKING:
+    		if (recvfrom(I_socket_id, O_data, I_lenght, MSG_DONTWAIT, (struct sockaddr*) &server, &lenght_server) == -1)
+			{
+				error = 1u;
+			}
+    		break;
+    }
+
+	return(error);
 }
