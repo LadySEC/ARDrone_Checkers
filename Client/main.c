@@ -1,26 +1,19 @@
-/* Useful libraries */
-#include <stdio.h>			// Standard C ANSI
-#include <stdlib.h>
+#include "global.h"
 #include <pthread.h>		// POSIX library for thread management
-#include <malloc.h>			// Dynamic allocation
 //#include <semaphore.h>	
-#include <sys/socket.h>		// UDP/TCP
-#include <netinet/in.h>
-#include <string.h> 
-#include <unistd.h>			// usleep
-#include <termios.h>
 #include <sys/types.h>
-#include <fcntl.h>
-
 #include <time.h>
 #include <signal.h>
 
-#include "global.h"
+/* Lady team libraries */
+#include "keyboard.h"
+#include "communication.h"
+#include "at_command.h"
+#include "navdata.h"
 
 /**********************************************************************************/
 /* Global variables 															  */
 /**********************************************************************************/
-
 /* Sockets */
 int 			socket_AT;
 int 			socket_NAV;
@@ -40,113 +33,6 @@ navdata_demo_t  navdata;
 /**********************************************************************************/
 
 /* Procedures */
-void die(char *s)
-{
-    perror(s);
-    exit(1);
-}
-
-int socket_init(protocol p, int port)
-{
-	/* Declaration */
-	struct 	sockaddr_in client;
-	int 				socket_id;
-
-	/* Generate a socket */
-	switch(p)
-	{
-		case TCP:
-			socket_id = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
-			break;
-
-		case UDP:
-			socket_id = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP);
-			break;
-	}
-
-    if(socket_id == -1)
-   	{
-   		die("socket");
-   	}
-   	/* Socket created */
-   	else
-   	{
-   		/* zero out the structure */
-    	memset((char *) &client, 0, sizeof(client));
-
-   		client.sin_addr.s_addr 	= htonl(INADDR_ANY); 
-	    client.sin_family 		= AF_INET;
-	    client.sin_port 		= htons(port);
-	 
-	 	/* bind socket to port */
-	    if( bind(socket_id, (struct sockaddr*)&client, sizeof(client) ) == -1)
-	    {
-	        die("bind");
-	    }
-   	}
-
-    return(socket_id);
-}
-
-void sendFrame(int socket_id, int port_dest, char* message)
-{
-	/* Declaration */
-	struct 	sockaddr_in server;
-
-	/* zero out the structure */
-	memset((char *) &server, 0, sizeof(server));
-
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
-    server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
-
-	if (sendto(socket_id, message, strlen(message)+1, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
-    {
-        die("sendto()");
-    }
-    else
-    {
-    	printf("\n\r%s", message);
-    }
-}
-
-void sendBytes(int socket_id, int port_dest, unsigned char* bytes, unsigned char lenght)
-{
-	/* Declaration */
-	struct 	sockaddr_in server;
-
-	/* zero out the structure */
-	memset((char *) &server, 0, sizeof(server));
-
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
-    server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
-
-	if (sendto(socket_id, bytes, lenght, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
-    {
-        die("sendto()");
-    }
-}
-
-void readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char lenght)
-{
-	/* Declaration */
-	struct 	sockaddr_in server;
-	unsigned int 		lenght_server = sizeof(server);
-
-	/* zero out the structure */
-	memset((char *) &server, 0, sizeof(server));
-
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
-    server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
-
-	if (recvfrom(socket_id, data, lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
-	{
-		die("recvfrom()");
-	}
-}
-
 void ATcommand_generate(char* frame, ATcommands command, word32bits* array, char strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
 	/* Reset the frame */
@@ -502,60 +388,6 @@ void navdata_initiate(void)
 	ATcommand_send(ACK_COMMAND);
 }
 
-void Mode_raw(int Activer)
-{
-    static struct termios Cooked;
-    static int            Raw_Actif = 0;
-    struct termios 		  Raw;
-
-    if(Raw_Actif == Activer)
-        return;
-
-    if(Activer)
-    {
-        tcgetattr(STDIN_FILENO, &Cooked);
-
-        Raw = Cooked;
-        cfmakeraw(&Raw);
-        tcsetattr(STDIN_FILENO, TCSANOW, &Raw);
-    }
-    else
-        tcsetattr(STDIN_FILENO, TCSANOW, &Cooked);
-
-    Raw_Actif = Activer;
-}
-
-int kbhit(void)
-{
-    struct timeval Tv = {0, 0};
-    fd_set         Readfds;
-
-    FD_ZERO(&Readfds);
-    FD_SET(STDIN_FILENO, &Readfds);
-
-    return select(STDIN_FILENO + 1, &Readfds, NULL, NULL, &Tv) == 1;
-}
-
-unsigned char _getch(void)
-{
-	unsigned char character = 0;
-
-
-	character = getchar();		/* Lecture du caractere */
-
-	/* Gestion des 3 octets codant un caractere special */
-	if(character == 0x1B)
-	{
-		character = getchar();
-		if(character ==	0x5B)
-			character = getchar();
-	}
-
-	return(character);
-}
-
-
-
 /* Threads */
 void* droneMoves_management(void* arg)
 {
@@ -632,9 +464,9 @@ int main (int argc, char *argv[])
 
 	/* Create a socket */
 	// AT command socket
-	socket_AT 	= socket_init(UDP, 15213u);
+	socket_AT 	= socket_initiate(UDP, 15213u);
 	// Navdata socket with non blocking reception
-	socket_NAV 	= socket_init(UDP, 15214u);
+	socket_NAV 	= socket_initiate(UDP, 15214u);
 	flags 		= fcntl(socket_NAV, F_GETFL);
 	fcntl(socket_NAV, F_SETFL, flags | O_NONBLOCK);
 
@@ -650,16 +482,16 @@ int main (int argc, char *argv[])
 	pthread_create (&thread2, NULL, navdata_management, NULL);
 
 	/* Activate the terminal for raw mode */
-	Mode_raw(1u);
+	keyboard_rawMode(1u);
 
 	do
 	{
 		/* Test */
-        key_pressed = kbhit();
+        key_pressed = keyboard_hit();
         if(key_pressed)
         {
             /* Read the selected key */
-            key_selected = _getch();
+            key_selected = keyboard_getchar();
 	        switch(key_selected)
 	        {
 	            case UP_KEY	:
@@ -722,7 +554,7 @@ int main (int argc, char *argv[])
 	printf("\n\rEnd");
 
 	/* Disable the raw mode */
-	Mode_raw(0u);
+	keyboard_rawMode(0u);
 
 	/* Close current threads */
    	pthread_cancel(thread1);
