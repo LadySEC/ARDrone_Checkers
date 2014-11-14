@@ -104,7 +104,7 @@ void ATcommand_send(ATorders order)
 		case CALIBRATION:
 			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, FTRIM, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case TAKEOFF:
@@ -121,7 +121,7 @@ void ATcommand_send(ATorders order)
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = EMERGENCY_COMMAND;
 			ATcommand_generate(frame, REF, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case HOVERING:
@@ -138,7 +138,7 @@ void ATcommand_send(ATorders order)
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
 			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case YAW_RIGHT:
@@ -212,7 +212,7 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[0u], "general:navdata_demo");
 			strcpy(ATstrings[1u], "TRUE");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case CONFIGURATION_IDS:
@@ -221,7 +221,7 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case LED_ANIMATION:
@@ -229,14 +229,14 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[0u], "leds:leds_anim");
 			strcpy(ATstrings[1u], "3,1073741824,2");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case ACK_COMMAND:
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = 0u;
 			ATcommand_generate(frame, CTRL, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case NAVDATA_REQUEST:
@@ -246,13 +246,13 @@ void ATcommand_send(ATorders order)
 			bytes[2u] 				= 0u;
 			bytes[3u] 				= 0u;
 			bytes[4u] 				= 0u;
-			sendBytes(socket_NAV,5554,bytes,5u);
+			socket_sendBytes(socket_NAV,5554,bytes,5u);
 			break;
 
 		case RESET_WATCHDOG:
 			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, COMWDG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 
 		case INIT_CONFIG:
@@ -262,11 +262,11 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], "-all");
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,sub_frame);
+			socket_sendString(socket_AT,5556,sub_frame);
 			usleep(CONFIG_TEMPO);
 
 			/* Session id */
@@ -274,11 +274,11 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], session_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,sub_frame);
+			socket_sendString(socket_AT,5556,sub_frame);
 			usleep(CONFIG_TEMPO);
 
 			/* profile id */
@@ -286,11 +286,11 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			strcpy(ATstrings[0u], "custom:profile_id");
 			strcpy(ATstrings[1u], profile_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,sub_frame);
+			socket_sendString(socket_AT,5556,sub_frame);
 			usleep(CONFIG_TEMPO);
 
 			/* application id */
@@ -298,11 +298,11 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[1u], profile_id);
 			strcpy(ATstrings[2u], application_id);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			strcpy(ATstrings[0u], "custom:application_id");
 			strcpy(ATstrings[1u], application_id);
 			ATcommand_generate(sub_frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,sub_frame);
+			socket_sendString(socket_AT,5556,sub_frame);
 			usleep(CONFIG_TEMPO);
 			break;
 
@@ -311,7 +311,7 @@ void ATcommand_send(ATorders order)
 			strcpy(ATstrings[0u], "network:ssid_single_player");
 			strcpy(ATstrings[1u], "Ardrone2_Lady");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			sendFrame(socket_AT,5556,frame);
+			socket_sendString(socket_AT,5556,frame);
 			break;
 	}
 
@@ -400,7 +400,7 @@ void* droneMoves_management(void* arg)
 		if(((nb_received_commands == 0u) && (nb_sent_commands > 0u)) || (nb_sent_commands < nb_received_commands))
 		{
 			/* Send the frame through local host */
-			sendFrame(socket_AT, 5556, commandBuffer[nb_sent_commands]);
+			socket_sendString(socket_AT, 5556, commandBuffer[nb_sent_commands]);
 			printf(" (%s %d/%d)", "BUFFER", nb_sent_commands, nb_received_commands);
 			/* Update */
 			if(nb_sent_commands < (NB_MAX_COMMANDS - 1))
@@ -454,7 +454,6 @@ int main (int argc, char *argv[])
 	/* Declarations */
 	unsigned char  	key_pressed  	= 0;
 	unsigned int   	key_selected	= 0;
-	int 			flags;
 	/* Thread */
 	pthread_t 		thread1;
 	pthread_t 		thread2;
@@ -464,11 +463,9 @@ int main (int argc, char *argv[])
 
 	/* Create a socket */
 	// AT command socket
-	socket_AT 	= socket_initiate(UDP, 15213u);
+	socket_AT 	= socket_initiate(UDP, 15213u, BLOCKING);
 	// Navdata socket with non blocking reception
-	socket_NAV 	= socket_initiate(UDP, 15214u);
-	flags 		= fcntl(socket_NAV, F_GETFL);
-	fcntl(socket_NAV, F_SETFL, flags | O_NONBLOCK);
+	socket_NAV 	= socket_initiate(UDP, 15214u, NON_BLOCKING);
 
 	/* Initiate the configuration */
 	ATcommand_send(INIT_CONFIG);

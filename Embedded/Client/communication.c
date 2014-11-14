@@ -13,14 +13,15 @@ void socket_die(char *s)
     exit(1);
 }
 
-int socket_init(protocol p, int port)
+int socket_initiate(T_protocol I_protocol, int I_port, T_state I_state)
 {
 	/* Declaration */
 	struct 	sockaddr_in client;
 	int 				socket_id;
+	int 				flags;
 
 	/* Generate a socket */
-	switch(p)
+	switch(I_protocol)
 	{
 		case TCP:
 			socket_id = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
@@ -43,19 +44,26 @@ int socket_init(protocol p, int port)
 
    		client.sin_addr.s_addr 	= htonl(INADDR_ANY); 
 	    client.sin_family 		= AF_INET;
-	    client.sin_port 		= htons(port);
+	    client.sin_port 		= htons(I_port);
 	 
 	 	/* bind socket to port */
 	    if( bind(socket_id, (struct sockaddr*)&client, sizeof(client) ) == -1)
 	    {
 	        socket_die("bind");
 	    }
+
+	    /* Set the socket as non-blocking */
+	    if(I_state ==  NON_BLOCKING)
+	   	{
+	   		flags 		= fcntl(socket_NAV, F_GETFL);
+			fcntl(socket_NAV, F_SETFL, flags | O_NONBLOCK);
+	   	}
    	}
 
     return(socket_id);
 }
 
-void sendFrame(int socket_id, int port_dest, char* message)
+void socket_sendString(int I_socket_id, int I_port_dest, char* O_message)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
@@ -65,19 +73,19 @@ void sendFrame(int socket_id, int port_dest, char* message)
 
 	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
     server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
+    server.sin_port 		= htons(I_port_dest);
 
-	if (sendto(socket_id, message, strlen(message)+1, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
+	if (sendto(I_socket_id, O_message, strlen(O_message)+1, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
     {
         socket_die("sendto()");
     }
     else
     {
-    	printf("\n\r%s", message);
+    	printf("\n\rString sent: %s", O_message);
     }
 }
 
-void sendBytes(int socket_id, int port_dest, unsigned char* bytes, unsigned char lenght)
+void socket_sendBytes(int I_socket_id, int I_port_dest, unsigned char* O_bytes, unsigned char I_lenght)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
@@ -87,15 +95,15 @@ void sendBytes(int socket_id, int port_dest, unsigned char* bytes, unsigned char
 
 	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
     server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
+    server.sin_port 		= htons(I_port_dest);
 
-	if (sendto(socket_id, bytes, lenght, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
+	if (sendto(I_socket_id, O_bytes, I_lenght, 0u, (struct sockaddr*) &server, sizeof(server)) == -1)
     {
         socket_die("sendto()");
     }
 }
 
-void readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char lenght)
+void socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
@@ -106,9 +114,9 @@ void readFrame(int socket_id, int port_dest, unsigned int* data, unsigned char l
 
 	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
     server.sin_family 		= AF_INET;
-    server.sin_port 		= htons(port_dest);
+    server.sin_port 		= htons(I_port_dest);
 
-	if (recvfrom(socket_id, data, lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
+	if (recvfrom(I_socket_id, O_data, sizeof(O_data), 0u, (struct sockaddr*) &server, &lenght_server) == -1)
 	{
 		socket_die("recvfrom()");
 	}
