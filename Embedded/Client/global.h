@@ -8,15 +8,11 @@
 #include <stdio.h>			// Standard C ANSI
 #include <stdlib.h>
 #include <unistd.h>			// usleep
+#include <pthread.h>		// POSIX library for thread management
 
 /**********************************************************************************/
 /* Constants														      		  */
 /**********************************************************************************/
-/* Temporisations */
-#define BUFFER_TEMPO		(unsigned int)30000
-#define WATCHDOG_TEMPO		(unsigned int)1000000
-#define CONFIG_TEMPO		(unsigned int)200000
-
 /* Debug */
 #define DEBUG_NAVDATA
 //#define ENABLE_HOVERING

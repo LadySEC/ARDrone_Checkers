@@ -136,3 +136,9 @@ unsigned char socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data, 
 
 	return(error);
 }
+
+void socket_close(int I_socket_id)
+{
+	/* Close the socket */
+	close(I_socket_id);
+}
