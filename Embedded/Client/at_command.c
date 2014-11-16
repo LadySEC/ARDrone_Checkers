@@ -3,13 +3,15 @@
 /**********************************************************************************/
 /* Constants 															  		  */
 /**********************************************************************************/
+/* Local host */
+static const char* C_LOCALHOST_IP				= "127.0.0.1";
 /* CONFIG_IDS arguments */
-static const char* C_session_id 				= "00000000";
-static const char* C_profile_id 				= "00000000";
-static const char* C_application_id 			= "00000000"; 
+static const char* C_SESSION_ID 				= "00000000";
+static const char* C_PROFILE_ID 				= "00000000";
+static const char* C_APPLICATION_ID 			= "00000000"; 
 /* Arrays */
-static const char* C_commands[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
-static const char* C_orders[NB_ORDERS] 			= { "CALIBRATION", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", "PITCH_DOWN", 
+static const char* C_COMMANDS[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
+static const char* C_ORDERS[NB_ORDERS] 			= { "CALIBRATION", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", "PITCH_DOWN", 
 													"VERTICAL_UP", "VERTICAL_DOWN", "CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
 													"RESET_WATCHDOG", "REMOVE_CONFIGS", "CHANGE_SESSION", "CHANGE_PROFILE", "CHANGE_APP", "CHANGE_SSID"};
 
@@ -32,8 +34,27 @@ T_navdata_demo  G_navdata;
 /**********************************************************************************/
 /* Procedures														     		  */
 /**********************************************************************************/
+/* Getters */
+T_bool ATcommand_FlyingState(void)
+{
+	T_bool flying;
+
+	if((G_navdata.ardrone_state & 0x1u) == 0u)
+	{
+		flying = FALSE;
+	}
+	else
+	{
+		flying = TRUE;
+	}
+
+	return(flying);
+}
+
+/* Procedures */
 void ATcommand_display_navdata(T_navdata_display I_display)
 {
+#ifdef DEBUG_NAVDATA
 	switch(I_display)
 	{
 		case ALL_NAVDATA:
@@ -54,52 +75,65 @@ void ATcommand_display_navdata(T_navdata_display I_display)
 																						G_navdata.vx, G_navdata.vy);
 			break;
 	}
-
+#endif
 }
 
-void ATcommand_initiate(void)
+T_error ATcommand_initiate(void)
 {
-	char string[100u];
+	/* Declarations */
+	char 	string[100u];
+	T_error	error = NO_ERROR;
+
 	/* Create a socket */
 	// AT command socket
-	G_socket_AT 	= socket_initiate(UDP, AT_CLIENT_PORT, BLOCKING);
+	G_socket_AT 	= socket_initiate(UDP, C_LOCALHOST_IP, AT_CLIENT_PORT, BLOCKING);
 	// Navdata socket with non blocking reception
-	G_socket_NAV 	= socket_initiate(UDP, NAV_CLIENT_PORT, NON_BLOCKING);
+	G_socket_NAV 	= socket_initiate(UDP, C_LOCALHOST_IP, NAV_CLIENT_PORT, NON_BLOCKING);
 
-	/* Initiate the configuration */
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(REMOVE_CONFIGS);
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(CHANGE_SESSION);
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(CHANGE_PROFILE);
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(CHANGE_APP);
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(CHANGE_SSID);
+	printf("\n\r%d,%d", G_socket_AT, G_socket_NAV);
+	if((G_socket_AT != -1) && (G_socket_NAV != -1))
+	{
+		/* Initiate the configuration */
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(REMOVE_CONFIGS);
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(CHANGE_SESSION);
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(CHANGE_PROFILE);
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(CHANGE_APP);
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(CHANGE_SSID);
 
-	/* Initiate navdata reception */
-	// Send a request to port 5554
-	ATcommand_process(NAVDATA_REQUEST);
-	// Forward the port 5554 to 15214
-	system("iptables -t nat -F");
-	sprintf(string,"iptables -t nat -A POSTROUTING -p UDP --sport %d -j SNAT --to 127.0.0.1:%d", NAV_CLIENT_PORT, NAV_SERVER_PORT);
-	system(string);
-	sprintf(string,"iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport %d -j DNAT --to 127.0.0.1:%d", NAV_SERVER_PORT, NAV_CLIENT_PORT);
-	system(string);
-	usleep(100000);
-	// Read the received packet
-	socket_readPaquet(G_socket_NAV, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
-	ATcommand_display_navdata(PROCESSED_NAVDATA);
-	// Init navdata demo
-	ATcommand_process(CONFIGURATION_IDS);
-	ATcommand_process(INIT_NAVDATA);
-	usleep(100000);
-	// Read the received packet
-	socket_readPaquet(G_socket_NAV, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
-	ATcommand_display_navdata(PROCESSED_NAVDATA);
-	// Send Ack paquet
-	ATcommand_process(ACK_COMMAND);
+		/* Initiate navdata reception */
+		// Send a request to port 5554
+		ATcommand_process(NAVDATA_REQUEST);
+		// Forward the port 5554 to 15214
+		system("iptables -t nat -F");
+		sprintf(string,"iptables -t nat -A POSTROUTING -p UDP --sport %d -j SNAT --to 127.0.0.1:%d", NAV_CLIENT_PORT, NAV_SERVER_PORT);
+		system(string);
+		sprintf(string,"iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport %d -j DNAT --to 127.0.0.1:%d", NAV_SERVER_PORT, NAV_CLIENT_PORT);
+		system(string);
+		usleep(100000);
+		// Read the received packet
+		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		ATcommand_display_navdata(PROCESSED_NAVDATA);
+		// Init navdata demo
+		ATcommand_process(CONFIGURATION_IDS);
+		ATcommand_process(INIT_NAVDATA);
+		usleep(100000);
+		// Read the received packet
+		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		ATcommand_display_navdata(PROCESSED_NAVDATA);
+		// Send Ack paquet
+		ATcommand_process(ACK_COMMAND);
+	}
+	else
+	{
+		error = ERROR;
+	}
+
+	return(error);
 }
 
 void ATcommand_close(void)
@@ -116,43 +150,43 @@ void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_a
 	switch(I_command)
 	{
 		case REF:
-			sprintf(O_frame,"%s=%d,%d\r",C_commands[I_command], G_sequenceNumber, I_array[0u].integer);
+			sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
 			break;
 
 		case PCMD:
-			sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d\r",C_commands[I_command], G_sequenceNumber, 
+			sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
 					I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer);
 			break;
 
 		case PCMD_MAG:
-			sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d,%d,%d\r",C_commands[I_command], G_sequenceNumber, 
+			sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
 					I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer, I_array[5u].integer, I_array[6u].integer);
 			break;
 
 		case FTRIM:
-			sprintf(O_frame,"%s=%d\r",C_commands[I_command], G_sequenceNumber);
+			sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
 			break;
 
 		case CONFIG:
-			sprintf(O_frame,"%s=%d,\"%s\",\"%s\"\r",C_commands[I_command], G_sequenceNumber,
+			sprintf(O_frame,"%s=%d,\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
 					I_strings[0u], I_strings[1u]);
 			break;
 
 		case CONFIG_IDS:
-			sprintf(O_frame,"%s=%d,\"%s\",\"%s\",\"%s\"\r",C_commands[I_command], G_sequenceNumber,
+			sprintf(O_frame,"%s=%d,\"%s\",\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
 					I_strings[0u], I_strings[1u], I_strings[2u]);
 			break;	
 
 		case COMWDG:
-			sprintf(O_frame,"%s=%d\r",C_commands[I_command], G_sequenceNumber);
+			sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
 			break;
 
 		case CALIB:
-			sprintf(O_frame,"%s=%d,%d\r",C_commands[I_command], G_sequenceNumber, I_array[0u].integer);
+			sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
 			break;		
 
 		case CTRL:
-			sprintf(O_frame,"%s=%d,%d\r",C_commands[I_command], G_sequenceNumber, I_array[0u].integer);
+			sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
 			break;	
 	}
 
@@ -172,13 +206,13 @@ void ATcommand_process(T_ATorders I_order)
 	unsigned char 	bytes[5u];
 
 	/* Build the frame */
-	printf("\n\r[%s]", C_orders[I_order]);
+	printf("\n\r[%s]", C_ORDERS[I_order]);
 	switch(I_order)
 	{
 		case CALIBRATION:
 			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, FTRIM, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case TAKEOFF:
@@ -195,7 +229,7 @@ void ATcommand_process(T_ATorders I_order)
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = EMERGENCY_COMMAND;
 			ATcommand_generate(frame, REF, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case HOVERING:
@@ -212,7 +246,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
 			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case YAW_RIGHT:
@@ -308,16 +342,16 @@ void ATcommand_process(T_ATorders I_order)
 			strcpy(ATstrings[0u], "general:navdata_demo");
 			strcpy(ATstrings[1u], "TRUE");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case CONFIGURATION_IDS:
 			sendToBuffer 			= 0u;
-			strcpy(ATstrings[0u], C_session_id);
-			strcpy(ATstrings[1u], C_profile_id);
-			strcpy(ATstrings[2u], C_application_id);
+			strcpy(ATstrings[0u], C_SESSION_ID);
+			strcpy(ATstrings[1u], C_PROFILE_ID);
+			strcpy(ATstrings[2u], C_APPLICATION_ID);
 			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case LED_ANIMATION:
@@ -325,14 +359,14 @@ void ATcommand_process(T_ATorders I_order)
 			strcpy(ATstrings[0u], "leds:leds_anim");
 			strcpy(ATstrings[1u], "3,1073741824,2");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case ACK_COMMAND:
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = 0u;
 			ATcommand_generate(frame, CTRL, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case NAVDATA_REQUEST:
@@ -342,13 +376,13 @@ void ATcommand_process(T_ATorders I_order)
 			bytes[2u] 				= 0u;
 			bytes[3u] 				= 0u;
 			bytes[4u] 				= 0u;
-			socket_sendBytes(G_socket_NAV, NAV_SERVER_PORT, bytes, 5u);
+			socket_sendBytes(G_socket_NAV, C_LOCALHOST_IP, NAV_SERVER_PORT, bytes, 5u);
 			break;
 
 		case RESET_WATCHDOG:
 			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, COMWDG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case REMOVE_CONFIGS:
@@ -356,31 +390,31 @@ void ATcommand_process(T_ATorders I_order)
 			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], "-all");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case CHANGE_SESSION:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:session_id");
-			strcpy(ATstrings[1u], C_session_id);
+			strcpy(ATstrings[1u], C_SESSION_ID);
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case CHANGE_PROFILE:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:profile_id");
-			strcpy(ATstrings[1u], C_profile_id);
+			strcpy(ATstrings[1u], C_PROFILE_ID);
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case CHANGE_APP:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:application_id");
-			strcpy(ATstrings[1u], C_application_id);
+			strcpy(ATstrings[1u], C_APPLICATION_ID);
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 
 		case CHANGE_SSID:
@@ -388,7 +422,7 @@ void ATcommand_process(T_ATorders I_order)
 			strcpy(ATstrings[0u], "network:ssid_single_player");
 			strcpy(ATstrings[1u], "Ardrone2_Lady");
 			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, frame);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
 			break;
 	}
 
@@ -396,7 +430,7 @@ void ATcommand_process(T_ATorders I_order)
 	if(sendToBuffer == 1u)
 	{
 		strcpy(G_buffer[G_nb_receivedCommands], frame);
-		printf("\n\rBuffer %d updated (%s)", G_nb_receivedCommands, C_orders[I_order]);
+		printf("\n\rBuffer %d updated (%s)", G_nb_receivedCommands, C_ORDERS[I_order]);
 		if(G_nb_receivedCommands < (NB_MAX_COMMANDS - 1))
 		{
 			G_nb_receivedCommands++;
@@ -413,7 +447,9 @@ void ATcommand_process(T_ATorders I_order)
 /**********************************************************************************/
 void* ATcommand_thread_movements(void* arg)
 {
-	int 	nb_sentCommands = 0u;
+	/* Declarations */
+	int 			nb_sentCommands = 0u;
+	unsigned char 	counter = 0u;
 
 	printf("\n\rStarting drone moves management thread");
 
@@ -422,7 +458,7 @@ void* ATcommand_thread_movements(void* arg)
 		if(((G_nb_receivedCommands == 0u) && (nb_sentCommands > 0u)) || (nb_sentCommands < G_nb_receivedCommands))
 		{
 			/* Send the frame through local host */
-			socket_sendString(G_socket_AT, AT_SERVER_PORT, G_buffer[nb_sentCommands]);
+			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, G_buffer[nb_sentCommands]);
 			printf(" (%s %d/%d)", "BUFFER", nb_sentCommands, G_nb_receivedCommands);
 			/* Update */
 			if(nb_sentCommands < (NB_MAX_COMMANDS - 1))
@@ -433,20 +469,38 @@ void* ATcommand_thread_movements(void* arg)
 			{
 				nb_sentCommands = 0u;
 			}
+
+			/* Reset the counter */
+			counter = 0u;
 		}
 		else
 		{
-			#ifdef ENABLE_HOVERING
-				ATcommand_process(HOVERING);
-			#endif
+			if(counter == COUNTER_VALUE)
+			{
+				/* Reset the counter */
+				counter = 0u;
+				/* Hovering mode */
+				if(ATcommand_FlyingState() == TRUE)
+				{
+					ATcommand_process(HOVERING);
+				}
+			}
+			else
+			{
+				/* Update the counter */
+				counter++;
+			}	
 		}
 	
+
 		/* Read Navdata */
-		socket_readPaquet(G_socket_NAV, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 		/* Display */
 		ATcommand_display_navdata(PROCESSED_NAVDATA);
+	#ifdef DEBUG_NAVDATA
 		/* Reset Watchdog */
 		ATcommand_process(RESET_WATCHDOG);
+	#endif
 		/* Wait */
 		usleep(BUFFER_TEMPO);
 	}

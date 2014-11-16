@@ -35,7 +35,7 @@ typedef enum
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-void 			keyboard_rawMode(int I_enable);
+void 			keyboard_rawMode(T_bool I_enable);
 int 			keyboard_hit(void);
 unsigned char 	keyboard_getchar(void);
 

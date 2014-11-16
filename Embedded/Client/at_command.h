@@ -20,6 +20,8 @@
 #define NB_ORDERS			24u
 /* Temporisations */
 #define BUFFER_TEMPO		(unsigned int)30000
+#define HOVERING_TEMPO		(unsigned int)200000
+#define COUNTER_VALUE		((unsigned int)(HOVERING_TEMPO/BUFFER_TEMPO)) - 1u
 /* REF command */
 #define TAKEOFF_COMMAND		290718208
 #define LANDING_COMMAND		290717696
@@ -116,14 +118,17 @@ typedef struct
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-void ATcommand_initiate(void);
-void ATcommand_close(void);
-void ATcommand_process(T_ATorders I_order);
+/* Getters */
+T_bool 	ATcommand_FlyingState(void);
+
+T_error ATcommand_initiate(void);
+void 	ATcommand_close(void);
+void 	ATcommand_process(T_ATorders I_order);
 
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
-void* ATcommand_thread_movements(void* arg);
+void* 	ATcommand_thread_movements(void* arg);
 
 
 #endif //! _AT_COMMAND_H_

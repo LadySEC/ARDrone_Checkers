@@ -7,13 +7,7 @@
 /**********************************************************************************/
 /* Threads & Procedures														      */
 /**********************************************************************************/
-void socket_die(char *s)
-{
-    perror(s);
-    exit(1);
-}
-
-int socket_initiate(T_protocol I_protocol, int I_port, T_state I_state)
+int socket_initiate(T_protocol I_protocol, const char* I_ip_addr, int I_port, T_state I_state)
 {
 	/* Declaration */
 	struct 	sockaddr_in client;
@@ -34,7 +28,7 @@ int socket_initiate(T_protocol I_protocol, int I_port, T_state I_state)
 
     if(socket_id == -1)
    	{
-   		socket_die("socket");
+   		perror("socket");
    	}
    	/* Socket created */
    	else
@@ -42,78 +36,92 @@ int socket_initiate(T_protocol I_protocol, int I_port, T_state I_state)
    		/* zero out the structure */
     	memset((char *) &client, 0, sizeof(client));
 
-   		client.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+   		client.sin_addr.s_addr 	= inet_addr(I_ip_addr); 
 	    client.sin_family 		= AF_INET;
 	    client.sin_port 		= htons(I_port);
 	 
 	 	/* bind socket to port */
 	    if( bind(socket_id, (struct sockaddr*)&client, sizeof(client) ) == -1)
 	    {
-	        socket_die("bind");
+	        perror("bind");
 	    }
-
-	    /* Set the socket as non-blocking */
-	    if(I_state ==  NON_BLOCKING)
-	   	{
-	   		flags 		= fcntl(socket_id, F_GETFL);
-			fcntl(socket_id, F_SETFL, flags | O_NONBLOCK);
-	   	}
+	    else
+	    {
+	    	/* Set the socket as non-blocking */
+		    if(I_state ==  NON_BLOCKING)
+		   	{
+		   		flags 		= fcntl(socket_id, F_GETFL);
+				fcntl(socket_id, F_SETFL, flags | O_NONBLOCK);
+		   	}
+	    }
    	}
 
     return(socket_id);
 }
 
-void socket_sendString(int I_socket_id, int I_port_dest, char* O_message)
+T_error socket_sendString(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, char* O_message)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
+	T_error 			error 	= NO_ERROR;
 
 	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
 
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+	server.sin_addr.s_addr 	= inet_addr(I_ip_addr_dest); 
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(I_port_dest);
 
 	if (sendto(I_socket_id, O_message, strlen(O_message)+1, 0, (struct sockaddr*) &server, sizeof(server)) == -1)
     {
-        socket_die("sendto()");
+        perror("sendto()");
+        error = ERROR;
     }
     else
     {
     	printf("\n\rString sent: %s", O_message);
     }
+
+    return(error);
 }
 
-void socket_sendBytes(int I_socket_id, int I_port_dest, unsigned char* O_bytes, unsigned char I_lenght)
+T_error socket_sendBytes(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, unsigned char* O_bytes, unsigned char I_lenght)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
+	T_error 			error 	= NO_ERROR;
 
 	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
 
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+	server.sin_addr.s_addr 	= inet_addr(I_ip_addr_dest);  
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(I_port_dest);
 
 	if (sendto(I_socket_id, O_bytes, I_lenght, 0u, (struct sockaddr*) &server, sizeof(server)) == -1)
     {
-        socket_die("sendto()");
+        perror("sendto()");
+        error = ERROR;
     }
+    else
+    {
+    	/* printf */
+    }
+
+    return(error);
 }
 
-unsigned char socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data, int I_lenght, T_state I_state)
+T_error socket_readPaquet(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, void* O_data, int I_lenght, T_state I_state)
 {
 	/* Declaration */
 	struct 	sockaddr_in server;
 	unsigned int 		lenght_server 	= sizeof(server);
-	unsigned char		error 			= 0u;
+	T_error				error 			= NO_ERROR;
 
 	/* zero out the structure */
 	memset((char *) &server, 0, sizeof(server));
 
-	server.sin_addr.s_addr 	= htonl(INADDR_ANY); 
+	server.sin_addr.s_addr 	= inet_addr(I_ip_addr_dest); 
     server.sin_family 		= AF_INET;
     server.sin_port 		= htons(I_port_dest);
 
@@ -122,14 +130,14 @@ unsigned char socket_readPaquet(int I_socket_id, int I_port_dest, void* O_data, 
     	case BLOCKING:
     		if (recvfrom(I_socket_id, O_data, I_lenght, 0u, (struct sockaddr*) &server, &lenght_server) == -1)
 			{
-				error = 1u;
+				error = ERROR;
 			}
     		break;
 
     	case NON_BLOCKING:
     		if (recvfrom(I_socket_id, O_data, I_lenght, MSG_DONTWAIT, (struct sockaddr*) &server, &lenght_server) == -1)
 			{
-				error = 1u;
+				error = ERROR;
 			}
     		break;
     }
