@@ -1,3 +1,14 @@
+/**
+ * \file 	at_command.c
+ * \brief 	Manages all AT commands compatible with the AR-Drone firmware
+ * \author 	Lady team
+ * \version 1.0
+ * \date 	18 november 2014
+ *
+ */
+/**********************************************************************************/
+/* Libraries														      		  */
+/**********************************************************************************/
 #include "at_command.h"
 
 /**********************************************************************************/
@@ -11,7 +22,7 @@ static const char* C_PROFILE_ID 				= "00000000";
 static const char* C_APPLICATION_ID 			= "00000000"; 
 /* Arrays */
 static const char* C_COMMANDS[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
-static const char* C_ORDERS[NB_ORDERS] 			= { "CALIBRATION", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", "PITCH_DOWN", 
+static const char* C_ORDERS[NB_ORDERS] 			= { "TRIM", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", "PITCH_DOWN", 
 													"VERTICAL_UP", "VERTICAL_DOWN", "CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
 													"RESET_WATCHDOG", "REMOVE_CONFIGS", "CHANGE_SESSION", "CHANGE_PROFILE", "CHANGE_APP", "CHANGE_SSID"};
 
@@ -23,7 +34,7 @@ pthread_mutex_t G_mutex_seqNum 			= PTHREAD_MUTEX_INITIALIZER;
 /* Sequence number */
 static int 		G_sequenceNumber 		= 1u;
 /* Buffer management */
-char 			G_buffer[NB_MAX_BITS_COMMAND][NB_MAX_COMMANDS]; 
+char 			G_buffer[NB_MAX_BYTES_COMMAND][NB_MAX_COMMANDS]; 
 int 			G_nb_receivedCommands 	= 0u;
 /* Socket */
 int 			G_socket_AT;
@@ -32,52 +43,21 @@ int 			G_socket_NAV;
 T_navdata_demo  G_navdata;
 
 /**********************************************************************************/
+/* Prototypes														     		  */
+/**********************************************************************************/
+T_bool 			ATcommand_FlyingState(void);
+static void 	ATcommand_display_navdata(T_navdata_display I_display);
+
+
+/**********************************************************************************/
 /* Procedures														     		  */
 /**********************************************************************************/
-/* Getters */
-T_bool ATcommand_FlyingState(void)
-{
-	T_bool flying;
-
-	if((G_navdata.ardrone_state & 0x1u) == 0u)
-	{
-		flying = FALSE;
-	}
-	else
-	{
-		flying = TRUE;
-	}
-
-	return(flying);
-}
-
-/* Procedures */
-void ATcommand_display_navdata(T_navdata_display I_display)
-{
-#ifdef DEBUG_NAVDATA
-	switch(I_display)
-	{
-		case ALL_NAVDATA:
-			/* Echo */
-			printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
-				G_navdata.header, G_navdata.ardrone_state, G_navdata.sequence, G_navdata.vision_defined, 
-				G_navdata.tag, G_navdata.size, G_navdata.ctrl_state, G_navdata.vbat_flying_percentage, 
-				G_navdata.theta, G_navdata.phi, G_navdata.psi, G_navdata.altitude , G_navdata.vx, G_navdata.vy,
-				G_navdata.cks_id, G_navdata.cks_size, G_navdata.cks_data);
-			break;
-
-		case PROCESSED_NAVDATA:
-			printf("\n\rBatt: %d | Flying: %d | Trim run: %d | Trim ok: %d | Alt: %d | Vx: %f | Vy: %f", 	G_navdata.vbat_flying_percentage, 
-																						G_navdata.ardrone_state & 0x1u,
-																						(G_navdata.ardrone_state >> 8u) & 0x1u,
-																						(G_navdata.ardrone_state >> 9u) & 0x1u,
-																						G_navdata.altitude,
-																						G_navdata.vx, G_navdata.vy);
-			break;
-	}
-#endif
-}
-
+/**
+ * \fn 		T_error ATcommand_initiate(void)
+ * \brief 	Allows the client to communicate with the Parrot server
+ *
+ * \return 	ERROR: Something went wrong during the process, NO_ERROR: Success
+ */
 T_error ATcommand_initiate(void)
 {
 	/* Declarations */
@@ -86,11 +66,10 @@ T_error ATcommand_initiate(void)
 
 	/* Create a socket */
 	// AT command socket
-	G_socket_AT 	= socket_initiate(UDP, C_LOCALHOST_IP, AT_CLIENT_PORT, BLOCKING);
+	G_socket_AT 	= socket_initiate(UDP, AT_CLIENT_PORT, BLOCKING);
 	// Navdata socket with non blocking reception
-	G_socket_NAV 	= socket_initiate(UDP, C_LOCALHOST_IP, NAV_CLIENT_PORT, NON_BLOCKING);
+	G_socket_NAV 	= socket_initiate(UDP, NAV_CLIENT_PORT, NON_BLOCKING);
 
-	printf("\n\r%d,%d", G_socket_AT, G_socket_NAV);
 	if((G_socket_AT != -1) && (G_socket_NAV != -1))
 	{
 		/* Initiate the configuration */
@@ -116,14 +95,14 @@ T_error ATcommand_initiate(void)
 		system(string);
 		usleep(100000);
 		// Read the received packet
-		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 		ATcommand_display_navdata(PROCESSED_NAVDATA);
 		// Init navdata demo
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(INIT_NAVDATA);
 		usleep(100000);
 		// Read the received packet
-		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 		ATcommand_display_navdata(PROCESSED_NAVDATA);
 		// Send Ack paquet
 		ATcommand_process(ACK_COMMAND);
@@ -136,12 +115,25 @@ T_error ATcommand_initiate(void)
 	return(error);
 }
 
+/**
+ * \fn 		void ATcommand_close(void)
+ * \brief 	Close all used sockets
+ */
 void ATcommand_close(void)
 {
 	socket_close(G_socket_AT);
 	socket_close(G_socket_NAV);
 }
 
+/**
+ * \fn 		void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
+ * \brief 	Generates an 8-bit ASCII string from a given command and its arguments
+ *
+ * \param 	O_frame		Output string
+ * \param 	I_command	Requested command
+ * \param 	I_array		32-bit arguments array
+ * \param 	I_strings	String arguments array
+ */
 void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
 	/* Reset the frame */
@@ -196,9 +188,15 @@ void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_a
 	pthread_mutex_unlock(&G_mutex_seqNum);
 }
 
+/**
+ * \fn 		void ATcommand_process(T_ATorders I_order)
+ * \brief 	Processes high-level orders 
+ *
+ * \param 	I_order		Choosen order 
+ */
 void ATcommand_process(T_ATorders I_order)
 {
-	char 			frame[NB_MAX_BITS_COMMAND];
+	char 			frame[NB_MAX_BYTES_COMMAND];
 	/* At commands management */
 	T_word32bits 	ATarguments[NB_MAX_UNION_ARG];
 	char 			ATstrings[NB_MAX_STRING_ARG][NB_MAX_CHAR];
@@ -209,7 +207,7 @@ void ATcommand_process(T_ATorders I_order)
 	printf("\n\r[%s]", C_ORDERS[I_order]);
 	switch(I_order)
 	{
-		case CALIBRATION:
+		case TRIM:
 			sendToBuffer 			= 0u;
 			ATcommand_generate(frame, FTRIM, ATarguments, ATstrings);
 			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
@@ -234,7 +232,7 @@ void ATcommand_process(T_ATorders I_order)
 
 		case HOVERING:
 			sendToBuffer 			= 0u;
-			ATarguments[0u].integer = 1u;
+			ATarguments[0u].integer = 0u;
 			/* ROLL */
 			ATarguments[1u].integer = 0u;
 			/* PITCH */
@@ -442,9 +440,76 @@ void ATcommand_process(T_ATorders I_order)
 	}
 }
 
+/**
+ * \fn 		void ATcommand_display_navdata(T_navdata_display I_display)
+ * \brief 	Displays usefull information from navdata
+ *
+ * \param 	I_display 	Navdata display format 
+ * \return 	TRUE: The drone is flying, FALSE: the drone is on the ground
+ */
+T_bool ATcommand_FlyingState(void)
+{
+	T_bool flying;
+
+	if((G_navdata.ardrone_state & 0x1u) == 0u)
+	{
+		flying = FALSE;
+	}
+	else
+	{
+		flying = TRUE;
+	}
+
+	return(flying);
+}
+
+/**
+ * \fn 		static void ATcommand_display_navdata(T_navdata_display I_display)
+ * \brief 	Displays usefull information from navdata
+ *
+ * \param 	I_display 	Navdata display format 
+ */
+static void ATcommand_display_navdata(T_navdata_display I_display)
+{
+#ifdef DEBUG_NAVDATA
+	switch(I_display)
+	{
+		case ALL_NAVDATA:
+			/* Echo */
+			printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
+				G_navdata.header, G_navdata.ardrone_state, G_navdata.sequence, G_navdata.vision_defined, 
+				G_navdata.tag, G_navdata.size, G_navdata.ctrl_state, G_navdata.vbat_flying_percentage, 
+				G_navdata.theta, G_navdata.phi, G_navdata.psi, G_navdata.altitude , G_navdata.vx, G_navdata.vy,
+				G_navdata.cks_id, G_navdata.cks_size, G_navdata.cks_data);
+			break;
+
+		case PROCESSED_NAVDATA:
+			printf("\n\rBatt: %d | Flying: %d | Theta: %d | Phi: %d | Psi: %d | Alt: %d | Vx: %d | Vy: %d | Err: %d", 	G_navdata.vbat_flying_percentage, 
+																						G_navdata.ardrone_state & 0x1u,
+																						(int)G_navdata.theta,
+																						(int)G_navdata.phi,
+																						(int)G_navdata.psi,
+																						G_navdata.altitude,
+																						(int)G_navdata.vx, (int)G_navdata.vy,
+																						(G_navdata.ardrone_state >> 30u) & 0x1u);
+			break;
+	}
+#endif
+}
+
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
+/**
+ * \fn 		void* ATcommand_thread_movements(void* arg)
+ * \brief 	Thread which manages the drone movements and updates navdata
+ *
+ * \param 	arg 	Input argument 
+ * \return  		Nothing
+ * 
+ * This periodic thread either reads the buffer content or send an hovering command by default
+ * It also checks if a new navdata appeared and reset the watchdog
+ */
 void* ATcommand_thread_movements(void* arg)
 {
 	/* Declarations */
@@ -494,7 +559,7 @@ void* ATcommand_thread_movements(void* arg)
 	
 
 		/* Read Navdata */
-		socket_readPaquet(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 		/* Display */
 		ATcommand_display_navdata(PROCESSED_NAVDATA);
 	#ifdef DEBUG_NAVDATA
@@ -504,6 +569,8 @@ void* ATcommand_thread_movements(void* arg)
 		/* Wait */
 		usleep(BUFFER_TEMPO);
 	}
+
+	printf("\n\rEnding drone moves management thread");
 
   	return NULL;
 }

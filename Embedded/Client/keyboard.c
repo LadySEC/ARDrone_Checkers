@@ -1,3 +1,11 @@
+/**
+ * \file    keyboard.c
+ * \brief   Process keyboard entries
+ * \author  Lady team
+ * \version 1.0
+ * \date    21 november 2014
+ *
+ */
 #include "keyboard.h"
 
 /**********************************************************************************/
@@ -7,7 +15,12 @@
 /**********************************************************************************/
 /* Threads & Procedures														      */
 /**********************************************************************************/
-/* Enbale user inputs */
+/**
+ * \fn      void keyboard_rawMode(T_bool I_enable)
+ * \brief   Enables user's keyboard entries in the shell
+ *
+ * \param   I_enable    TRUE: enable, FALSE: disable
+ */
 void keyboard_rawMode(T_bool I_enable)
 {
     static struct termios Cooked;
@@ -33,7 +46,12 @@ void keyboard_rawMode(T_bool I_enable)
     Raw_enabled = (int)I_enable;
 }
 
-/* Detect if a keyboard key has been pressed */
+/**
+ * \fn      int keyboard_hit(void)
+ * \brief   Informs if a key has just been pressed by the user
+ *
+ * \return  1: Key pressed, 0: Nothing has happened 
+ */
 int keyboard_hit(void)
 {
     struct timeval Tv = {0, 0};
@@ -45,7 +63,12 @@ int keyboard_hit(void)
     return select(STDIN_FILENO + 1, &Readfds, NULL, NULL, &Tv) == 1;
 }
 
-/* Read special characters from keyboard */
+/**
+ * \fn      unsigned char keyboard_getchar(void)
+ * \brief   Process a special character from a keyboard entry 
+ *
+ * \return  Character value  
+ */
 unsigned char keyboard_getchar(void)
 {
 	unsigned char character = 0;

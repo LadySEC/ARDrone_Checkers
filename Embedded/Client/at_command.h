@@ -1,3 +1,11 @@
+/**
+ * \file 	at_command.h
+ * \brief 	Manages all AT commands compatible with the AR-Drone firmware
+ * \author 	Lady team
+ * \version 1.0
+ * \date 	18 november 2014
+ *
+ */
 #ifndef _AT_COMMAND_H_
 #define _AT_COMMAND_H_
 
@@ -11,31 +19,34 @@
 /* Constants													      			  */
 /**********************************************************************************/
 /* AT command configuration */
-#define NB_MAX_BITS_COMMAND 264u
-#define NB_MAX_UNION_ARG	8u
-#define NB_MAX_STRING_ARG	3u
-#define NB_MAX_CHAR			30u
-#define NB_AT_COMMANDS		9u
-#define NB_MAX_COMMANDS		20u
-#define NB_ORDERS			24u
+#define NB_MAX_BYTES_COMMAND 264u													/*!< Maximum lenght of an AT command string */
+#define NB_MAX_UNION_ARG	8u														/*!< Maximum number of arguments to give progressive commands */
+#define NB_MAX_STRING_ARG	3u 														/*!< Maximum number of string arguments to configure the drone */
+#define NB_MAX_CHAR			30u														/*!< Maximum lenght of a string argument */
+#define NB_AT_COMMANDS		9u														/*!< Number of different AT commands */
+#define NB_MAX_COMMANDS		20u														/*!< Size of the commands buffer */
+#define NB_ORDERS			24u 													/*!< Number of high-level orders available */
 /* Temporisations */
-#define BUFFER_TEMPO		(unsigned int)30000
-#define HOVERING_TEMPO		(unsigned int)200000
-#define COUNTER_VALUE		((unsigned int)(HOVERING_TEMPO/BUFFER_TEMPO)) - 1u
+#define BUFFER_TEMPO		(unsigned int)30000										/*!< at_command thread temporisation */
+#define HOVERING_TEMPO		(unsigned int)200000									/*!< Period for hovering command */
+#define COUNTER_VALUE		((unsigned int)(HOVERING_TEMPO/BUFFER_TEMPO)) - 1u      /*!< Number of cycles required for sending hovering command */
 /* REF command */
-#define TAKEOFF_COMMAND		290718208
-#define LANDING_COMMAND		290717696
-#define EMERGENCY_COMMAND 	290717952
+#define TAKEOFF_COMMAND		290718208 												/*!< Argument for performing a takeoff */
+#define LANDING_COMMAND		290717696 												/*!< Argument for performing a landing */
+#define EMERGENCY_COMMAND 	290717952 												/*!< Argument for shutting-down all motors */
 /* Sockets */
-#define AT_CLIENT_PORT		15213u
-#define AT_SERVER_PORT		5556u
-#define NAV_CLIENT_PORT		15214u
-#define NAV_SERVER_PORT		5554u
+#define AT_CLIENT_PORT		15213u 													/*!< UDP client port for sending AT commands */
+#define AT_SERVER_PORT		5556u 													/*!< UDP server port */
+#define NAV_CLIENT_PORT		15214u 													/*!< UDP client port for starting navdata emission */
+#define NAV_SERVER_PORT		5554u 													/*!< UDP server port for reading navdata */
 
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
-/* List of available commands */
+ /**
+ * \struct 	T_ATcommands
+ * \brief 	Defines all AT commands available
+ */
 typedef enum
 {
 	REF = 0,
@@ -48,10 +59,14 @@ typedef enum
 	CALIB,
 	CTRL
 }T_ATcommands;
-/* List of available orders */
+
+ /**
+ * \struct 	T_ATorders
+ * \brief 	Defines all high-level orders available
+ */
 typedef enum
 {
-	CALIBRATION =0,
+	TRIM =0,
 	TAKEOFF,
 	LANDING,
 	EMERGENCY,
@@ -76,13 +91,31 @@ typedef enum
 	CHANGE_APP,
 	CHANGE_SSID
 }T_ATorders;
-/* Integer interpretation from floating value */
+
+ /**
+ * \struct 	T_navdata_display
+ * \brief 	Defines navdata display formats
+ */
+typedef enum 
+{
+	ALL_NAVDATA,
+	PROCESSED_NAVDATA
+}T_navdata_display;
+
+ /**
+ * \struct 	T_word32bits
+ * \brief 	Integer interpretation from floating value
+ */
 typedef union 
 {
 	int 	integer;
 	float 	floating;
 }T_word32bits;
 
+ /**
+ * \struct 	T_navdata_demo
+ * \brief 	Data structure of the expected navdata
+ */
 typedef struct 
 {
 	/* State */
@@ -109,21 +142,15 @@ typedef struct
     uint32_t    cks_data;
   } T_navdata_demo;
 
-  typedef enum 
-  {
-  	ALL_NAVDATA,
-  	PROCESSED_NAVDATA
-  }T_navdata_display;
-
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-/* Getters */
-T_bool 	ATcommand_FlyingState(void);
-
 T_error ATcommand_initiate(void);
 void 	ATcommand_close(void);
 void 	ATcommand_process(T_ATorders I_order);
+
+/* Getters */
+T_bool 	ATcommand_FlyingState(void);
 
 /**********************************************************************************/
 /* Threads														     		  	  */
