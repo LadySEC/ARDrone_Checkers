@@ -1,11 +1,11 @@
 #include "detect_tag.h"
 
 // @function detectAndDisplay
-position detect( Mat i_frame, String i_color, String i_form)
+Position detect( Mat i_frame, String i_color, String i_form)
 {
 
-    position new_pos ;
-    new_pos.found = false ;
+    Position new_pos ;
+    new_pos.found = 0 ;
 
     int angles ;
 
@@ -52,7 +52,7 @@ position detect( Mat i_frame, String i_color, String i_form)
             cv::Rect r = cv::boundingRect(contours[i]);
             new_pos.abs = r.x + (r.width/2);
             new_pos.ord = r.y + (r.height/2);
-            new_pos.found = true ;
+            new_pos.found = 1 ;
         }
         else if ( (approx.size() ==4) && (i_form == "rectangle"))
         {
@@ -72,7 +72,7 @@ position detect( Mat i_frame, String i_color, String i_form)
                 cv::Rect r = cv::boundingRect(contours[i]);
                 new_pos.abs = r.x + (r.width/2);
                 new_pos.ord = r.y + (r.height/2);
-                new_pos.found = true ;
+                new_pos.found = 1 ;
             }
         }
         else if ( i_form == "circle")
@@ -86,7 +86,7 @@ position detect( Mat i_frame, String i_color, String i_form)
                 cv::Rect r = cv::boundingRect(contours[i]);
                 new_pos.abs = r.x + (r.width/2);
                 new_pos.ord = r.y + (r.height/2);
-                new_pos.found = true ;
+                new_pos.found = 1 ;
             }
         }
     }

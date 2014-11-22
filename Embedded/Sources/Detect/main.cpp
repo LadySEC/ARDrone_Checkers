@@ -9,7 +9,7 @@ int main( void )
     VideoCapture capture ;
     Mat frame;
 
-    position pos ;
+    Position pos ;
 
     String color = "red";
     String form  = "rectangle" ;

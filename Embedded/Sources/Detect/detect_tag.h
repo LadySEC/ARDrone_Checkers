@@ -14,15 +14,15 @@
 using namespace std;
 using namespace cv;
 
-struct position
+struct Position
 {
     int abs ;
     int ord ;
-    bool found ;
+    int found ;
 };
 
 // @function detect
-position detect( Mat frame, String i_color, String i_form);
+Position detect( Mat frame, String i_color, String i_form);
 
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
 static double angle(Point pt1, Point pt2, Point pt0) ;
