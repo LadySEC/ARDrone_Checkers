@@ -17,6 +17,7 @@
 #include <unistd.h>			// usleep
 #include <pthread.h>	        	// POSIX library for thread management
 #include "periodic.h"                   // Librairy for periodic thread
+#include <signal.h>
 /**********************************************************************************/
 /* Constants														      		  */
 /**********************************************************************************/

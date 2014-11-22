@@ -34,6 +34,9 @@
  */
 int main (int argc, char *argv[])
 {
+    /* Signal */
+    int sig_switch_off = 0;
+
     /* Thread */
     pthread_t 		th_ATcommand;
 #ifdef ENABLE_SUPERVISOR

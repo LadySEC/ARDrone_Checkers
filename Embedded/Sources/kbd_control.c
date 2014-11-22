@@ -28,107 +28,168 @@ void*  kbd_thread_drone_controller(void * args)
     /* Declarations */
     unsigned char  	key_pressed  	= 0;
     unsigned int   	key_selected	= 0;
-    /* Activate the terminal for raw mode */
-    keyboard_rawMode(TRUE);
-    /* Infinite loop */
-    do {
-        /* Test */
-        key_pressed = keyboard_hit();
+    	unsigned int 	counter;
 
-        if(key_pressed)
-        {
-            /* Read the selected key */
-            key_selected = keyboard_getchar();
+  		/* Activate the terminal for raw mode */
+		keyboard_rawMode(TRUE);
+		/* Infinite loop */
+		do
+		{
+			/* Test */
+	        key_pressed = keyboard_hit();
 
-            switch(key_selected)
-            {
-                case ENTER_KEY :
-                    ATcommand_process(CONFIGURATION_IDS);
-                    ATcommand_process(LED_ANIMATION);
+	        if(key_pressed)
+	        {
+	            /* Read the selected key */
+	            key_selected = keyboard_getchar();
 
-                    if(ATcommand_FlyingState() == FALSE)
-                    {
-                        /* Flat trim */
-                        ATcommand_process(TRIM);
-                        sleep(2u);
-                        /* Take off */
-                        ATcommand_process(TAKEOFF);
-                        /* Wait the flying state */
-                        while(ATcommand_FlyingState() != TRUE);
-                    }
-                    else
-                    {
-                        /* Landing */
-                        ATcommand_process(LANDING);
-                        /* Wait the landing state */
-                        while(ATcommand_FlyingState() != FALSE);
-                    }
-                    break;
+		        switch(key_selected)
+		        {
+		        	case ENTER_KEY :
+		        		if(ATcommand_enoughBattery() == TRUE)
+		        		{
+		        			if(ATcommand_FlyingState() == FALSE)
+			            	{
+			            		/* Enable the bottom camera */
+			            		ATcommand_process(CONFIGURATION_IDS);
+			            		ATcommand_process(ENABLE_VISION);
+			            		/* Flat trim */
+			            		ATcommand_process(TRIM);
+								sleep(2u);
+								/* Take off */
+			            		ATcommand_process(TAKEOFF);
+			            		/* Wait the flying state */
+			            		while(ATcommand_FlyingState() != TRUE);
+			            	}
+			            	else
+			            	{
+			            		/* Landing */
+			            		ATcommand_process(LANDING);
+			            		/* Wait the landing state */
+			            		while(ATcommand_FlyingState() != FALSE);
+			            		/* Disable the bottom camera */
+			            		ATcommand_process(CONFIGURATION_IDS);
+			            		ATcommand_process(DISABLE_VISION);
+			            	}
+		        		}
+		        		else
+		        		{
+		        			/* Not enough battery to takeoff */
+		        			ATcommand_process(CONFIGURATION_IDS);
+	                		ATcommand_process(LED_ANIMATION);
+		        		}
+	                	break;
 
-                case UP_KEY	:
-                    ATcommand_process(PITCH_DOWN);
-                    break;
+		            case UP_KEY	:
+		            	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+		            		ATcommand_process(PITCH_DOWN);
+		            	}
+	                	break;
 
-                case DOWN_KEY :
-                    ATcommand_process(PITCH_UP);
-                    break;
+		            case DOWN_KEY :
+		            	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+		            		ATcommand_process(PITCH_UP);
+		            	}
+	                	break;
 
-                case LEFT_KEY	:
-                    ATcommand_process(YAW_LEFT);
-                    break;
+	                case LEFT_KEY	:
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+		            		ATcommand_process(YAW_LEFT);
+		            	}
+	                	break;
 
-                case RIGHT_KEY :
-                    ATcommand_process(YAW_RIGHT);
-                    break;
+		            case RIGHT_KEY :
+		            	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+		            		ATcommand_process(YAW_RIGHT);
+		            	}
+	                	break;
 
-                case Z_KEY :
-                    ATcommand_process(VERTICAL_UP);
-                    break;
+	                case Z_KEY :
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+	                		ATcommand_process(VERTICAL_UP);
+	                	}
+	                	break;
 
-                case S_KEY :
-                    ATcommand_process(VERTICAL_DOWN);
-                    break;
+	                case S_KEY :
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+	                		ATcommand_process(VERTICAL_DOWN);
+	                	}
+	                	break;
 
-                case Q_KEY :
-                    ATcommand_process(ROLL_LEFT);
-                    break;
+	                case Q_KEY :
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+	                		ATcommand_process(ROLL_LEFT);
+	                	}
+	                	break;
 
-                case D_KEY :
-                    ATcommand_process(ROLL_RIGHT);
-                    break;
+	                case D_KEY :
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+	                		ATcommand_process(ROLL_RIGHT);
+	                	}
+	                	break;
 
-                case SPACE_KEY :
-                    ATcommand_process(TRIM);
-                    break;
+	                case SPACE_KEY :
+		            	ATcommand_process(TRIM);
+	                	break;
 
-                case BACKSPACE_KEY :
+	                /* Sequence test */
+	                case BACKSPACE_KEY :
+	                	for(counter = 0u; counter < 10u; counter++)
+		            	{
+	                		ATcommand_process(VERTICAL_UP);
+	                	}
+	                	for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
+		            	{
+	                		ATcommand_process(VERTICAL_DOWN);
+	                	}
+	                	for(counter = 0u; counter < 10u; counter++)
+		            	{
+	                		ATcommand_process(PITCH_DOWN);
+	                	}
+	                	for(counter = 0u; counter < 10u; counter++)
+		            	{
+	                		ATcommand_process(YAW_LEFT);
+	                	}
+	                	for(counter = 0u; counter < 10u; counter++)
+		            	{
+	                		ATcommand_process(PITCH_DOWN);
+	                	}
+	                	break;
 
-                    break;
+	                case A_KEY :
+	                	/* Disable the bottom camera */
+	            		ATcommand_process(CONFIGURATION_IDS);
+	            		ATcommand_process(DISABLE_VISION);
+	                	break;
 
-                case A_KEY :
+	                case L_KEY :
+	                	ATcommand_process(CONFIGURATION_IDS);
+	                	ATcommand_process(LED_ANIMATION);
+	                	break;
 
-                    break;
+	                case E_KEY :
+	                	ATcommand_process(EMERGENCY);
+	                	break;
+		        }
+	        }
 
-                case L_KEY :
-                    ATcommand_process(CONFIGURATION_IDS);
-                    ATcommand_process(LED_ANIMATION);
-                    break;
+	        /* Empty the output buffer */
+			fflush(stdout);
+		}
+		while(key_selected != CTRL_C_KEY);
 
-                case E_KEY :
-                    ATcommand_process(EMERGENCY);
-                    break;
-            }
-        }
+		printf("\n\rEnd");
 
-        /* Empty the output buffer */
-        fflush(stdout);
-    }
-    while(key_selected != CTRL_C_KEY);
-
-    printf("\n\rEnd");
-
-    /* Disable the raw mode */
-    keyboard_rawMode(FALSE);
+		/* Disable the raw mode */
+		keyboard_rawMode(FALSE);
 
 }
 
