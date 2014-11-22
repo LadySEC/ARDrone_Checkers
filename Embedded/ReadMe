@@ -1,0 +1,10 @@
+ReadMe for the embedded tictactoe program 
+
+HOW TO COMPILE : 
+
+                Requierements :   CMAKE
+
+go to Build directory
+execute 'cmake .'
+then execute 'make'
+this will create a 'tictactoe' executable
