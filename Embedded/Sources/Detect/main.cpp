@@ -9,8 +9,7 @@ int main( void )
     VideoCapture capture ;
     Mat frame;
 
-    int abs =0;
-    int ord =0;
+    position pos ;
 
     String color = "red";
     String form  = "rectangle" ;
@@ -29,8 +28,9 @@ int main( void )
         }
 
         //-- 2. Apply the classifier to the frame
-        if (detectAndDisplay( frame, color, form, &abs, &ord ))
-            qDebug() << QString( (form+"_"+color).c_str()) << " : x = " << abs << " ; y = " << ord ;
+        pos = detect( frame, color, form ) ;
+        if (pos.found)
+            qDebug() << QString( (form+"_"+color).c_str()) << " : x = " << pos.abs << " ; y = " << pos.ord ;
 
         int c = waitKey(10);
         if( (char)c == 27 ) { break; } // escape

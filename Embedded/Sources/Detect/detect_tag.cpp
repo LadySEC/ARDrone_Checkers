@@ -1,13 +1,11 @@
 #include "detect_tag.h"
 
-// Global variables
-String window_name = "Capture - Forms detection";
-
 // @function detectAndDisplay
-bool detectAndDisplay( Mat i_frame, String i_color, String i_form, int *io_x, int *io_y)
+position detect( Mat i_frame, String i_color, String i_form)
 {
 
-    bool o_found = false ;
+    position new_pos ;
+    new_pos.found = false ;
 
     int angles ;
 
@@ -52,9 +50,9 @@ bool detectAndDisplay( Mat i_frame, String i_color, String i_form, int *io_x, in
         if ( (approx.size() == 3) && (i_form == "triangle") )
         {
             cv::Rect r = cv::boundingRect(contours[i]);
-            *io_x = r.x + (r.width/2);
-            *io_y = r.y + (r.height/2);
-            o_found = true ;
+            new_pos.abs = r.x + (r.width/2);
+            new_pos.ord = r.y + (r.height/2);
+            new_pos.found = true ;
         }
         else if ( (approx.size() ==4) && (i_form == "rectangle"))
         {
@@ -72,9 +70,9 @@ bool detectAndDisplay( Mat i_frame, String i_color, String i_form, int *io_x, in
             if (approx.size() == 4 && mincos >= -0.1 && maxcos <= 0.3)
             {
                 cv::Rect r = cv::boundingRect(contours[i]);
-                *io_x = r.x + (r.width/2);
-                *io_y = r.y + (r.height/2);
-                o_found = true ;
+                new_pos.abs = r.x + (r.width/2);
+                new_pos.ord = r.y + (r.height/2);
+                new_pos.found = true ;
             }
         }
         else if ( i_form == "circle")
@@ -86,17 +84,14 @@ bool detectAndDisplay( Mat i_frame, String i_color, String i_form, int *io_x, in
             if (abs(1 - ((double)r.width / r.height)) <= 0.2 && abs(1 - (area / (CV_PI * pow(radius, 2)))) <= 0.2)
             {
                 cv::Rect r = cv::boundingRect(contours[i]);
-                *io_x = r.x + (r.width/2);
-                *io_y = r.y + (r.height/2);
-                o_found = true ;
+                new_pos.abs = r.x + (r.width/2);
+                new_pos.ord = r.y + (r.height/2);
+                new_pos.found = true ;
             }
         }
     }
 
-    //-- Show what you got
-    imshow( window_name, i_frame);
-
-    return o_found ;
+    return new_pos ;
 }
 
 
