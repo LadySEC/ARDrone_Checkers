@@ -1,9 +1,0 @@
-# MakeFile of the embedded program 
-# Compilateur à exécuter : 
-CC=g++
-# Options du compilateur :
-CFLAGS=-c -Wall -lpthread
-
-all : tictactoe
-
-
