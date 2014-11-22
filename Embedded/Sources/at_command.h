@@ -14,7 +14,7 @@
 /**********************************************************************************/
 #include "global.h"
 #include "communication.h"
-
+#include "periodic.h"
 /**********************************************************************************/
 /* Constants													      			  */
 /**********************************************************************************/
@@ -43,87 +43,87 @@
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
- /**
+/**
  * \struct 	T_ATcommands
  * \brief 	Defines all AT commands available
  */
 typedef enum
 {
-	REF = 0,
-	PCMD,
-	PCMD_MAG,
-	FTRIM,
-	CONFIG,
-	CONFIG_IDS,
-	COMWDG,
-	CALIB,
-	CTRL
+    REF = 0,
+    PCMD,
+    PCMD_MAG,
+    FTRIM,
+    CONFIG,
+    CONFIG_IDS,
+    COMWDG,
+    CALIB,
+    CTRL
 }T_ATcommands;
 
- /**
+/**
  * \struct 	T_ATorders
  * \brief 	Defines all high-level orders available
  */
 typedef enum
 {
-	TRIM =0,
-	TAKEOFF,
-	LANDING,
-	EMERGENCY,
-	HOVERING,
-	YAW_LEFT,
-	YAW_RIGHT,
-	ROLL_LEFT,
-	ROLL_RIGHT,
-	PITCH_UP,
-	PITCH_DOWN,
-	VERTICAL_UP,
-	VERTICAL_DOWN,
-	CONFIGURATION_IDS,
-	INIT_NAVDATA,
-	LED_ANIMATION,
-	ACK_COMMAND,
-	NAVDATA_REQUEST,
-	RESET_WATCHDOG,
-	REMOVE_CONFIGS,
-	CHANGE_SESSION,
-	CHANGE_PROFILE,
-	CHANGE_APP,
-	CHANGE_SSID
+    TRIM =0,
+    TAKEOFF,
+    LANDING,
+    EMERGENCY,
+    HOVERING,
+    YAW_LEFT,
+    YAW_RIGHT,
+    ROLL_LEFT,
+    ROLL_RIGHT,
+    PITCH_UP,
+    PITCH_DOWN,
+    VERTICAL_UP,
+    VERTICAL_DOWN,
+    CONFIGURATION_IDS,
+    INIT_NAVDATA,
+    LED_ANIMATION,
+    ACK_COMMAND,
+    NAVDATA_REQUEST,
+    RESET_WATCHDOG,
+    REMOVE_CONFIGS,
+    CHANGE_SESSION,
+    CHANGE_PROFILE,
+    CHANGE_APP,
+    CHANGE_SSID
 }T_ATorders;
 
- /**
+/**
  * \struct 	T_navdata_display
  * \brief 	Defines navdata display formats
  */
 typedef enum 
 {
-	ALL_NAVDATA,
-	PROCESSED_NAVDATA
+    ALL_NAVDATA,
+    PROCESSED_NAVDATA
 }T_navdata_display;
 
- /**
+/**
  * \struct 	T_word32bits
  * \brief 	Integer interpretation from floating value
  */
 typedef union 
 {
-	int 	integer;
-	float 	floating;
+    int 	integer;
+    float 	floating;
 }T_word32bits;
 
- /**
+/**
  * \struct 	T_navdata_demo
  * \brief 	Data structure of the expected navdata
  */
 typedef struct 
 {
-	/* State */
-	uint32_t    header;				/*!< Always set to NAVDATA_HEADER */
-	uint32_t    ardrone_state;    	/*!< Bit mask built from def_ardrone_state_mask_t */
-	uint32_t    sequence;         	/*!< Sequence number, incremented for each sent packet */
-	uint32_t    vision_defined;
-	/* Option */
+    /* State */
+    uint32_t    header;				/*!< Always set to NAVDATA_HEADER */
+    uint32_t    ardrone_state;    	/*!< Bit mask built from def_ardrone_state_mask_t */
+    uint32_t    sequence;         	/*!< Sequence number, incremented for each sent packet */
+    uint32_t    vision_defined;
+    /* Option */
     // Common part
     uint16_t    tag;
     uint16_t    size;
@@ -140,7 +140,7 @@ typedef struct
     uint16_t    cks_id;
     uint16_t    cks_size;
     uint32_t    cks_data;
-  } T_navdata_demo;
+} T_navdata_demo;
 
 /**********************************************************************************/
 /* Prototypes													      			  */

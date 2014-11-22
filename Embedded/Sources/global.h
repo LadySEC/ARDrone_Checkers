@@ -15,8 +15,8 @@
 #include <stdio.h>			// Standard C ANSI
 #include <stdlib.h>
 #include <unistd.h>			// usleep
-#include <pthread.h>		// POSIX library for thread management
-
+#include <pthread.h>	        	// POSIX library for thread management
+#include "periodic.h"                   // Librairy for periodic thread
 /**********************************************************************************/
 /* Constants														      		  */
 /**********************************************************************************/
@@ -24,7 +24,7 @@
 #define DEBUG_NAVDATA
 #define ENABLE_HOVERING
 #define ENABLE_SUPERVISOR
-
+#define ENABLE_KBD_CONTROL
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/

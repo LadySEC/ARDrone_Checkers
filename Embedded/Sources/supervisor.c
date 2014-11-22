@@ -35,17 +35,17 @@ char	G_orders[RECV_BUFF_SIZE];
  */
 T_error supervisor_initiate(void)
 {
-	T_error error = NO_ERROR;
+    T_error error = NO_ERROR;
 
-	/* Create a socket */
-	// Supervisor socket with non blocking reception
-	G_socket_SPVSR 	= socket_initiate(TCP, SPVSR_CLIENT_PORT, NON_BLOCKING);
-	if(G_socket_SPVSR == -1)
-	{
-		error = error;
-	}
+    /* Create a socket */
+    // Supervisor socket with non blocking reception
+    G_socket_SPVSR 	= socket_initiate(TCP, SPVSR_CLIENT_PORT, NON_BLOCKING);
+    if(G_socket_SPVSR == -1)
+    {
+        error = error;
+    }
 
-	return(error);
+    return(error);
 }
 
 /**
@@ -56,7 +56,7 @@ T_error supervisor_initiate(void)
  */
 void supervisor_close(void)
 {
-	socket_close(G_socket_SPVSR);
+    socket_close(G_socket_SPVSR);
 }
 
 /**********************************************************************************/
@@ -74,49 +74,54 @@ void supervisor_close(void)
  */
 void* supervisor_thread_interact(void* arg)
 {
-	T_bool 	disconnected = FALSE;
+    T_bool 	disconnected = FALSE;
 
+    /* Make this thread periodic */
+    struct periodic_info info;
+    make_periodic (INTERACT_TEMPO	, &info);   
 
-	printf("\n\rStarting supervisor management thread");
+    printf("\n\rStarting supervisor management thread");
 
-	while(disconnected == FALSE)
-	{
-		/* zero out the structure */
-		memset((char *) &G_orders, 0, sizeof(G_orders));
+    while(disconnected == FALSE)
+    {
+        /* zero out the structure */
+        memset((char *) &G_orders, 0, sizeof(G_orders));
 
-		/* Read orders from the supervisor */
-		if(socket_readPacket(G_socket_SPVSR, C_SUPERVISOR_IP, SPVSR_CLIENT_PORT, &G_orders, sizeof(G_orders), NON_BLOCKING) == RECEPTION_ERROR)
-		{
-			printf("\n\rClient disconnected");
-			disconnected = TRUE;
-		}
-		else
-		{
-			/* Processing order */
-			printf("\n\rReceived paquet: %s", G_orders);
+        /* Read orders from the supervisor */
+        if(socket_readPacket(G_socket_SPVSR, C_SUPERVISOR_IP, SPVSR_CLIENT_PORT, &G_orders, sizeof(G_orders), NON_BLOCKING) == RECEPTION_ERROR)
+        {
+            printf("\n\rClient disconnected");
+            disconnected = TRUE;
+        }
+        else
+        {
+            /* Processing order */
+            printf("\n\rReceived paquet: %s", G_orders);
 
-			if (strcmp(G_orders, "exit") == 0) 
-			{
-				disconnected = TRUE;
-			}
+            if (strcmp(G_orders, "exit") == 0) 
+            {
+                disconnected = TRUE;
+            }
 
-			if (strcmp(G_orders, "takeoff") == 0) 
-			{
-		        ATcommand_process(TAKEOFF);
-			}
+            if (strcmp(G_orders, "takeoff") == 0) 
+            {
+                ATcommand_process(TAKEOFF);
+            }
 
-			if (strcmp(G_orders, "land") == 0) 
-			{
-				ATcommand_process(LANDING);
-			}
-		}
+            if (strcmp(G_orders, "land") == 0) 
+            {
+                ATcommand_process(LANDING);
+            }
+        }
 
-		usleep(INTERACT_TEMPO);
-	}
+        /* Wait until the next period is achieved */
+        wait_period (&info);
 
-	/* Close */
-	supervisor_close();
-	printf("\n\rEnding supervisor management thread");
+    }
 
-	return(NULL);
+    /* Close */
+    supervisor_close();
+    printf("\n\rEnding supervisor management thread");
+
+    return(NULL);
 }

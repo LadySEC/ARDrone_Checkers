@@ -47,6 +47,6 @@ typedef enum
 /**********************************************************************************/
 void 			keyboard_rawMode(T_bool I_enable);
 int 			keyboard_hit(void);
-unsigned char 	keyboard_getchar(void);
+unsigned char 	        keyboard_getchar(void);
 
 #endif //! _KEYBOARD_H_
