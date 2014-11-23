@@ -7,7 +7,6 @@
 #include "opencv2/imgproc.hpp"
 #include <opencv/cv.h>
 #include <cmath>
-#include <QtDebug>
 #include <iostream>
 #include <stdio.h>
 
@@ -22,7 +21,7 @@ struct Position
 };
 
 // @function detect
-Position detect( Mat frame, String i_color, String i_form);
+Position detect( Mat frame, std::string i_color, std::string i_form);
 
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
 static double angle(Point pt1, Point pt2, Point pt0) ;
