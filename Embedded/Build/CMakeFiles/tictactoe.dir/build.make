@@ -187,29 +187,6 @@ CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/p
 
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o.provides.build: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o
 
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: CMakeFiles/tictactoe.dir/flags.make
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles $(CMAKE_PROGRESS_7)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building C object CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o"
-	/usr/bin/gcc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o   -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c
-
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i"
-	/usr/bin/gcc  $(C_DEFINES) $(C_FLAGS) -E /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c > CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i
-
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s"
-	/usr/bin/gcc  $(C_DEFINES) $(C_FLAGS) -S /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c -o CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s
-
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.requires:
-.PHONY : CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.requires
-
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.provides: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.requires
-	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.provides.build
-.PHONY : CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.provides
-
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.provides.build: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o
-
 # Object files for target tictactoe
 tictactoe_OBJECTS = \
 "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.c.o" \
@@ -217,8 +194,7 @@ tictactoe_OBJECTS = \
 "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o" \
 "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o" \
 "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o" \
-"CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o" \
-"CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o"
+"CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o"
 
 # External object files for target tictactoe
 tictactoe_EXTERNAL_OBJECTS =
@@ -229,7 +205,6 @@ tictactoe: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedde
 tictactoe: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o
 tictactoe: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o
 tictactoe: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o
-tictactoe: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o
 tictactoe: CMakeFiles/tictactoe.dir/build.make
 tictactoe: CMakeFiles/tictactoe.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking C executable tictactoe"
@@ -245,7 +220,6 @@ CMakeFiles/tictactoe.dir/requires: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/A
 CMakeFiles/tictactoe.dir/requires: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o.requires
 CMakeFiles/tictactoe.dir/requires: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o.requires
 CMakeFiles/tictactoe.dir/requires: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o.requires
-CMakeFiles/tictactoe.dir/requires: CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o.requires
 .PHONY : CMakeFiles/tictactoe.dir/requires
 
 CMakeFiles/tictactoe.dir/clean:

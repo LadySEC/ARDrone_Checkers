@@ -5,7 +5,6 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o"
   "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o"
   "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.c.o"
-  "CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o"
   "tictactoe.pdb"
   "tictactoe"
 )

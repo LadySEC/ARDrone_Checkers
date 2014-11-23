@@ -159,30 +159,6 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s:
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s
 
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.o
-
-# target to build an object file
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o:
-	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o
-
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.i: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.i
-
-# target to preprocess a source file
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i:
-	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.i
-
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.s: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.s
-
-# target to generate assembly for a file
-home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s:
-	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s
-.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.s
-
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o
 
@@ -294,9 +270,6 @@ help:
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.s"
-	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.o"
-	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.i"
-	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.s"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.s"

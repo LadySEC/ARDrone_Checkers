@@ -12,14 +12,6 @@ CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/c
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/global.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.h
 
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/global.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.h
-
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/global.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.h
@@ -28,7 +20,6 @@ CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/k
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/global.h
-CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/kbd_control.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.h
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/main.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/periodic.h

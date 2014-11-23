@@ -12,14 +12,30 @@
 #include "global.h"
 #include "keyboard.h"
 #include "supervisor.h"
-#include "kbd_control.h"
 /**********************************************************************************/
 /* Global variables 															  */
 /**********************************************************************************/
 
 /**********************************************************************************/
-/* Procedures														      */
+/* Procedures                                                                     */
 /**********************************************************************************/
+/* Block all real time signals so they can be used for the timers.
+   To be done before any threads are created so they all inherit the same mask.
+   Doing it later is subject to race conditions */
+void RTsignals_init(void)
+{
+    sigset_t        alarm_sig;
+    int             i;
+
+    sigemptyset (&alarm_sig);
+
+    for (i = SIGRTMIN; i <= SIGRTMAX; i++)
+    {
+        sigaddset (&alarm_sig, i);
+    }
+
+    sigprocmask (SIG_BLOCK, &alarm_sig, NULL);
+}
 
 /**********************************************************************************/
 /* Main program													      			  */
@@ -48,6 +64,12 @@ int main (int argc, char *argv[])
 #endif
 
     printf("Start\n\r");
+
+#ifdef ENABLE_SIGWAIT
+    printf("\n\rInitializing RT signals");
+    RTsignals_init();
+#endif
+
 
 #ifdef ENABLE_SUPERVISOR
     /* Initialize the supervisor thread (blocking function) */
