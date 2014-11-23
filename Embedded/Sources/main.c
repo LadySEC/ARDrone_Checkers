@@ -104,7 +104,6 @@ int main (int argc, char *argv[])
     {
         /* Initialize the movements thread */
         pthread_create (&th_ATcommand, NULL, ATcommand_thread_movements, NULL);
-        
         /* Launch thread for the autonomous flight*/
         pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
         //pthread_create (&th_detect_tag, NULL, calcul_order_thread, NULL);
@@ -119,7 +118,16 @@ int main (int argc, char *argv[])
         //#ifdef ENABLE_SUPERVISOR
         //        pthread_cancel(th_supervisor);
         //        supervisor_close();
-        //#endif
+        //#endifi
+        pthread_join(th_ATcommand,NULL);
+        pthread_join(th_calcul_order,NULL);
+        pthread_join(th_detect_tag,NULL);
+#ifdef ENABLE_SUPERVISOE
+        pthread_join(th_supervisor,NULL);
+#endif
+#ifdef ENABLE_KBD_CONTROL
+        pthread_join(th_kbd_control,NULL);
+#endif
     }
     else
     {
