@@ -135,6 +135,30 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.c.s:
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.c.s
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.c.s
 
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.o
+
+# target to build an object file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.o:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.o
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.i: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.i
+
+# target to preprocess a source file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.i:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.i
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.s: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.s
+
+# target to generate assembly for a file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s
+
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.o
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o
 
@@ -267,6 +291,9 @@ help:
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/at_command.s"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.o"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.i"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.s"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.s"

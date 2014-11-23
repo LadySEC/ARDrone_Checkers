@@ -12,6 +12,7 @@
 #include "global.h"
 #include "keyboard.h"
 #include "supervisor.h"
+#include "calcul_order.h"
 /**********************************************************************************/
 /* Global variables 															  */
 /**********************************************************************************/
@@ -55,6 +56,12 @@ int main (int argc, char *argv[])
 
     /* Thread */
     pthread_t 		th_ATcommand;
+
+    // For the orders calculation
+    pthread_t 		th_calcul_order;
+    
+    // For the image processing
+    pthread_t           th_detect_tag;
 #ifdef ENABLE_SUPERVISOR
     pthread_t 		th_supervisor;
 #endif
@@ -97,6 +104,10 @@ int main (int argc, char *argv[])
     {
         /* Initialize the movements thread */
         pthread_create (&th_ATcommand, NULL, ATcommand_thread_movements, NULL);
+        
+        /* Launch thread for the autonomous flight*/
+        pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
+        //pthread_create (&th_detect_tag, NULL, calcul_order_thread, NULL);
 
         // TODO : Find a condition on stop threads
 
