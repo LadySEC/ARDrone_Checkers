@@ -183,6 +183,30 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s:
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.s
 
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.o
+
+# target to build an object file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.i: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.i
+
+# target to preprocess a source file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.s: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.s
+
+# target to generate assembly for a file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
+
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.c.o
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o
 
@@ -297,6 +321,9 @@ help:
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.s"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.o"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.i"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.s"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/keyboard.s"

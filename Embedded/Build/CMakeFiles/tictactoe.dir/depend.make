@@ -45,3 +45,6 @@ CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/s
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c
 CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.c.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/supervisor.h
 
+CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp
+CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.h
+

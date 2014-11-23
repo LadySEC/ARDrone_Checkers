@@ -5,11 +5,12 @@
 
 cmake_minimum_required (VERSION 2.8.9)
 
-project(tictactoe C)
+project(tictactoe )
 
 ### Requierements
-find_package(Threads REQUIRED)
-
+#find_package(Threads REQUIRED)
+find_package(OpenCV REQUIRED )
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 ### Subdirectories where the sources are
@@ -18,6 +19,6 @@ find_package(Threads REQUIRED)
 
 FILE(GLOB MyCSources "../Sources/*.c")
 
-    ADD_EXECUTABLE(tictactoe ${MyCSources})
+ADD_EXECUTABLE(tictactoe  ${MyCSources} ../Sources/detect_tag.cpp ../Sources/detect_tag.h)
 
-TARGET_LINK_LIBRARIES(tictactoe rt ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(tictactoe rt ${CMAKE_THREAD_LIBS_INIT} ${OpenCV_LIBS})

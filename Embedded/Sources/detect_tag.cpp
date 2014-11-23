@@ -26,7 +26,10 @@ Position detect( Mat i_frame, std::string i_color, std::string i_form)
 
     //Find contours
     vector<vector<Point> > contours;
-    findContours(bw.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    //findContours(bw.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    
+    Mat bw_clone = bw.clone() ;
+    findContours(bw_clone, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
     vector<Point> approx;
 
     if (i_form == "triangle")

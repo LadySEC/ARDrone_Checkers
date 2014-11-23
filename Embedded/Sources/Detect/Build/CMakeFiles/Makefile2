@@ -47,10 +47,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/fabrice/Detect
+CMAKE_SOURCE_DIR = /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/fabrice/Detect/Build
+CMAKE_BINARY_DIR = /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build
 
 #=============================================================================
 # Target rules for target CMakeFiles/Detect.dir
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/fabrice/Detect/Build
 CMakeFiles/Detect.dir/all:
 	$(MAKE) -f CMakeFiles/Detect.dir/build.make CMakeFiles/Detect.dir/depend
 	$(MAKE) -f CMakeFiles/Detect.dir/build.make CMakeFiles/Detect.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/fabrice/Detect/Build/CMakeFiles  1 2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles  1 2
 	@echo "Built target Detect"
 .PHONY : CMakeFiles/Detect.dir/all
 
@@ -69,9 +69,9 @@ all: CMakeFiles/Detect.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Detect.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/fabrice/Detect/Build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Detect.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/fabrice/Detect/Build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles 0
 .PHONY : CMakeFiles/Detect.dir/rule
 
 # Convenience name for target.

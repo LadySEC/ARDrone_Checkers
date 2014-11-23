@@ -4,8 +4,8 @@ SET(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 SET(CMAKE_DEPENDS_CHECK_CXX
-  "/home/fabrice/Detect/src/detect_tag.cpp" "/home/fabrice/Detect/Build/CMakeFiles/Detect.dir/src/detect_tag.cpp.o"
-  "/home/fabrice/Detect/src/main.cpp" "/home/fabrice/Detect/Build/CMakeFiles/Detect.dir/src/main.cpp.o"
+  "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.cpp" "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles/Detect.dir/src/detect_tag.cpp.o"
+  "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/main.cpp" "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles/Detect.dir/src/main.cpp.o"
   )
 SET(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -15,8 +15,7 @@ SET(CMAKE_TARGET_LINKED_INFO_FILES
 
 # The include file search paths:
 SET(CMAKE_C_TARGET_INCLUDE_PATH
-  "/usr/local/include/opencv"
-  "/usr/local/include"
+  "/usr/include/opencv"
   )
 SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
 SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
