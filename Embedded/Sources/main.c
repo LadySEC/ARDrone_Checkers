@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
         pthread_create (&th_ATcommand, NULL, ATcommand_thread_movements, NULL);
         /* Launch thread for the autonomous flight*/
         pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
-        //pthread_create (&th_detect_tag, NULL, calcul_order_thread, NULL);
+        pthread_create (&th_detect_tag, NULL, detect_tag_thread, NULL);
 
         // TODO : Find a condition on stop threads
 

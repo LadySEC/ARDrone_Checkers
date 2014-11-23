@@ -53,13 +53,48 @@ CMAKE_SOURCE_DIR = /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build
 CMAKE_BINARY_DIR = /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build
 
 #=============================================================================
+# Target rules for target CMakeFiles/detect_tag.dir
+
+# All Build rule for target.
+CMakeFiles/detect_tag.dir/all:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/depend
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles  1
+	@echo "Built target detect_tag"
+.PHONY : CMakeFiles/detect_tag.dir/all
+
+# Include target in all.
+all: CMakeFiles/detect_tag.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/detect_tag.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/detect_tag.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles 0
+.PHONY : CMakeFiles/detect_tag.dir/rule
+
+# Convenience name for target.
+detect_tag: CMakeFiles/detect_tag.dir/rule
+.PHONY : detect_tag
+
+# clean rule for target.
+CMakeFiles/detect_tag.dir/clean:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/clean
+.PHONY : CMakeFiles/detect_tag.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/detect_tag.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/tictactoe.dir
 
 # All Build rule for target.
 CMakeFiles/tictactoe.dir/all:
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/depend
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles  1 2 3 4 5 6 7 8
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles  2 3 4 5 6 7 8 9 10
 	@echo "Built target tictactoe"
 .PHONY : CMakeFiles/tictactoe.dir/all
 
@@ -69,7 +104,7 @@ all: CMakeFiles/tictactoe.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/tictactoe.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles 9
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/tictactoe.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles 0
 .PHONY : CMakeFiles/tictactoe.dir/rule

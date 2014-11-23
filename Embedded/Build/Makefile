@@ -99,6 +99,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named detect_tag
+
+# Build rule for target.
+detect_tag: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 detect_tag
+.PHONY : detect_tag
+
+# fast build rule for target.
+detect_tag/fast:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/build
+.PHONY : detect_tag/fast
+
+#=============================================================================
 # Target rules for targets named tictactoe
 
 # Build rule for target.
@@ -159,6 +172,30 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s:
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.c.s
 
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.o
+
+# target to build an object file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.o:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.o
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.o
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.i: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.i
+
+# target to preprocess a source file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.i:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.i
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.i
+
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.s: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.s
+
+# target to generate assembly for a file
+home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.s:
+	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.s
+.PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.c.s
+
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o: home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.c.o
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o
 
@@ -188,6 +225,7 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.o: home/tilak/A
 
 # target to build an object file
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.o
 
@@ -196,6 +234,7 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.i: home/tilak/A
 
 # target to preprocess a source file
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.i
 
@@ -204,6 +243,7 @@ home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.s: home/tilak/A
 
 # target to generate assembly for a file
 home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s:
+	$(MAKE) -f CMakeFiles/detect_tag.dir/build.make CMakeFiles/detect_tag.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
 	$(MAKE) -f CMakeFiles/tictactoe.dir/build.make CMakeFiles/tictactoe.dir/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
 .PHONY : home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/detect_tag.cpp.s
 
@@ -309,6 +349,7 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... detect_tag"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... tictactoe"
@@ -318,6 +359,9 @@ help:
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_order.s"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.o"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.i"
+	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/calcul_tag.s"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.o"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.i"
 	@echo "... home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/communication.s"

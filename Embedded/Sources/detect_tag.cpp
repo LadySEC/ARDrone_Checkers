@@ -1,7 +1,10 @@
-#include "detect_tag.h"
+extern "C" {#include "detect_tag.hpp"
+
 
 // @function detectAndDisplay
-Position detect( Mat i_frame, std::string i_color, std::string i_form)
+    
+    
+    Position detect( Mat i_frame, std::string i_color, std::string i_form)
 {
 
     Position new_pos ;
@@ -98,6 +101,7 @@ Position detect( Mat i_frame, std::string i_color, std::string i_form)
 }
 
 
+
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
 static double angle(Point pt1, Point pt2, Point pt0)
 {
@@ -106,4 +110,5 @@ static double angle(Point pt1, Point pt2, Point pt0)
     double dx2 = pt2.x - pt0.x;
     double dy2 = pt2.y - pt0.y;
     return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+}
 }

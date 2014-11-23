@@ -51,3 +51,38 @@ make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedd
 make: *** [cmTryCompileExec3703486641/fast] Erreur 2
 
 
+Determining if the isfinite exist failed with the following output:
+Change Dir: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1856313653/fast"
+make[1]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1856313653.dir/build.make CMakeFiles/cmTryCompileExec1856313653.dir/build
+make[2]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/cmake -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1856313653.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec1856313653.dir/CheckSymbolExists.cxx.o -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘isfinite’ was not declared in this scope
+/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative:
+In file included from /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:2:0:
+/usr/include/c++/4.7/cmath:821:5: note:   ‘std::isfinite’
+make[2]: *** [CMakeFiles/cmTryCompileExec1856313653.dir/CheckSymbolExists.cxx.o] Erreur 1
+make[2]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: *** [cmTryCompileExec1856313653/fast] Erreur 2
+
+File /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <cmath>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef isfinite
+  return ((int*)(&isfinite))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+

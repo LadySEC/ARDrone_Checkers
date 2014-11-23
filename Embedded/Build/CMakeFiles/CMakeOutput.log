@@ -287,3 +287,113 @@ Parsed CXX implicit link information from above output:
   implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/4.7;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib]
 
 
+Determining if the include file cmath exists passed with the following output:
+Change Dir: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2873680801/fast"
+make[1]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2873680801.dir/build.make CMakeFiles/cmTryCompileExec2873680801.dir/build
+make[2]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/cmake -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2873680801.dir/CheckIncludeFile.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec2873680801.dir/CheckIncludeFile.cxx.o -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckIncludeFile.cxx
+Linking CXX executable cmTryCompileExec2873680801
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2873680801.dir/link.txt --verbose=1
+/usr/bin/c++          CMakeFiles/cmTryCompileExec2873680801.dir/CheckIncludeFile.cxx.o  -o cmTryCompileExec2873680801 -rdynamic 
+make[2]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+
+
+Determining if the isinf exist passed with the following output:
+Change Dir: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3317400451/fast"
+make[1]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3317400451.dir/build.make CMakeFiles/cmTryCompileExec3317400451.dir/build
+make[2]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/cmake -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3317400451.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec3317400451.dir/CheckSymbolExists.cxx.o -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTryCompileExec3317400451
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3317400451.dir/link.txt --verbose=1
+/usr/bin/c++          CMakeFiles/cmTryCompileExec3317400451.dir/CheckSymbolExists.cxx.o  -o cmTryCompileExec3317400451 -rdynamic 
+make[2]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+
+File /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <cmath>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef isinf
+  return ((int*)(&isinf))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the isnan exist passed with the following output:
+Change Dir: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1856663079/fast"
+make[1]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1856663079.dir/build.make CMakeFiles/cmTryCompileExec1856663079.dir/build
+make[2]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/cmake -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1856663079.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec1856663079.dir/CheckSymbolExists.cxx.o -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTryCompileExec1856663079
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1856663079.dir/link.txt --verbose=1
+/usr/bin/c++          CMakeFiles/cmTryCompileExec1856663079.dir/CheckSymbolExists.cxx.o  -o cmTryCompileExec1856663079 -rdynamic 
+make[2]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+
+File /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <cmath>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef isnan
+  return ((int*)(&isnan))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the signgam exist passed with the following output:
+Change Dir: /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3055873091/fast"
+make[1]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3055873091.dir/build.make CMakeFiles/cmTryCompileExec3055873091.dir/build
+make[2]: entrant dans le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+/usr/bin/cmake -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3055873091.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec3055873091.dir/CheckSymbolExists.cxx.o -c /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTryCompileExec3055873091
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3055873091.dir/link.txt --verbose=1
+/usr/bin/c++          CMakeFiles/cmTryCompileExec3055873091.dir/CheckSymbolExists.cxx.o  -o cmTryCompileExec3055873091 -rdynamic 
+make[2]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+make[1]: quittant le répertoire « /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp »
+
+File /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <cmath>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef signgam
+  return ((int*)(&signgam))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+

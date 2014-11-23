@@ -3,11 +3,11 @@
 
 # compile C with /usr/bin/gcc
 # compile CXX with /usr/bin/c++
-C_FLAGS = -I/usr/include/opencv   
+C_FLAGS = -I/usr/include/opencv -I/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/../Sources   
 
 C_DEFINES = 
 
-CXX_FLAGS = -I/usr/include/opencv   
+CXX_FLAGS = -I/usr/include/opencv -I/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build/../Sources   
 
 CXX_DEFINES = 
 

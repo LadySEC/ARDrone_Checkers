@@ -155,8 +155,20 @@ CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//The directory containing a CMake configuration file for CMath.
+CMath_DIR:PATH=CMath_DIR-NOTFOUND
+
 //The directory containing a CMake configuration file for OpenCV.
 OpenCV_DIR:PATH=/usr/share/OpenCV
+
+//The directory containing a CMake configuration file for cmath.
+cmath_DIR:PATH=cmath_DIR-NOTFOUND
+
+//Dependencies for target
+detect_tag_LIB_DEPENDS:STATIC=
+
+//The directory containing a CMake configuration file for maths.
+maths_DIR:PATH=maths_DIR-NOTFOUND
 
 //Value Computed by CMake
 tictactoe_BINARY_DIR:STATIC=/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Build
@@ -300,4 +312,14 @@ CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+//Have include cmath
+HAVE_CMATH:INTERNAL=1
+//Have symbol isfinite
+HAVE_DECL_ISFINITE:INTERNAL=
+//Have symbol isinf
+HAVE_DECL_ISINF:INTERNAL=1
+//Have symbol isnan
+HAVE_DECL_ISNAN:INTERNAL=1
+//Have symbol signgam
+HAVE_DECL_SIGNGAM:INTERNAL=1
 
