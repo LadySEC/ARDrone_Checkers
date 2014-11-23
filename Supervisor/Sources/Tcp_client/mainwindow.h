@@ -21,11 +21,23 @@ public:
 
 public slots:
     void open_connexion();
+
+    void mark_connexion() ;
+    void unmark_connexion() ;
+
     void send_takeoff() ;
     void send_landing() ;
     void send_exit() ;
-    void mark_connexion() ;
-    void unmark_connexion() ;
+
+    void send_M_Bl_Re() ;
+    void send_M_Bl_Tr() ;
+    void send_M_Bl_Ci() ;
+    void send_M_Ro_Re() ;
+    void send_M_Ro_Tr() ;
+    void send_M_Ro_Ci() ;
+    void send_M_Gr_Re() ;
+    void send_M_Gr_Tr() ;
+    void send_M_Gr_Ci() ;
 
 private:
     void allow_sending() ;

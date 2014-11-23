@@ -14,13 +14,17 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -29,12 +33,42 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QPushButton *button_connect;
-    QPushButton *button_takeoff;
+    QGridLayout *gridLayout_2;
+    QHBoxLayout *horizontalLayout;
     QTextEdit *displayAdrIP;
+    QSpacerItem *horizontalSpacer_7;
+    QVBoxLayout *verticalLayout;
+    QPushButton *button_connect;
     QCheckBox *checkBox_connected;
+    QSpacerItem *horizontalSpacer_8;
+    QVBoxLayout *verticalLayout_2;
+    QPushButton *button_takeoff;
     QPushButton *button_landing;
+    QSpacerItem *horizontalSpacer_9;
     QPushButton *button_exit;
+    QSpacerItem *verticalSpacer_7;
+    QGridLayout *gridLayout;
+    QPushButton *button_blue_triangle;
+    QPushButton *button_red_triangle;
+    QSpacerItem *verticalSpacer_2;
+    QPushButton *button_green_rectangle;
+    QPushButton *button_green_triangle;
+    QPushButton *button_blue_rectangle;
+    QSpacerItem *verticalSpacer_6;
+    QPushButton *button_red_rectangle;
+    QSpacerItem *horizontalSpacer_3;
+    QSpacerItem *verticalSpacer_5;
+    QPushButton *button_red_circle;
+    QSpacerItem *horizontalSpacer_2;
+    QSpacerItem *horizontalSpacer_6;
+    QPushButton *button_green_circle;
+    QPushButton *button_blue_circle;
+    QSpacerItem *verticalSpacer;
+    QSpacerItem *horizontalSpacer_4;
+    QSpacerItem *horizontalSpacer;
+    QSpacerItem *verticalSpacer_3;
+    QSpacerItem *horizontalSpacer_5;
+    QSpacerItem *verticalSpacer_4;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -43,37 +77,197 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(342, 287);
+        MainWindow->resize(561, 413);
+        MainWindow->setMaximumSize(QSize(1677, 1677));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        button_connect = new QPushButton(centralWidget);
-        button_connect->setObjectName(QStringLiteral("button_connect"));
-        button_connect->setEnabled(true);
-        button_connect->setGeometry(QRect(229, 29, 89, 27));
-        button_takeoff = new QPushButton(centralWidget);
-        button_takeoff->setObjectName(QStringLiteral("button_takeoff"));
-        button_takeoff->setEnabled(false);
-        button_takeoff->setGeometry(QRect(60, 110, 85, 27));
+        gridLayout_2 = new QGridLayout(centralWidget);
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setContentsMargins(11, 11, 11, 11);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         displayAdrIP = new QTextEdit(centralWidget);
         displayAdrIP->setObjectName(QStringLiteral("displayAdrIP"));
         displayAdrIP->setEnabled(false);
-        displayAdrIP->setGeometry(QRect(9, 22, 181, 51));
+        displayAdrIP->setMaximumSize(QSize(200, 100));
+
+        horizontalLayout->addWidget(displayAdrIP);
+
+        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_7);
+
+        verticalLayout = new QVBoxLayout();
+        verticalLayout->setSpacing(6);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        button_connect = new QPushButton(centralWidget);
+        button_connect->setObjectName(QStringLiteral("button_connect"));
+        button_connect->setEnabled(true);
+
+        verticalLayout->addWidget(button_connect);
+
         checkBox_connected = new QCheckBox(centralWidget);
         checkBox_connected->setObjectName(QStringLiteral("checkBox_connected"));
         checkBox_connected->setEnabled(false);
-        checkBox_connected->setGeometry(QRect(210, 60, 104, 22));
+
+        verticalLayout->addWidget(checkBox_connected);
+
+
+        horizontalLayout->addLayout(verticalLayout);
+
+        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_8);
+
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        button_takeoff = new QPushButton(centralWidget);
+        button_takeoff->setObjectName(QStringLiteral("button_takeoff"));
+        button_takeoff->setEnabled(false);
+
+        verticalLayout_2->addWidget(button_takeoff);
+
         button_landing = new QPushButton(centralWidget);
         button_landing->setObjectName(QStringLiteral("button_landing"));
         button_landing->setEnabled(false);
-        button_landing->setGeometry(QRect(210, 110, 85, 27));
+
+        verticalLayout_2->addWidget(button_landing);
+
+
+        horizontalLayout->addLayout(verticalLayout_2);
+
+        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_9);
+
         button_exit = new QPushButton(centralWidget);
         button_exit->setObjectName(QStringLiteral("button_exit"));
         button_exit->setEnabled(false);
-        button_exit->setGeometry(QRect(140, 170, 85, 27));
+
+        horizontalLayout->addWidget(button_exit);
+
+
+        gridLayout_2->addLayout(horizontalLayout, 0, 0, 1, 1);
+
+        verticalSpacer_7 = new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_2->addItem(verticalSpacer_7, 1, 0, 1, 1);
+
+        gridLayout = new QGridLayout();
+        gridLayout->setSpacing(6);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        button_blue_triangle = new QPushButton(centralWidget);
+        button_blue_triangle->setObjectName(QStringLiteral("button_blue_triangle"));
+        button_blue_triangle->setEnabled(false);
+
+        gridLayout->addWidget(button_blue_triangle, 2, 4, 1, 1);
+
+        button_red_triangle = new QPushButton(centralWidget);
+        button_red_triangle->setObjectName(QStringLiteral("button_red_triangle"));
+        button_red_triangle->setEnabled(false);
+
+        gridLayout->addWidget(button_red_triangle, 0, 0, 1, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_2, 1, 2, 1, 1);
+
+        button_green_rectangle = new QPushButton(centralWidget);
+        button_green_rectangle->setObjectName(QStringLiteral("button_green_rectangle"));
+        button_green_rectangle->setEnabled(false);
+
+        gridLayout->addWidget(button_green_rectangle, 0, 4, 1, 1);
+
+        button_green_triangle = new QPushButton(centralWidget);
+        button_green_triangle->setObjectName(QStringLiteral("button_green_triangle"));
+        button_green_triangle->setEnabled(false);
+
+        gridLayout->addWidget(button_green_triangle, 4, 2, 1, 1);
+
+        button_blue_rectangle = new QPushButton(centralWidget);
+        button_blue_rectangle->setObjectName(QStringLiteral("button_blue_rectangle"));
+        button_blue_rectangle->setEnabled(false);
+
+        gridLayout->addWidget(button_blue_rectangle, 4, 0, 1, 1);
+
+        verticalSpacer_6 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_6, 3, 4, 1, 1);
+
+        button_red_rectangle = new QPushButton(centralWidget);
+        button_red_rectangle->setObjectName(QStringLiteral("button_red_rectangle"));
+        button_red_rectangle->setEnabled(false);
+
+        gridLayout->addWidget(button_red_rectangle, 2, 2, 1, 1);
+
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer_3, 0, 3, 1, 1);
+
+        verticalSpacer_5 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_5, 3, 2, 1, 1);
+
+        button_red_circle = new QPushButton(centralWidget);
+        button_red_circle->setObjectName(QStringLiteral("button_red_circle"));
+        button_red_circle->setEnabled(false);
+
+        gridLayout->addWidget(button_red_circle, 4, 4, 1, 1);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer_2, 2, 3, 1, 1);
+
+        horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer_6, 4, 3, 1, 1);
+
+        button_green_circle = new QPushButton(centralWidget);
+        button_green_circle->setObjectName(QStringLiteral("button_green_circle"));
+        button_green_circle->setEnabled(false);
+
+        gridLayout->addWidget(button_green_circle, 2, 0, 1, 1);
+
+        button_blue_circle = new QPushButton(centralWidget);
+        button_blue_circle->setObjectName(QStringLiteral("button_blue_circle"));
+        button_blue_circle->setEnabled(false);
+
+        gridLayout->addWidget(button_blue_circle, 0, 2, 1, 1);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer, 1, 0, 1, 1);
+
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer_4, 0, 1, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer, 2, 1, 1, 1);
+
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_3, 1, 4, 1, 1);
+
+        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer_5, 4, 1, 1, 1);
+
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_4, 3, 0, 1, 1);
+
+
+        gridLayout_2->addLayout(gridLayout, 2, 0, 1, 1);
+
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 342, 25));
+        menuBar->setGeometry(QRect(0, 0, 561, 25));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -90,17 +284,26 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        button_connect->setText(QApplication::translate("MainWindow", "Connecter", 0));
-        button_takeoff->setText(QApplication::translate("MainWindow", "takeoff", 0));
         displayAdrIP->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Adresse IP : 192.168.1.1</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Socket : 4000</p></body></html>", 0));
+        button_connect->setText(QApplication::translate("MainWindow", "Connecter", 0));
         checkBox_connected->setText(QApplication::translate("MainWindow", "Connected", 0));
+        button_takeoff->setText(QApplication::translate("MainWindow", "takeoff", 0));
         button_landing->setText(QApplication::translate("MainWindow", "landing", 0));
         button_exit->setText(QApplication::translate("MainWindow", "exit", 0));
+        button_blue_triangle->setText(QApplication::translate("MainWindow", "Blue Triangle", 0));
+        button_red_triangle->setText(QApplication::translate("MainWindow", "Red Triangle", 0));
+        button_green_rectangle->setText(QApplication::translate("MainWindow", "Green Rectangle", 0));
+        button_green_triangle->setText(QApplication::translate("MainWindow", "Green Triangle", 0));
+        button_blue_rectangle->setText(QApplication::translate("MainWindow", "Blue Rectangle", 0));
+        button_red_rectangle->setText(QApplication::translate("MainWindow", "Red Rectangle", 0));
+        button_red_circle->setText(QApplication::translate("MainWindow", "Red Circle", 0));
+        button_green_circle->setText(QApplication::translate("MainWindow", "Green Circle", 0));
+        button_blue_circle->setText(QApplication::translate("MainWindow", "Blue Circle", 0));
     } // retranslateUi
 
 };
