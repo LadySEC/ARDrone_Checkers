@@ -1,8 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/Detect.dir/src/detect_tag.cpp.o"
-  "CMakeFiles/Detect.dir/src/main.cpp.o"
-  "Detect.pdb"
-  "Detect"
+  "libDetect.pdb"
+  "libDetect.a"
 )
 
 # Per-language clean rules from dependency scanning.

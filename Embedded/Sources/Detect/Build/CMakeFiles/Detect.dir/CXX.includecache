@@ -6,29 +6,3 @@
 
 #IncludeRegexTransform: 
 
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.cpp
-detect_tag.h
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.h
-
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.h
-opencv2/objdetect.hpp
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/opencv2/objdetect.hpp
-opencv2/videoio.hpp
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/opencv2/videoio.hpp
-opencv2/highgui.hpp
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/opencv2/highgui.hpp
-opencv2/imgproc.hpp
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/opencv2/imgproc.hpp
-opencv/cv.h
--
-cmath
--
-iostream
--
-stdio.h
--
-
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/main.cpp
-detect_tag.h
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.h
-

@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect
 CMakeFiles/Detect.dir/all:
 	$(MAKE) -f CMakeFiles/Detect.dir/build.make CMakeFiles/Detect.dir/depend
 	$(MAKE) -f CMakeFiles/Detect.dir/build.make CMakeFiles/Detect.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles  1 2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles  1
 	@echo "Built target Detect"
 .PHONY : CMakeFiles/Detect.dir/all
 
@@ -69,7 +69,7 @@ all: CMakeFiles/Detect.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Detect.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Detect.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles 0
 .PHONY : CMakeFiles/Detect.dir/rule

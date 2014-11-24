@@ -4,7 +4,7 @@ SET(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 SET(CMAKE_DEPENDS_CHECK_CXX
-  "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.cpp" "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles/Detect.dir/src/detect_tag.cpp.o"
+  "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/src/detect_tag.cpp" "/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles/Detect_lib.dir/src/detect_tag.cpp.o"
   )
 SET(CMAKE_CXX_COMPILER_ID "GNU")
 

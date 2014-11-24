@@ -1,31 +1,37 @@
 #ifndef DETECT_TAG_H
 #define DETECT_TAG_H
 
-#include "opencv2/opencv.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
-//#include "opencv2/video/video.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv/cv.h>
+
 #include <cmath>
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
 
+#include "detect_tag_wrapper.h"
+
 using namespace std;
 using namespace cv;
 
-struct Position
+/*struct Position
 {
-    int abs ;
+    int abs ;		???
     int ord ;
     int found ;
-};
+};*/
 
 // @function detect
-Position detect( Mat frame, std::string i_color, std::string i_form);
+
+Position detect(std::string i_color, std::string i_form);
 
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
-static double angle(Point pt1, Point pt2, Point pt0) ;
+static  double angle(Point pt1, Point pt2, Point pt0) ;
+
 
 #endif // DETECT_TAG_H
+
+
+  
