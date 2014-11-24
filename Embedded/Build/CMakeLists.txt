@@ -8,16 +8,23 @@ cmake_minimum_required (VERSION 2.8.9)
 project(tictactoe)
 
 ### Requierements
-#find_package(Threads REQUIRED)
-    find_package(OpenCV REQUIRED )
-include_directories(${OpenCV_INCLUDE_DIRS})
+find_package(Threads REQUIRED)
+find_package(OpenCV REQUIRED )
 
-### Subdirectories where the sources are
+include_directories(${OpenCV_INCLUDE_DIRS} ../Sources)
 
-#add_executable(tictactoe ../Sources/main.c ../Sources/communication.c ../Sources/supervisor.c ../Sources/keyboard.c ../Sources/at_command.c)
-    FILE(GLOB MyCSources "../Sources/*.c")
-ADD_LIBRARY(detect ../Sources/detect_tag.cpp ../Sources/detect_tag.hpp)
-ADD_EXECUTABLE(tictactoe  ${MyCSources} ../Sources/detect_tag.cpp ../Sources/detect_tag.hpp)
+set(TICTACTOE_SRC  	../Sources/at_command.c
+			../Sources/calcul_order.c
+			../Sources/calcul_tag.c
+			../Sources/communication.c
+			../Sources/detect_tag_wrapper.cpp
+			../Sources/detect_tag.cpp
+			../Sources/keyboard.c
+			../Sources/periodic.c
+			../Sources/supervisor.c
+		   )
 
+ADD_EXECUTABLE(tictactoe  ${TICTACTOE_SRC} ../Sources/main.c)
 
 TARGET_LINK_LIBRARIES(tictactoe rt  ${CMAKE_THREAD_LIBS_INIT} ${OpenCV_LIBS})
+

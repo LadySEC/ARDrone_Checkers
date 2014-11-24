@@ -8,6 +8,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv/cv.h>
 #include <cmath>
+#include <math.h>
 #include <iostream>
 #include <stdio.h>
 

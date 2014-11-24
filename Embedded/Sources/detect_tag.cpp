@@ -4,8 +4,10 @@
 // @function detectAndDisplay
     
     
-    Position detect( Mat i_frame, std::string i_color, std::string i_form)
+Position detect(std::string i_color, std::string i_form)
 {
+
+    Mat i_frame; 
 
     Position new_pos ;
     new_pos.found = 0 ;
