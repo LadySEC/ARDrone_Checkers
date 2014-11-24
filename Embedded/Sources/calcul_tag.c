@@ -1,6 +1,6 @@
 /**
- * \file 	calcul_order.c
- * \brief 	Make the calculation for the next drone orders
+ * \file 	detect_tag.c
+ * \brief 	Make the image processing for a tag
  * \author 	Lady team
  * \version 1.0
  * \date 	23 november 2014
@@ -9,7 +9,7 @@
 /**********************************************************************************/
 /* Libraries														      		  */
 /**********************************************************************************/
-#include "calcul_order.h"
+#include "calcul_tag.h"
 
 /**********************************************************************************/
 /* Constants 															  		  */
@@ -28,19 +28,19 @@
 /**********************************************************************************/
 /**
  * \fn 		void* detect_tag_thread(void* arg)
- * \brief 	Thread which receive the tag position and calcul the next orders
+ * \brief 	Thread which receive the image and process the position of a tag
  * \param 	arg 	Input argument
  * \return  		Nothing
  *
- * This thread reads received datas from the image processing thread
- * And then calcul the next orders
+ * This thread reads a frame from the camera and process it trying to find a tag, then 
+ * send the position of the tag
  */
-void* calcul_order_thread(void* arg)
+void* calcul_tag_thread(void* arg)
 {
 
     /* Make this thread periodic */
     struct periodic_info info;
-    make_periodic (_CALCUL_PERIOD, &info);
+    make_periodic (_IMG_PERIOD, &info);
 
 
     while(1)

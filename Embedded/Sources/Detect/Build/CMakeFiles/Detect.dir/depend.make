@@ -4,6 +4,3 @@
 CMakeFiles/Detect.dir/src/detect_tag.cpp.o: ../src/detect_tag.cpp
 CMakeFiles/Detect.dir/src/detect_tag.cpp.o: ../src/detect_tag.h
 
-CMakeFiles/Detect.dir/src/main.cpp.o: ../src/detect_tag.h
-CMakeFiles/Detect.dir/src/main.cpp.o: ../src/main.cpp
-
