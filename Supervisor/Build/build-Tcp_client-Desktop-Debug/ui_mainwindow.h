@@ -295,15 +295,15 @@ public:
         button_takeoff->setText(QApplication::translate("MainWindow", "takeoff", 0));
         button_landing->setText(QApplication::translate("MainWindow", "landing", 0));
         button_exit->setText(QApplication::translate("MainWindow", "exit", 0));
-        button_blue_triangle->setText(QApplication::translate("MainWindow", "Blue Triangle", 0));
-        button_red_triangle->setText(QApplication::translate("MainWindow", "Red Triangle", 0));
-        button_green_rectangle->setText(QApplication::translate("MainWindow", "Green Rectangle", 0));
-        button_green_triangle->setText(QApplication::translate("MainWindow", "Green Triangle", 0));
-        button_blue_rectangle->setText(QApplication::translate("MainWindow", "Blue Rectangle", 0));
-        button_red_rectangle->setText(QApplication::translate("MainWindow", "Red Rectangle", 0));
-        button_red_circle->setText(QApplication::translate("MainWindow", "Red Circle", 0));
-        button_green_circle->setText(QApplication::translate("MainWindow", "Green Circle", 0));
-        button_blue_circle->setText(QApplication::translate("MainWindow", "Blue Circle", 0));
+        button_blue_triangle->setText(QString());
+        button_red_triangle->setText(QString());
+        button_green_rectangle->setText(QString());
+        button_green_triangle->setText(QString());
+        button_blue_rectangle->setText(QString());
+        button_red_rectangle->setText(QString());
+        button_red_circle->setText(QString());
+        button_green_circle->setText(QString());
+        button_blue_circle->setText(QString());
     } // retranslateUi
 
 };

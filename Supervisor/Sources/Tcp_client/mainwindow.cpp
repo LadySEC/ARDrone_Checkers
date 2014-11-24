@@ -7,12 +7,52 @@
  * PUBLIC
  * *****************************/
 
+static const QString ICON_RED_RECTANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/red_rectangle.jpg";
+static const QString ICON_BLUE_RECTANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/blue_rectangle.jpg";
+static const QString ICON_GREEN_RECTANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/green_rectangle.jpg";
+static const QString ICON_RED_TRIANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/red_triangle.jpg";
+static const QString ICON_BLUE_TRIANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/blue_triangle.jpg";
+static const QString ICON_GREEN_TRIANGLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/green_triangle.jpg";
+static const QString ICON_RED_CIRCLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/red_circle.jpg";
+static const QString ICON_BLUE_CIRCLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/blue_circle.jpg";
+static const QString ICON_GREEN_CIRCLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/green_circle.jpg";
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     link_connect();
+
+    ui->button_red_rectangle->setIcon(QIcon(ICON_RED_RECTANGLE_PATH));
+    ui->button_red_rectangle->setIconSize(QSize(100, 100));
+
+    ui->button_blue_rectangle->setIcon(QIcon(ICON_BLUE_RECTANGLE_PATH));
+    ui->button_blue_rectangle->setIconSize(QSize(100, 100));
+
+    ui->button_green_rectangle->setIcon(QIcon(ICON_GREEN_RECTANGLE_PATH));
+    ui->button_green_rectangle->setIconSize(QSize(100, 100));
+
+    ui->button_red_triangle->setIcon(QIcon(ICON_RED_TRIANGLE_PATH));
+    ui->button_red_triangle->setIconSize(QSize(100, 100));
+
+    ui->button_blue_triangle->setIcon(QIcon(ICON_BLUE_TRIANGLE_PATH));
+    ui->button_blue_triangle->setIconSize(QSize(100, 100));
+
+    ui->button_green_triangle->setIcon(QIcon(ICON_GREEN_TRIANGLE_PATH));
+    ui->button_green_triangle->setIconSize(QSize(100, 100));
+
+    ui->button_red_circle->setIcon(QIcon(ICON_RED_CIRCLE_PATH));
+    ui->button_red_circle->setIconSize(QSize(100, 100));
+
+    ui->button_blue_circle->setIcon(QIcon(ICON_BLUE_CIRCLE_PATH));
+    ui->button_blue_circle->setIconSize(QSize(100, 100));
+
+    ui->button_green_circle->setIcon(QIcon(ICON_GREEN_CIRCLE_PATH));
+    ui->button_green_circle->setIconSize(QSize(100, 100));
+
+
 }
 
 MainWindow::~MainWindow()

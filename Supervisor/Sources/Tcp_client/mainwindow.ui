@@ -164,7 +164,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Blue Triangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -174,7 +174,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Red Triangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -197,7 +197,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Green Rectangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -207,7 +207,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Green Triangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -217,7 +217,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Blue Rectangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -240,7 +240,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Red Rectangle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -276,7 +276,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Red Circle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -312,7 +312,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Green Circle</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -322,7 +322,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Blue Circle</string>
+         <string/>
         </property>
        </widget>
       </item>
