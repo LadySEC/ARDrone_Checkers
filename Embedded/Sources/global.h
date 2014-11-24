@@ -15,17 +15,20 @@
 #include <stdio.h>			// Standard C ANSI
 #include <stdlib.h>
 #include <unistd.h>			// usleep
-#include <pthread.h>	        	// POSIX library for thread management
-#include "periodic.h"                   // Librairy for periodic thread
+#include <pthread.h>	    // POSIX library for thread management
 #include <signal.h>
+
 /**********************************************************************************/
 /* Constants														      		  */
 /**********************************************************************************/
 /* Debug */
 #define DEBUG_NAVDATA
 #define ENABLE_HOVERING
-#define ENABLE_SUPERVISOR
+//#define ENABLE_SUPERVISOR
 #define ENABLE_KBD_CONTROL
+#define ENABLE_SIGWAIT
+//#define CONFIG_VIDEO
+ 
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/

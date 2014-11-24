@@ -89,11 +89,12 @@ T_error ATcommand_initiate(void)
 		ATcommand_process(CHANGE_APP);
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(CHANGE_SSID);
+#ifdef CONFIG_VIDEO
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(DISABLE_VIDEO);
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(DISABLE_VISION);
-
+#endif
 		/* Initiate navdata reception */
 		// Send a request to port 5554
 		ATcommand_process(NAVDATA_REQUEST);
@@ -501,7 +502,7 @@ T_bool ATcommand_enoughBattery(void)
 {
 	T_bool enough;
 
-	if(((G_navdata.ardrone_state >> 18u) & 0x1u) == 0u)
+	if(G_navdata.vbat_flying_percentage > 30u)
 	{
 		enough = TRUE;
 	}
@@ -511,6 +512,23 @@ T_bool ATcommand_enoughBattery(void)
 	}
 
 	return(enough);
+}
+
+
+T_bool ATcommand_navdataError(void)
+{
+	T_bool error;
+
+	if(((G_navdata.ardrone_state >> 30u) & 0x1u) == 0u)
+	{
+		error = FALSE;
+	}
+	else
+	{
+		error = TRUE;
+	}
+
+	return(error);
 }
 
 /**
@@ -562,16 +580,14 @@ static void displayNavdata(T_navdata_display I_display)
  */
 void* ATcommand_thread_movements(void* arg)
 {
-
     /* Make this thread periodic */
     struct periodic_info info;
-    make_periodic (BUFFER_TEMPO, &info);   
 
-    /* Declarations */
-    int 			nb_sentCommands = 0u;
-    unsigned char 	counter = 0u;
 
     printf("\n\rStarting drone moves management thread");
+#ifdef ENABLE_SIGWAIT
+    make_periodic(BUFFER_TEMPO, &info);   
+#endif
 
 	while(1)
 	{
@@ -586,8 +602,12 @@ void* ATcommand_thread_movements(void* arg)
 		ATcommand_process(RESET_WATCHDOG);
 
 		/* Wait */
+#ifdef ENABLE_SIGWAIT
         /* Wait until the next period is achieved */
-        wait_period (&info);
+       	wait_period (&info);
+#else
+       	usleep(BUFFER_TEMPO);
+#endif
     }
 
     printf("\n\rEnding drone moves management thread");
@@ -601,11 +621,11 @@ void* ATcommand_thread_movements(void* arg)
 /* Create a packet */
 static struct T_packet* createPacket(T_ATorders order, char* command)
 {
-    struct T_packet* packet = malloc(sizeof(struct T_packet));	/* Allocation memoire */
+    struct T_packet* packet = (struct T_packet*)malloc(sizeof(struct T_packet));	/* Allocation memoire */
 
 	/* Initialisation du paquet */
 	packet->order 				= order;
-    packet->data                = malloc((sizeof(char)*strlen(command)) + 1u);
+    packet->data                = (char*)malloc((sizeof(char)*strlen(command)) + 1u);
     strcpy(packet->data, command);
     packet->next             	= NULL;
     packet->previous            = NULL;
@@ -661,7 +681,7 @@ static T_bufferState consumeBuffer(void)
 		/* Send the command through the local host */
 		printf("\n\r[%s] ", C_ORDERS[G_packetBuffer.first->order]);
 		socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, G_packetBuffer.first->data);
-		//printf(" (%d remaining commands)", G_packetBuffer.nb_packets - 1u);
+		//printf("(%d remaining commands)", G_packetBuffer.nb_packets - 1u);
 
     	/* Update the buffer */
     	tmp_packet = G_packetBuffer.first;

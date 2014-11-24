@@ -75,12 +75,14 @@ void supervisor_close(void)
 void* supervisor_thread_interact(void* arg)
 {
     T_bool 	disconnected = FALSE;
-
     /* Make this thread periodic */
     struct periodic_info info;
-    make_periodic (INTERACT_TEMPO	, &info);   
+
 
     printf("\n\rStarting supervisor management thread");
+#ifdef ENABLE_SIGWAIT
+    make_periodic (INTERACT_TEMPO, &info);   
+#endif
 
     while(disconnected == FALSE)
     {
@@ -114,9 +116,13 @@ void* supervisor_thread_interact(void* arg)
             }
         }
 
+        /* Wait */
+#ifdef ENABLE_SIGWAIT
         /* Wait until the next period is achieved */
         wait_period (&info);
-
+#else
+        usleep(INTERACT_TEMPO);
+#endif
     }
 
     /* Close */

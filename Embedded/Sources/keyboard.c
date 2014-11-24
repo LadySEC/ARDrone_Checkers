@@ -86,18 +86,15 @@ unsigned char keyboard_getchar(void)
 	return(character);
 }
 
-
-
-
 /**********************************************************************************/
-/* Threads			                               		          */
+/* Threads                                                        */
 /**********************************************************************************/
 /**
  * \fn      void*  kb_thread_drone_controller(void * args)
  * \brief   Thread that control the drone through the keyboard interface
  *
- * \param 	arg 	Input argument 
- * \return  		Nothing
+ * \param   arg     Input argument 
+ * \return          Nothing
  *
  * This thread read the keyboards input
  * And then process them to control the drone 
@@ -106,9 +103,9 @@ void*  kbd_thread_drone_controller(void * args)
 {
 
     /* Declarations */
-    unsigned char  	key_pressed  	= 0;
-    unsigned int   	key_selected	= 0;
-    unsigned int 	counter;
+    unsigned char   key_pressed     = 0;
+    unsigned int    key_selected    = 0;
+    unsigned int    counter;
 
     /* Activate the terminal for raw mode */
     keyboard_rawMode(TRUE);
@@ -130,9 +127,11 @@ void*  kbd_thread_drone_controller(void * args)
                     {
                         if(ATcommand_FlyingState() == FALSE)
                         {
+                        #ifdef CONFIG_VIDEO
                             /* Enable the bottom camera */
                             ATcommand_process(CONFIGURATION_IDS);
                             ATcommand_process(ENABLE_VISION);
+                        #endif
                             /* Flat trim */
                             ATcommand_process(TRIM);
                             sleep(2u);
@@ -147,9 +146,11 @@ void*  kbd_thread_drone_controller(void * args)
                             ATcommand_process(LANDING);
                             /* Wait the landing state */
                             while(ATcommand_FlyingState() != FALSE);
+                        #ifdef CONFIG_VIDEO
                             /* Disable the bottom camera */
                             ATcommand_process(CONFIGURATION_IDS);
                             ATcommand_process(DISABLE_VISION);
+                        #endif
                         }
                     }
                     else
@@ -160,7 +161,7 @@ void*  kbd_thread_drone_controller(void * args)
                     }
                     break;
 
-                case UP_KEY	:
+                case UP_KEY :
                     for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
                     {
                         ATcommand_process(PITCH_DOWN);
@@ -174,7 +175,7 @@ void*  kbd_thread_drone_controller(void * args)
                     }
                     break;
 
-                case LEFT_KEY	:
+                case LEFT_KEY   :
                     for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
                     {
                         ATcommand_process(YAW_LEFT);
@@ -222,25 +223,17 @@ void*  kbd_thread_drone_controller(void * args)
 
                     /* Sequence test */
                 case BACKSPACE_KEY :
-                    for(counter = 0u; counter < 10u; counter++)
-                    {
-                        ATcommand_process(VERTICAL_UP);
-                    }
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(VERTICAL_DOWN);
-                    }
-                    for(counter = 0u; counter < 10u; counter++)
+                    for(counter = 0u; counter < 15u; counter++)
                     {
                         ATcommand_process(PITCH_DOWN);
                     }
-                    for(counter = 0u; counter < 10u; counter++)
+                    for(counter = 0u; counter < 40u; counter++)
                     {
-                        ATcommand_process(YAW_LEFT);
+                        ATcommand_process(ROLL_RIGHT);
                     }
-                    for(counter = 0u; counter < 10u; counter++)
+                    for(counter = 0u; counter < 15u; counter++)
                     {
-                        ATcommand_process(PITCH_DOWN);
+                        ATcommand_process(PITCH_UP);
                     }
                     break;
 
@@ -261,15 +254,27 @@ void*  kbd_thread_drone_controller(void * args)
             }
         }
 
+        /* Manage navdata errors */
+        if(ATcommand_navdataError() == TRUE)
+        {
+            printf("\n\rNavdata error");
+            if(ATcommand_FlyingState() == TRUE)
+            {
+                printf("\n\rEmergency landing ...");
+                /* Landing */
+                ATcommand_process(LANDING);
+                /* Wait the landing state */
+                while(ATcommand_FlyingState() != FALSE);
+            }
+        }
+
         /* Empty the output buffer */
         fflush(stdout);
     }
-    while(key_selected != CTRL_C_KEY);
-
-    printf("\n\rEnd");
+    while((key_selected != CTRL_C_KEY) && (ATcommand_navdataError() == FALSE));
 
     /* Disable the raw mode */
     keyboard_rawMode(FALSE);
 
+    return NULL;
 }
-

@@ -26,9 +26,15 @@
 /*                                                                           */
 /* ------------------------------------------------------------------------- */
 
-#include"periodic.h"
+#include "periodic.h"
 
-
+/**
+ * \fn static int make_periodic(int unsigned period, struct periodic_info *info);
+ * \brief Fonction de création de timer pour rendre un thread POSIX périodique
+ *
+ * \param period : periodre en ms, structure periodic_info 
+ * \return état de la création du timer
+ */
 int make_periodic (int unsigned period, struct periodic_info *info)
 {
 	static int next_sig;
@@ -56,7 +62,7 @@ int make_periodic (int unsigned period, struct periodic_info *info)
 	sigev.sigev_notify = SIGEV_SIGNAL;
 	sigev.sigev_signo = info->sig;
 	sigev.sigev_value.sival_ptr = (void *) &timer_id;
-	ret = timer_create (CLOCK_MONOTONIC, &sigev, &timer_id);
+	ret = timer_create(CLOCK_MONOTONIC, &sigev, &timer_id);
 	if (ret == -1)
 		return ret;
 
@@ -67,12 +73,23 @@ int make_periodic (int unsigned period, struct periodic_info *info)
 	itval.it_interval.tv_nsec = ns;
 	itval.it_value.tv_sec = sec;
 	itval.it_value.tv_nsec = ns;
-	ret = timer_settime (timer_id, 0, &itval, NULL);
+	ret = timer_settime(timer_id, 0, &itval, NULL);
 	return ret;
 }
 
+/**
+ * \fn static void wait_period(struct periodic_info *info);
+ * \brief Fonction d'attente pour reboucler la prochaine fois après la période (à mettre dans la while(1) du thread)
+ *
+ * \param period : structure periodic_info 
+ * 
+ */
 void wait_period (struct periodic_info *info)
 {
 	int sig;
-	sigwait (&(info->alarm_sig), &sig);
+	if(sigwait(&(info->alarm_sig), &sig) != 0)
+	{
+		printf("\n\rError number: %d", sig);
+		perror("\n\rSigwait: ");
+	}
 }

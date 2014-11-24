@@ -16,6 +16,7 @@
 #include <malloc.h>
 #include "communication.h"
 #include "periodic.h"
+
 /**********************************************************************************/
 /* Constants													      			  */
 /**********************************************************************************/
@@ -195,6 +196,7 @@ void 	ATcommand_process(T_ATorders I_order);
 /* Getters */
 T_bool 	ATcommand_FlyingState(void);
 T_bool 	ATcommand_enoughBattery(void);
+T_bool 	ATcommand_navdataError(void);
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/

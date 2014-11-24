@@ -48,7 +48,6 @@ void* calcul_order_thread(void* arg)
 
         /* Wait until the next period is achieved */
         wait_period (&info);
-
     }
 
     printf("\n\rEnding calcul_order_thread");
