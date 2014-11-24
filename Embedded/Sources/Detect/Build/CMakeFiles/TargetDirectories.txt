@@ -1,1 +1,0 @@
-/home/tilak/ARDRONE/ARDrone_TicTacToe/Embedded/Sources/Detect/Build/CMakeFiles/Detect.dir

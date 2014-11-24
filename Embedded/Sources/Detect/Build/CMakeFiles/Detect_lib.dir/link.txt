@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/Detect_lib.dir/src/detect_tag.cpp.o  -o Detect_lib -rdynamic 

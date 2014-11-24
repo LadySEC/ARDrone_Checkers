@@ -1,2 +1,0 @@
-/usr/bin/ar cr libDetect.a  CMakeFiles/Detect.dir/src/detect_tag.cpp.o
-/usr/bin/ranlib libDetect.a
