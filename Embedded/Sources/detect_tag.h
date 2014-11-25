@@ -1,18 +1,22 @@
+// Version de test 25 Nov
+// Le detect est un cercle 
+
+
+
 #ifndef DETECT_TAG_H
 #define DETECT_TAG_H
 
+#include "opencv2/opencv.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
+//#include "opencv2/video/video.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv/cv.h>
-
 #include <cmath>
-#include <math.h>
 #include <iostream>
 #include <stdio.h>
-
+#include <unistd.h>
 #include "detect_tag_wrapper.h"
-
 using namespace std;
 using namespace cv;
 
@@ -24,14 +28,11 @@ using namespace cv;
 };*/
 
 // @function detect
+Position detect();
 
-Position detect(std::string i_color, std::string i_form);
+Position detect_wo_flux(Mat i_frame);
 
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
-static  double angle(Point pt1, Point pt2, Point pt0) ;
-
+static double angle(Point pt1, Point pt2, Point pt0) ;
 
 #endif // DETECT_TAG_H
-
-
-  
