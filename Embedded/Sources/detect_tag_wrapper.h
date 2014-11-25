@@ -1,7 +1,6 @@
 #ifndef DETECT_TAG_WRAPPER_H
 #define DETECT_TAG_WRAPPER_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

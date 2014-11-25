@@ -15,19 +15,22 @@
 #include <cmath>
 #include <iostream>
 #include <stdio.h>
-
+#include <unistd.h>
+#include "detect_tag_wrapper.h"
 using namespace std;
 using namespace cv;
 
-struct Position
+/*struct Position
 {
     int abs ;
     int ord ;
     int found ;
-};
+};*/
 
 // @function detect
-Position detect( Mat frame);
+Position detect();
+
+Position detect_wo_flux(Mat i_frame);
 
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
 static double angle(Point pt1, Point pt2, Point pt0) ;

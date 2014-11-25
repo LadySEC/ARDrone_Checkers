@@ -1,4 +1,4 @@
-#include "detect_tag.hpp"
+#include "detect_tag.h"
 #include "detect_tag_wrapper.h"
 
 extern "C" {
@@ -8,6 +8,6 @@ extern "C" {
 		std::string color = i_color;
 		std::string form = i_form;
 
-		return detect(color, form);
+		return detect();
         }
 } 

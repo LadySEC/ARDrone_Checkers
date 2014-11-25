@@ -19,6 +19,7 @@
 /* Global variables 															  */
 /**********************************************************************************/
 
+Position position_tag;
 /**********************************************************************************/
 /* Procedures														      		  */
 /**********************************************************************************/
@@ -46,9 +47,9 @@ void* calcul_tag_thread(void* arg)
     while(1)
     {
 
+        position_tag = detect_wrapper("c","c");
         /* Wait until the next period is achieved */
         wait_period (&info);
-
     }
 
     printf("\n\rEnding calcul_order_thread");
