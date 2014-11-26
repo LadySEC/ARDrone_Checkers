@@ -107,13 +107,44 @@ void* supervisor_thread_interact(void* arg)
 
             if (strcmp(G_orders, "takeoff") == 0) 
             {
-                ATcommand_process(TAKEOFF);
+                if(ATcommand_enoughBattery() == TRUE)
+                {
+                    if(ATcommand_FlyingState() == FALSE)
+                    {
+                        /* Flat trim */
+                        ATcommand_process(TRIM);
+                        sleep(2u);
+                        /* Take off */
+                        ATcommand_process(TAKEOFF);
+                        /* Wait the flying state */
+                        while(ATcommand_FlyingState() != TRUE);
+                    }
+                }
+                else
+                {
+                    /* Not enough battery to takeoff */
+                    ATcommand_process(CONFIGURATION_IDS);
+                    ATcommand_process(LED_ANIMATION);
+                }
             }
 
             if (strcmp(G_orders, "land") == 0) 
             {
-                ATcommand_process(LANDING);
+                if(ATcommand_FlyingState() == TRUE)
+                {
+                    /* Landing */
+                    ATcommand_process(LANDING);
+                    /* Wait the landing state */
+                    while(ATcommand_FlyingState() != FALSE);
+                }
             }
+
+            if (strcmp(G_orders, "begin_m") == 0) 
+            {
+                moveDelay(PITCH_DOWN,500000);
+                moveDelay(ROLL_LEFT,1500000);
+            }
+
         }
 
         /* Wait */
