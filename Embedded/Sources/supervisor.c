@@ -59,6 +59,27 @@ void supervisor_close(void)
     socket_close(G_socket_SPVSR);
 }
 
+void supervisor_readData(void)
+{
+
+}
+
+void supervisor_sendData(T_TCP_DATA I_data)
+{
+    char frame[256u];
+
+    /* Mnémonique */
+    frame[0u] = I_data;
+    switch(I_data)
+    {
+        case NAVDATA_TCP:
+            frame[1u] = 1u;
+            memcpy(&frame[2u], &ATcommand_navdata()->ctrl_state, 4u);
+            socket_sendBytes(G_socket_SPVSR, C_SUPERVISOR_IP, SPVSR_CLIENT_PORT, frame, 6u);
+            break;
+    }
+}
+
 /**********************************************************************************/
 /* Threads														      		      */
 /**********************************************************************************/

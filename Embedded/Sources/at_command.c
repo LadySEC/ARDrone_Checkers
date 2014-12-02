@@ -145,10 +145,10 @@ void ATcommand_close(void)
  * \param 	I_array		32-bit arguments array
  * \param 	I_strings	String arguments array
  */
-void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
+void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
 	/* Reset the frame */
-	memset((char *) O_frame, 0, sizeof(O_frame));
+	memset((char *) O_frame, 0, I_frameSize);
 	/* Generate correct AT command */
 	switch(I_command)
 	{
@@ -219,23 +219,23 @@ void ATcommand_process(T_ATorders I_order)
 	{
 		case TRIM:
 			sendToBuffer 			= 0u;
-			ATcommand_generate(frame, FTRIM, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), FTRIM, ATarguments, ATstrings);
 			break;
 
 		case TAKEOFF:
 			ATarguments[0u].integer = TAKEOFF_COMMAND;
-			ATcommand_generate(frame, REF, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), REF, ATarguments, ATstrings);
 			break;
 
 		case LANDING:
 			ATarguments[0u].integer = LANDING_COMMAND;
-			ATcommand_generate(frame, REF, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), REF, ATarguments, ATstrings);
 			break;
 
 		case EMERGENCY:
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = EMERGENCY_COMMAND;
-			ATcommand_generate(frame, REF, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), REF, ATarguments, ATstrings);
 			break;
 
 		case HOVERING:
@@ -251,7 +251,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;
 
 		case YAW_RIGHT:
@@ -262,7 +262,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].floating = YAW_CONSTANT;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case YAW_LEFT:
@@ -273,7 +273,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].floating = -YAW_CONSTANT;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case ROLL_RIGHT:
@@ -284,7 +284,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case ROLL_LEFT:
@@ -295,7 +295,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case PITCH_UP:
@@ -306,7 +306,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case PITCH_DOWN:
@@ -317,7 +317,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case VERTICAL_UP:
@@ -328,7 +328,7 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;	
 
 		case VERTICAL_DOWN:
@@ -339,14 +339,14 @@ void ATcommand_process(T_ATorders I_order)
 			ATarguments[4u].integer = 0u;
 			ATarguments[5u].integer = 0u;
 			ATarguments[6u].integer = 0u;
-			ATcommand_generate(frame, PCMD_MAG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
 			break;
 
 		case INIT_NAVDATA:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "general:navdata_demo");
 			strcpy(ATstrings[1u], "TRUE");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case CONFIGURATION_IDS:
@@ -354,20 +354,20 @@ void ATcommand_process(T_ATorders I_order)
 			strcpy(ATstrings[0u], C_SESSION_ID);
 			strcpy(ATstrings[1u], C_PROFILE_ID);
 			strcpy(ATstrings[2u], C_APPLICATION_ID);
-			ATcommand_generate(frame, CONFIG_IDS, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG_IDS, ATarguments, ATstrings);
 			break;
 
 		case LED_ANIMATION:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "leds:leds_anim");
 			strcpy(ATstrings[1u], "3,1073741824,2");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case ACK_COMMAND:
 			sendToBuffer 			= 0u;
 			ATarguments[0u].integer = 0u;
-			ATcommand_generate(frame, CTRL, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CTRL, ATarguments, ATstrings);
 			break;
 
 		case NAVDATA_REQUEST:
@@ -381,70 +381,70 @@ void ATcommand_process(T_ATorders I_order)
 
 		case RESET_WATCHDOG:
 			sendToBuffer 			= 0u;
-			ATcommand_generate(frame, COMWDG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), COMWDG, ATarguments, ATstrings);
 			break;
 
 		case REMOVE_CONFIGS:
 			sendToBuffer 			= 0;
 			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], "-all");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case CHANGE_SESSION:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:session_id");
 			strcpy(ATstrings[1u], C_SESSION_ID);
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case CHANGE_PROFILE:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:profile_id");
 			strcpy(ATstrings[1u], C_PROFILE_ID);
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case CHANGE_APP:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "custom:application_id");
 			strcpy(ATstrings[1u], C_APPLICATION_ID);
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);		
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);		
 			break;
 
 		case CHANGE_SSID:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "network:ssid_single_player");
 			strcpy(ATstrings[1u], "Ardrone2_Lady");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case ENABLE_VIDEO:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "video_enable");
 			strcpy(ATstrings[1u], "TRUE");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case DISABLE_VIDEO:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "video_enable");
 			strcpy(ATstrings[1u], "FALSE");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case ENABLE_VISION:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "vision_enable");
 			strcpy(ATstrings[1u], "TRUE");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
 		case DISABLE_VISION:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "vision_enable");
 			strcpy(ATstrings[1u], "FALSE");
-			ATcommand_generate(frame, CONFIG, ATarguments, ATstrings);
+			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 	}
 
@@ -579,6 +579,17 @@ static void displayNavdata(T_navdata_display I_display)
 			break;
 	}
 #endif
+}
+
+/**
+ * \fn 		T_navdata_demo* ATcommand_navdata(void)
+ * \brief 	Returns the current navdata
+ *
+ * \Return 	Navdata
+ */
+T_navdata_demo* ATcommand_navdata(void)
+{
+	return(&G_navdata);
 }
 
 /**********************************************************************************/

@@ -189,19 +189,20 @@ typedef enum
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-T_error ATcommand_initiate(void);
-void 	ATcommand_close(void);
-void 	ATcommand_process(T_ATorders I_order);
-void 	moveDelay(T_ATorders I_order, int I_us);
+T_error 		ATcommand_initiate(void);
+void 			ATcommand_close(void);
+void 			ATcommand_process(T_ATorders I_order);
+void 			moveDelay(T_ATorders I_order, int I_us);
 
 /* Getters */
-T_bool 	ATcommand_FlyingState(void);
-T_bool 	ATcommand_enoughBattery(void);
-T_bool 	ATcommand_navdataError(void);
+T_bool 			ATcommand_FlyingState(void);
+T_bool 			ATcommand_enoughBattery(void);
+T_bool 			ATcommand_navdataError(void);
+T_navdata_demo* ATcommand_navdata(void);
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
-void* 	ATcommand_thread_movements(void* arg);
+void* 			ATcommand_thread_movements(void* arg);
 
 
 #endif //! _AT_COMMAND_H_

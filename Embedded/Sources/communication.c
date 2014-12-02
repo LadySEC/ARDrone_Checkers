@@ -204,8 +204,8 @@ T_error socket_sendBytes(int I_socket_id, const char* I_ip_addr_dest, int I_port
     		strcpy(&frame_sent[index_frame], byte_ascii);
     		index_frame = strlen(frame_sent);
     	}
-	//--------------------------------------------------------------------------------------------------------
-    	//printf("\n\rBytes sent: %s", frame_sent);
+	
+		printf("\n\rBytes sent: %s", frame_sent);
     }
 
     return(error);
