@@ -1,0 +1,57 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:C:/MinGW/bin/mingw32-make.exe "cmTryCompileExec4135798322/fast"
+C:/MinGW/bin/mingw32-make.exe -f CMakeFiles\cmTryCompileExec4135798322.dir\build.make CMakeFiles/cmTryCompileExec4135798322.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp'
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -E cmake_progress_report C:\Users\Clement\Documents\Formation\INSA\5AESEC\ProjetLady\Git\ARDrone_Checkers\Embedded\Build\CMakeFiles\CMakeTmp\CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec4135798322.dir/CheckSymbolExists.c.o
+C:\CodeBench\bin\arm-none-linux-gnueabi-gcc.exe    -o CMakeFiles\cmTryCompileExec4135798322.dir\CheckSymbolExists.c.o   -c C:\Users\Clement\Documents\Formation\INSA\5AESEC\ProjetLady\Git\ARDrone_Checkers\Embedded\Build\CMakeFiles\CMakeTmp\CheckSymbolExists.c
+Linking C executable cmTryCompileExec4135798322
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTryCompileExec4135798322.dir\link.txt --verbose=1
+C:\CodeBench\bin\arm-none-linux-gnueabi-gcc.exe       CMakeFiles/cmTryCompileExec4135798322.dir/CheckSymbolExists.c.o  -o cmTryCompileExec4135798322 -rdynamic 
+CMakeFiles/cmTryCompileExec4135798322.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x38): undefined reference to `pthread_create'
+collect2.exe: error: ld returned 1 exit status
+CMakeFiles\cmTryCompileExec4135798322.dir\build.make:90: recipe for target 'cmTryCompileExec4135798322' failed
+mingw32-make.exe[1]: *** [cmTryCompileExec4135798322] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp'
+Makefile:116: recipe for target 'cmTryCompileExec4135798322/fast' failed
+mingw32-make.exe: *** [cmTryCompileExec4135798322/fast] Error 2
+
+File C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp
+
+Run Build Command:C:/MinGW/bin/mingw32-make.exe "cmTryCompileExec3742127597/fast"
+C:/MinGW/bin/mingw32-make.exe -f CMakeFiles\cmTryCompileExec3742127597.dir\build.make CMakeFiles/cmTryCompileExec3742127597.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp'
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -E cmake_progress_report C:\Users\Clement\Documents\Formation\INSA\5AESEC\ProjetLady\Git\ARDrone_Checkers\Embedded\Build\CMakeFiles\CMakeTmp\CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3742127597.dir/CheckFunctionExists.c.o
+C:\CodeBench\bin\arm-none-linux-gnueabi-gcc.exe   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles\cmTryCompileExec3742127597.dir\CheckFunctionExists.c.o   -c "C:\Program Files (x86)\CMake 2.8\share\cmake-2.8\Modules\CheckFunctionExists.c"
+Linking C executable cmTryCompileExec3742127597
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTryCompileExec3742127597.dir\link.txt --verbose=1
+C:\CodeBench\bin\arm-none-linux-gnueabi-gcc.exe   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec3742127597.dir/CheckFunctionExists.c.o  -o cmTryCompileExec3742127597 -rdynamic -lpthreads 
+c:/codebench/bin/../lib/gcc/arm-none-linux-gnueabi/4.8.3/../../../../arm-none-linux-gnueabi/bin/ld.exe: cannot find -lpthreads
+collect2.exe: error: ld returned 1 exit status
+CMakeFiles\cmTryCompileExec3742127597.dir\build.make:90: recipe for target 'cmTryCompileExec3742127597' failed
+mingw32-make.exe[1]: *** [cmTryCompileExec3742127597] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Clement/Documents/Formation/INSA/5AESEC/ProjetLady/Git/ARDrone_Checkers/Embedded/Build/CMakeFiles/CMakeTmp'
+Makefile:116: recipe for target 'cmTryCompileExec3742127597/fast' failed
+mingw32-make.exe: *** [cmTryCompileExec3742127597/fast] Error 2
+
+

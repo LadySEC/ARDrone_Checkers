@@ -581,6 +581,17 @@ static void displayNavdata(T_navdata_display I_display)
 #endif
 }
 
+/**
+ * \fn 		T_navdata_demo* ATcommand_navdata(void)
+ * \brief 	Returns the current navdata
+ *
+ * \Return 	Navdata
+ */
+T_navdata_demo* ATcommand_navdata(void)
+{
+	return(&G_navdata);
+}
+
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
