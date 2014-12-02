@@ -16,15 +16,20 @@ Position detect_wo_flux(Mat i_frame)
 
 
     // Use Canny instead of threshold to catch squares with gradient shading
-    Mat bw ;
+    //Mat bw ;
     //Canny(i_frame, bw, 0,50,5) ;
 
-    Canny(i_frame, bw, 0,50,5);
+    //Canny(i_frame, bw, 0,50,5);
     //Find contours
-    vector<vector<Point> > contours;
+    //bw = i_frame;
+   threshold(i_frame,i_frame,127,255,THRESH_BINARY_INV); 
+        vector<vector<Point> > contours;
 
-    Mat bw_clone = bw.clone() ;
-    findContours(bw_clone, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+    //Mat frame_clone = i_frame.clone() ;
+    //cvtColor( i_frame, bw, CV_BGR2GRAY );
+    //threshold(bw,bw,127,255,ADAPTIVE_THRESH_GAUSSIAN_C);
+    findContours(i_frame, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
     vector<Point> approx;
 
 
@@ -93,8 +98,8 @@ int i,j;
 Position pos;
 
     //-- 1. Read the video stream
-    int m_ImgHeight = 240;
-    int m_ImgWidth = 320;
+    int m_ImgHeight = 480;
+    int m_ImgWidth = 640;
 
     Mat Img_Source_YUV(m_ImgHeight,m_ImgWidth,CV_8UC2);
     Mat Img_Destination_Bgr(m_ImgHeight,m_ImgWidth,CV_8UC3);
@@ -103,14 +108,14 @@ Position pos;
     uchar* pYUVPixels;
     int Img_Size= (m_ImgWidth * m_ImgHeight*2);
     pYUVPixels = new uchar[Img_Size];
-    printf("Demarrage Test Detection\n");
+    printf("Demarrage Test Detection\r\n");
     //while (1)
     //{
 
-        f=fopen("/tmp/video2_buffer","rb");
+        f=fopen("/tmp/video1_buffer","rb");
         if ( !f )
         {
-            printf("fopen error\n");
+            printf("fopen error\r\n");
         }
 
 
@@ -120,7 +125,7 @@ Position pos;
         // Suppression du ready pour avoir une nouvelle photo
 
         do{
-            i=remove("/tmp/video2_ready");
+            i=remove("/tmp/video1_ready");
         }while(i!=0);
 
 
@@ -134,10 +139,10 @@ Position pos;
         pos = detect_wo_flux( Img_Destination_Bgr);
         //printf("------------Apres detect\n");
         if (pos.found){
-            printf(  "Position Tag  x = %d ; y = %d\n ",  pos.abs, pos.ord) ;
+            printf(  "Position Tag  x = %d ; y = %d\r\n ",  pos.abs, pos.ord) ;
         }
         else {
-            printf("Pas encore trouve\n");
+            printf("Pas encore trouve\r\n");
         }
       //  usleep(200000);
     //}
