@@ -14,6 +14,7 @@
 #define LOG_INFO		3	// Information mode, used to log interesting actions and events
 #define	LOG_WARN		2	// Warning mode, used to log unexpected events or small problems
 #define LOG_ERROR		1	// Error mode, used to log errors and fatal errors
+#define LOG_DEFAULT		0	// Default value, used only when no value is passed
 
 #define LOG_ERR_OK		0x0 // No error
 #define LOG_ERR_INIT	0x1	// Error, log library already initialized
