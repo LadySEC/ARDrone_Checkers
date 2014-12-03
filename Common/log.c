@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <string.h>
 #include "log.h"
  
 #define	LOG_BUFF_SIZE	64
