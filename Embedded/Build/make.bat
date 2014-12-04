@@ -1,2 +1,3 @@
 @echo off
-cmake -G "MinGW Makefiles" . && mingw32-make
+cmake -G "MinGW Makefiles" .
+mingw32-make
