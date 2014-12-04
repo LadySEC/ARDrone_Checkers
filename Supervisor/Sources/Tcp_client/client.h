@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QTcpSocket>
 #include <QDebug>
+#include <iostream>
+#include "global.h"
 
 class client: public QObject
 {

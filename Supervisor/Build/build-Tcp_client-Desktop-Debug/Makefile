@@ -287,7 +287,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/Tcp_client1.0.0 || mkdir -p .tmp/Tcp_client1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.h ../../Sources/Tcp_client/client.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/client.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.h ../../Sources/Tcp_client/client.h ../../Sources/Tcp_client/global.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/client.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
 
 
 clean:compiler_clean 
@@ -436,6 +436,7 @@ moc_mainwindow.cpp: /usr/include/qt5/QtWidgets/QMainWindow \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
 		/usr/include/qt5/QtCore/QDebug \
+		../../Sources/Tcp_client/global.h \
 		../../Sources/Tcp_client/mainwindow.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../../Sources/Tcp_client/mainwindow.h -o moc_mainwindow.cpp
 
@@ -557,6 +558,7 @@ moc_client.cpp: /usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
 		/usr/include/qt5/QtCore/QDebug \
+		../../Sources/Tcp_client/global.h \
 		../../Sources/Tcp_client/client.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../../Sources/Tcp_client/client.h -o moc_client.cpp
 
@@ -702,6 +704,7 @@ main.o: ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.h 
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
 		/usr/include/qt5/QtCore/QDebug \
+		../../Sources/Tcp_client/global.h \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
 		/usr/include/qt5/QtWidgets/qframe.h \
@@ -835,7 +838,55 @@ mainwindow.o: ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/m
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
 		/usr/include/qt5/QtCore/QDebug \
-		ui_mainwindow.h
+		../../Sources/Tcp_client/global.h \
+		ui_mainwindow.h \
+		/usr/include/qt5/QtCore/QVariant \
+		/usr/include/qt5/QtWidgets/QAction \
+		/usr/include/qt5/QtWidgets/qaction.h \
+		/usr/include/qt5/QtWidgets/qactiongroup.h \
+		/usr/include/qt5/QtWidgets/QButtonGroup \
+		/usr/include/qt5/QtWidgets/qbuttongroup.h \
+		/usr/include/qt5/QtWidgets/QCheckBox \
+		/usr/include/qt5/QtWidgets/qcheckbox.h \
+		/usr/include/qt5/QtWidgets/qabstractbutton.h \
+		/usr/include/qt5/QtWidgets/QFrame \
+		/usr/include/qt5/QtWidgets/qframe.h \
+		/usr/include/qt5/QtWidgets/QGridLayout \
+		/usr/include/qt5/QtWidgets/qgridlayout.h \
+		/usr/include/qt5/QtWidgets/qlayout.h \
+		/usr/include/qt5/QtWidgets/qlayoutitem.h \
+		/usr/include/qt5/QtWidgets/qboxlayout.h \
+		/usr/include/qt5/QtWidgets/QHBoxLayout \
+		/usr/include/qt5/QtWidgets/QHeaderView \
+		/usr/include/qt5/QtWidgets/qheaderview.h \
+		/usr/include/qt5/QtWidgets/qabstractitemview.h \
+		/usr/include/qt5/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt5/QtCore/qabstractitemmodel.h \
+		/usr/include/qt5/QtCore/qitemselectionmodel.h \
+		/usr/include/qt5/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt5/QtWidgets/qstyleoption.h \
+		/usr/include/qt5/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt5/QtGui/qvalidator.h \
+		/usr/include/qt5/QtCore/qregularexpression.h \
+		/usr/include/qt5/QtWidgets/qslider.h \
+		/usr/include/qt5/QtWidgets/qabstractslider.h \
+		/usr/include/qt5/QtWidgets/qstyle.h \
+		/usr/include/qt5/QtWidgets/qtabbar.h \
+		/usr/include/qt5/QtWidgets/qrubberband.h \
+		/usr/include/qt5/QtWidgets/QLabel \
+		/usr/include/qt5/QtWidgets/qlabel.h \
+		/usr/include/qt5/QtWidgets/QMenuBar \
+		/usr/include/qt5/QtWidgets/qmenubar.h \
+		/usr/include/qt5/QtWidgets/qmenu.h \
+		/usr/include/qt5/QtWidgets/QPushButton \
+		/usr/include/qt5/QtWidgets/qpushbutton.h \
+		/usr/include/qt5/QtWidgets/QSpacerItem \
+		/usr/include/qt5/QtWidgets/QStatusBar \
+		/usr/include/qt5/QtWidgets/qstatusbar.h \
+		/usr/include/qt5/QtWidgets/QToolBar \
+		/usr/include/qt5/QtWidgets/qtoolbar.h \
+		/usr/include/qt5/QtWidgets/QVBoxLayout \
+		/usr/include/qt5/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../Sources/Tcp_client/mainwindow.cpp
 
 client.o: ../../Sources/Tcp_client/client.cpp ../../Sources/Tcp_client/client.h \
@@ -956,7 +1007,8 @@ client.o: ../../Sources/Tcp_client/client.cpp ../../Sources/Tcp_client/client.h 
 		/usr/include/qt5/QtNetwork/QTcpSocket \
 		/usr/include/qt5/QtNetwork/qtcpsocket.h \
 		/usr/include/qt5/QtNetwork/qabstractsocket.h \
-		/usr/include/qt5/QtCore/QDebug
+		/usr/include/qt5/QtCore/QDebug \
+		../../Sources/Tcp_client/global.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o client.o ../../Sources/Tcp_client/client.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

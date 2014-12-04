@@ -3,8 +3,8 @@
 
 client::client()
 {
-    port=4000; // choix arbitraire (>1024)
-    IP="192.168.1.1" ;
+    port = NUM_PORT_CLIENT; // choix arbitraire (>1024)
+    IP = ADDR_IP_CLIENT  ;
     QObject::connect(&soc,SIGNAL(connected()),this,SLOT(connexion_OK()));
     // signal émis lors de la connexion au serveur
     QObject::connect(&soc, SIGNAL(disconnected()), this, SLOT(connexion_stopped()));
@@ -40,6 +40,8 @@ void client::lecture()
     while(soc.canReadLine()) // tant qu'il y a quelque chose à lire dans la socket
     {
         ligne = soc.readLine();     // on lit une ligne
+        qDebug() << ligne ;
+        std::cout << ligne.toStdString() << endl ;
         emit vers_IHM_texte(ligne); // on envoie à l'IHM
     }
 }
