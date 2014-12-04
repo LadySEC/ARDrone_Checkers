@@ -22,10 +22,14 @@
 /**********************************************************************************/
 /* Temporisations */
 #define _CALCUL_PERIOD          (unsigned int)7000000
-#define _PIXEL_X_MAX 		1280
-#define _PIXEL_Y_MIN		720
 #define _PIXEL_X_MIDDLE		640
 #define _PIXEL_Y_MIDDLE		360
+
+#define _X_TOL_MAX		680
+#define _X_TOL_MIN		600
+
+#define _Y_TOL_MAX 		360
+#define _Y_TOL_MIN		280
 /**********************************************************************************/
 /* Types					      				  */
 /**********************************************************************************/

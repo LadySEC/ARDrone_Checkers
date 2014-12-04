@@ -35,4 +35,10 @@ Position detect_wo_flux(Mat i_frame);
 // Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
 static double angle(Point pt1, Point pt2, Point pt0) ;
 
+
+//--- modif hugo 04/12/2015 ------------------------------------
+void resetReper_x_y_last();
+//--- modif hugo 04/12/2015 ------------------------------------
+
+
 #endif // DETECT_TAG_H

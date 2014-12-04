@@ -55,65 +55,79 @@ void* calcul_order_thread(void* arg)
 	
 			if(cpt_mission == 0)
 			{
-				printf("\n\r\rMISSION - Beggin the mission");
+				printf("\n\r\r----- MISSION - Beggin the mission");
 			}
 			else
 			{
 				/*If the drone is in flight phase*/
-				if(ATcommand_FlyingState() == TRUE)
-				{
-					printf("\n\r\rMISSION - Seek the tag");
+				//if(ATcommand_FlyingState() == TRUE)
+				//{
 					//pos_tag = detect_wrapper("MOMO","triangle");
 					x 			= position_tag.abs;
 					y 			= position_tag.ord;
 					found_ou_pas_found 	= position_tag.found;
-					
+					printf("\n\r\r----- MISSION - found = %d, x = %d, y=%d",found_ou_pas_found,x,y);
 					if(found_ou_pas_found == 1)
 					{
-						if(x < _PIXEL_X_MIDDLE)
+						//Si je suis au dessus du tag			
+						if((x < _X_TOL_MAX && x > _X_TOL_MIN) && (y < _Y_TOL_MAX && y > _Y_TOL_MIN))
 						{
-							if(y < _PIXEL_Y_MIDDLE)
+							stop_mission();
+							printf("\n\r\r----- MISSION - ****** END ****** LANDING");
+						}
+						//Si je ne suis pas au dessus du tag
+						else
+						{
+							if(x < _PIXEL_X_MIDDLE)
 							{
-								//En bas à gauche
-								printf("\n\r\rMISSION - PITCH_UP");
-								printf("\n\r\rMISSION - ROLL_LEFT");
+								if(y < _PIXEL_Y_MIDDLE)
+								{
+									//En bas à gauche
+									printf("\n\r\r----- MISSION - je vais en bas/droite");
+								}
+								else
+								{
+									//En haut à gauche
+									printf("\n\r\rMISSION - je vais en haut/droite");	
+								}
 							}
 							else
-							{
-								//En haut à gauche
-								printf("\n\r\rMISSION - PITCH_DOWN");
-								printf("\n\r\rMISSION - ROLL_LEFT");	
+							{	
+								if(y < _PIXEL_Y_MIDDLE)
+								{
+									//En En bas à  droite
+									printf("\n\r\r----- MISSION - je vais en bas/gauche");
+								}
+								else
+								{
+									//En haut à droite
+									printf("\n\r\r----- MISSION - je vais en haut/gauche");	
+								}	
 							}
 						}
-						else
-						{	if(y < _PIXEL_Y_MIDDLE)
-							{
-								//En En bas à  droite
-								printf("\n\r\rMISSION - PITCH_UP");
-								printf("\n\r\rMISSION - ROLL_RIGHT");
-							}
-							else
-							{
-								//En haut à droite
-								printf("\n\r\rMISSION - PITCH_DOWN");
-								printf("\n\r\rMISSION - ROLL_WRITE");	
-							}	
-						}				
+						//voir dans detect_tag.h : remet à 0 cette variable pour ne pas diverger
+						reset_x_y_last();					
 					}
 					else
 					{
-						printf("\n\r\rMISSION - HOVERING");	
+						printf("\n\r\r----- MISSION - HOVERING");	
 					}
-				}
+				/*}
 				else
 				{
 					printf("\n\r\rMISSION - You have to take off !");					
-				}
+				}*/
 			}
-			
+			cpt_mission ++;	
+		}
+		else
+		{
+			printf("\n\r\r----- MISSION - aucune mission");
+			cpt_mission = 0;
+			reset_x_y_last();	
 		}	
-		cpt_mission ++;
-		printf("\n\r\rMISSION - cpt = %d",cpt_mission);
+		
+		printf("\n\r\r----- MISSION - cpt = %d\n",cpt_mission);
 
         	/* Wait until the next period is achieved */
         	wait_period (&info);

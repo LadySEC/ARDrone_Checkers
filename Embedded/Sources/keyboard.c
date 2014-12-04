@@ -313,3 +313,7 @@ void*  kbd_thread_drone_controller(void * args)
 T_bool get_mission(void){
     return G_triggered_mission;
 }
+
+void stop_mission(void){
+    G_triggered_mission = FALSE;
+}

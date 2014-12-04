@@ -1,5 +1,17 @@
 #include "detect_tag.h"
 
+
+//--- modif hugo 04/12/2015 ------------------------------------
+int x_last_found 	= 0;
+int y_last_found 	= 0;
+int repere_x_y_last 	= 0;
+
+void resetReper_x_y_last(){
+    repere_x_y_last 	= 0;
+}
+//--- modif hugo 04/12/2015 ------------------------------------
+
+
 // @function detectAndDisplay
 Position detect_wo_flux(Mat i_frame)
 {
@@ -138,11 +150,32 @@ Position pos;
         //printf("Avant detect\n");
         pos = detect_wo_flux( Img_Destination_Bgr);
         //printf("------------Apres detect\n");
+
+
         if (pos.found){
-            printf(  "Position Tag  x = %d ; y = %d\r\n ",  pos.abs, pos.ord) ;
+            printf(  "Position Tag:  x = %d ; y = %d\r\n ",  pos.abs, pos.ord) ;
+
+    	//--- modif hugo 04/12/2015 ------------------------------------
+	    x_last_found = pos.abs;
+    	    y_last_found = pos.ord;
+	    repere_x_y_last ++;
+	    // ! ! ! ! repere_x_y_last doit être remise à 0 lorsqu'elle est consommée par "calcul_order.c" ! ! ! !
+    	//--- modif hugo 04/12/2015 ------------------------------------
+
         }
         else {
             printf("Pas encore trouve\r\n");
+
+    	//--- modif hugo 04/12/2015 ------------------------------------
+	    if(repere_x_y_last > 0)
+            {
+	       pos.abs 		= x_last_found;
+    	       pos.ord 		= y_last_found;
+	       pos.found 	= 1;
+	       printf(  "Position Tag (--LAST FOUND -%d--): x = %d ; y = %d\r\n ",repere_x_y_last, pos.abs, pos.ord) ;
+            }
+    	//--- modif hugo 04/12/2015 ------------------------------------
+
         }
       //  usleep(200000);
     //}

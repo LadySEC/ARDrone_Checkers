@@ -10,4 +10,10 @@ extern "C" {
 
 		return detect();
         }
+
+//--- modif hugo 04/12/2015 ------------------------------------
+	void reset_x_y_last(){
+		resetReper_x_y_last();
+	}
+//--- modif hugo 04/12/2015 ------------------------------------
 } 

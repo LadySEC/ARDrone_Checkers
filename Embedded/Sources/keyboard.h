@@ -52,4 +52,5 @@ int 					keyboard_hit(void);
 unsigned char 	       			keyboard_getchar(void);
 void*  					kbd_thread_drone_controller(void * args);
 T_bool					get_mission(void);
+void 					stop_mission(void);
 #endif //! _KEYBOARD_H_
