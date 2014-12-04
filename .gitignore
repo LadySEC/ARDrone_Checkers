@@ -1,0 +1,6 @@
+CMD.lnk
+Embedded/Build/CMakeCache.txt
+Embedded/Build/CMakeFiles/*
+Embedded/Build/tictactoe
+Embedded/Build/Makefile
+Embedded/Build/cmake_install.cmake

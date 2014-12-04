@@ -1,0 +1,1 @@
+gcc -Wall test_log.c ../log.c -o test_log.exe

@@ -22,8 +22,8 @@ Position detect_wo_flux(Mat i_frame)
     //Canny(i_frame, bw, 0,50,5);
     //Find contours
     //bw = i_frame;
-   threshold(i_frame,i_frame,127,255,THRESH_BINARY_INV); 
-        vector<vector<Point> > contours;
+	threshold(i_frame,i_frame,127,255,THRESH_BINARY_INV); 
+	vector<vector<Point> > contours;
 
 
     //Mat frame_clone = i_frame.clone() ;
@@ -98,8 +98,8 @@ int i,j;
 Position pos;
 
     //-- 1. Read the video stream
-    int m_ImgHeight = 480;
-    int m_ImgWidth = 640;
+    int m_ImgHeight = 720;
+    int m_ImgWidth = 1280;
 
     Mat Img_Source_YUV(m_ImgHeight,m_ImgWidth,CV_8UC2);
     Mat Img_Destination_Bgr(m_ImgHeight,m_ImgWidth,CV_8UC3);
@@ -160,3 +160,13 @@ static double angle(Point pt1, Point pt2, Point pt0)
     double dy2 = pt2.y - pt0.y;
     return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
 }
+
+
+
+/**
+ * \fn 		
+ * \brief 	Convert a RGB threshold in a YUV format
+ *
+ * \return 	ERROR: Something went wrong during the process, NO_ERROR: Success
+ */
+
