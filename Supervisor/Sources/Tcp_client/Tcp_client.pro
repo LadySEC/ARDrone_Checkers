@@ -19,6 +19,7 @@ SOURCES += main.cpp\
         client.cpp
 
 HEADERS  += mainwindow.h \
-            client.h
+            client.h \
+            global.h
 
 FORMS    += mainwindow.ui
