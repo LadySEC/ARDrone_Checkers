@@ -11,6 +11,7 @@
 /**********************************************************************************/
 #include "calcul_order.h"
 #include "keyboard.h"
+#include "detect_tag_wrapper.h"
 /**********************************************************************************/
 /* Constants 							  		  */
 /**********************************************************************************/
@@ -22,7 +23,7 @@
 /**********************************************************************************/
 /* Procedures									*/
 /**********************************************************************************/
-
+extern Position position_tag;
 /**********************************************************************************/
 /* Threads									*/
 /**********************************************************************************/
@@ -37,52 +38,88 @@
  */
 void* calcul_order_thread(void* arg)
 {
-    int cpt_AT_cmd = 0;
+    	int cpt_AT_cmd = 0;
+	int cpt_mission = 0;
+	int x = 0, y = 0, found_ou_pas_found = 0;
+	Position pos_tag;
 
-    /* Make this thread periodic */
-    struct periodic_info info;
-    make_periodic (_CALCUL_PERIOD, &info);
+    	/* Make this thread periodic */
+    	struct periodic_info info;
+    	make_periodic (_CALCUL_PERIOD, &info);
 
-
-    while(1)
-    {
-	/* Triggered with 'M_KEY' if you are not executing one mission*/
-	if(get_mission() == TRUE)
-	{
-		printf("\n\r---------------------------------------------------");
-		printf("\n\rMISSION - Beggin/Continue the mission");
-		printf("\n\r---------------------------------------------------");
-
-		/*If the drone is in flight phase*/
-		if(ATcommand_FlyingState() == TRUE)
+    	while(1)
+    	{
+		/* Triggered with 'M_KEY' if you are not executing one mission*/
+		if(get_mission() == TRUE)
 		{
-			for(cpt_AT_cmd = 0; cpt_AT_cmd < 45; cpt_AT_cmd ++)
+	
+			if(cpt_mission == 0)
 			{
-				if(get_mission() == TRUE)
+				printf("\n\r\rMISSION - Beggin the mission");
+			}
+			else
+			{
+				/*If the drone is in flight phase*/
+				if(ATcommand_FlyingState() == TRUE)
 				{
-					ATcommand_process(PITCH_DOWN);	
+					printf("\n\r\rMISSION - Seek the tag");
+					//pos_tag = detect_wrapper("MOMO","triangle");
+					x 			= position_tag.abs;
+					y 			= position_tag.ord;
+					found_ou_pas_found 	= position_tag.found;
+					
+					if(found_ou_pas_found == 1)
+					{
+						if(x < _PIXEL_X_MIDDLE)
+						{
+							if(y < _PIXEL_Y_MIDDLE)
+							{
+								//En bas à gauche
+								printf("\n\r\rMISSION - PITCH_UP");
+								printf("\n\r\rMISSION - ROLL_LEFT");
+							}
+							else
+							{
+								//En haut à gauche
+								printf("\n\r\rMISSION - PITCH_DOWN");
+								printf("\n\r\rMISSION - ROLL_LEFT");	
+							}
+						}
+						else
+						{	if(y < _PIXEL_Y_MIDDLE)
+							{
+								//En En bas à  droite
+								printf("\n\r\rMISSION - PITCH_UP");
+								printf("\n\r\rMISSION - ROLL_RIGHT");
+							}
+							else
+							{
+								//En haut à droite
+								printf("\n\r\rMISSION - PITCH_DOWN");
+								printf("\n\r\rMISSION - ROLL_WRITE");	
+							}	
+						}				
+					}
+					else
+					{
+						printf("\n\r\rMISSION - HOVERING");	
+					}
+				}
+				else
+				{
+					printf("\n\r\rMISSION - You have to take off !");					
 				}
 			}
-			printf("\n\rMISSION - PITCH_DOWN");
-
-			for(cpt_AT_cmd = 0; cpt_AT_cmd < 45; cpt_AT_cmd ++)
-			{
-				if(get_mission() == TRUE)
-				{
-					ATcommand_process(ROLL_LEFT);
-				}
-			}
-			printf("\n\rMISSION - ROLL_LEFT");
-
 			
-		}
-	}	
+		}	
+		cpt_mission ++;
+		printf("\n\r\rMISSION - cpt = %d",cpt_mission);
 
-        /* Wait until the next period is achieved */
-        wait_period (&info);
-    }
+        	/* Wait until the next period is achieved */
+        	wait_period (&info);
+    	}
 
-    printf("\n\rEnding calcul_order_thread");
+    	printf("\n\rEnding calcul_order_thread");
 
-    return(NULL);
+    	return(NULL);
 }

@@ -229,12 +229,10 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case A_KEY :
-                    /* Disable the bottom camera 
-                    ATcommand_process(CONFIGURATION_IDS);
-                    ATcommand_process(DISABLE_VISION);*/
 
-	            moveDelay(PITCH_DOWN, 500000);
-	    	    moveDelay(ROLL_LEFT, 1500000);
+	            moveDelay(PITCH_DOWN, 800000);
+		    sleep(3u);
+	    	    moveDelay(ROLL_LEFT, 800000);
 
                     break;
 
@@ -249,28 +247,28 @@ void*  kbd_thread_drone_controller(void * args)
 
 
 		case M_KEY :
-		    /*If we clic on 'M' during a mission*/
+		    //If we clic on 'M' during a mission
 		    if(G_triggered_mission == TRUE)
 		    {
-			/*If the drone is in flight phase*/
-			if(ATcommand_FlyingState() == TRUE)
+			//If the drone is in flight phase*
+			/*if(ATcommand_FlyingState() == TRUE)
 			{
 				ATcommand_process(LANDING);
 				printf("\n\r---------------------------------------------------");
 				printf("\n\n\rMISSION - End of the mission");
 				printf("\n\r---------------------------------------------------");
-			}
+			}*/
 
-			/*We exit the MISSION MODE*/
+			//We exit the MISSION MODE
                         G_triggered_mission = FALSE;
 		    }
-		    /*If we clic on 'M' outside of the MISSION MODE*/
+		    //If we clic on 'M' outside of the MISSION MODE
 		    else 
 		    {
-		       	ATcommand_process(TRIM);
+		       	/*ATcommand_process(TRIM);
                 	sleep(2u);
 		
-			/*If the drone is not in flight phase*/
+			//If the drone is not in flight phase
 			if(ATcommand_FlyingState() == FALSE)
 			{
 				ATcommand_process(TAKEOFF);
@@ -278,9 +276,9 @@ void*  kbd_thread_drone_controller(void * args)
 				printf("\n\r---------------------------------------------------");
 				printf("\n\n\rMISSION - Takeoff");
 				printf("\n\r---------------------------------------------------");
-			}
+			}*/
 
-			/*We enter in the MISSION MODE */
+			//We enter in the MISSION MODE
 			G_triggered_mission = TRUE;
 		    }
                     break;
