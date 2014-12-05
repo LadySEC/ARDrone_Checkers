@@ -117,7 +117,7 @@ T_error ATcommand_initiate(void)
 		ATcommand_process(NAVDATA_REQUEST);
 
 		// Read the received packet
-		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->protocol, G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 #ifdef DEBUG_NAVDATA
 		displayNavdata(PROCESSED_NAVDATA);
 #endif
@@ -126,7 +126,7 @@ T_error ATcommand_initiate(void)
 		ATcommand_process(INIT_NAVDATA);
 		usleep(100000);
 		// Read the received packet
-		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->protocol, G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 #ifdef DEBUG_NAVDATA
 		displayNavdata(PROCESSED_NAVDATA);
 #endif
@@ -482,11 +482,11 @@ void ATcommand_process(T_ATorders I_order)
 #endif
 		if(I_order == NAVDATA_REQUEST)
 		{
-			socket_sendBytes(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, bytes, 5u);
+			socket_sendBytes(G_comm_NAV->protocol, G_comm_NAV->client->id, &G_comm_NAV->server->parameters, bytes, 5u);
 		}
 		else
 		{
-			socket_sendString(G_comm_AT->client->id, &G_comm_AT->server->parameters, frame);
+			socket_sendString(G_comm_AT->protocol, G_comm_AT->client->id, &G_comm_AT->server->parameters, frame);
 		}
 	}
 }
@@ -607,7 +607,6 @@ void* ATcommand_thread_movements(void* arg)
     struct periodic_info info;
 
 
-    printf("\n\rStarting drone moves management thread");
     make_periodic(BUFFER_TEMPO, &info);   
 
 	while(1)
@@ -616,7 +615,7 @@ void* ATcommand_thread_movements(void* arg)
 		consumeBuffer();
 	
 		/* Read Navdata */
-		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->protocol, G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
 		/* Correct Navdata if there is an error */
 		if(ATcommand_navdataError() == TRUE)
 		{
@@ -637,8 +636,6 @@ void* ATcommand_thread_movements(void* arg)
         /* Wait until the next period is achieved */
        	wait_period (&info);
     }
-
-    printf("\n\rEnding drone moves management thread");
 
     return NULL;
 }
@@ -711,7 +708,7 @@ static T_bufferState consumeBuffer(void)
 		printf("\n\r[%s] ", C_ORDERS[G_packetBuffer.first->order]);
 #endif
 
-		socket_sendString(G_comm_AT->client->id, &G_comm_AT->server->parameters, G_packetBuffer.first->data);
+		socket_sendString(G_comm_AT->protocol, G_comm_AT->client->id, &G_comm_AT->server->parameters, G_packetBuffer.first->data);
 
 #ifdef PRINT_TCPUDP_DATA_SENT
 		printf("(%d remaining commands)", G_packetBuffer.nb_packets - 1u);

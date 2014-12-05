@@ -209,6 +209,7 @@ void*  kbd_thread_drone_controller(void * args)
                     ATcommand_process(CHANGE_SSID);
                 #else
                     /* Exit */
+                    printf("\n\rExit pushed");
                 #endif
                     break;
 

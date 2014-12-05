@@ -34,17 +34,19 @@ T_comm* communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, ch
 {
 	/* Declaration */
 	T_comm*  			communication = (T_comm*)malloc(sizeof(T_comm));
-	int 				socket_lenght;
+	socklen_t 			socket_lenght;
 	int 				flags;
 
 
+	/* Save the protocol */
+	communication->protocol = I_protocol;
 	/* Generate a socket */
 	switch(I_protocol)
 	{
 		case TCP:
 			/* Instantiate a server */
 			communication->server 		= (T_socket*)malloc(sizeof(T_socket));
-			communication->server->id 	= socket(AF_INET , SOCK_STREAM, IPPROTO_IP);
+			communication->server->id 	= socket(PF_INET , SOCK_STREAM, IPPROTO_TCP);
 
 			if(communication->server->id == -1)
 		   	{
@@ -57,7 +59,7 @@ T_comm* communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, ch
   				memset(&communication->server->parameters, 0, sizeof(communication->server->parameters));
 
 		   		/* Socket configuration */
-		   		communication->server->parameters.sin_addr.s_addr 	= inet_addr(I_IP_addr_server); //htonl(INADDR_ANY);
+		   		communication->server->parameters.sin_addr.s_addr 	= htonl(INADDR_ANY);
 			    communication->server->parameters.sin_family 		= AF_INET;
 			    communication->server->parameters.sin_port 			= htons(I_port_server);
 			 
@@ -70,17 +72,26 @@ T_comm* communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, ch
 			    else
 			    {
 		    		/* Waiting for a communication */
-	    			if(listen(communication->server->id, 3u) == -1)		//3 ?
+	    			if(listen(communication->server->id, 10u) == -1)		//3 ?
 	    			{
 	    				perror("\n\rlisten()");
 	    			}
 	    			else
 	    			{
+	    			#if 0
+	    				/* Set the socket as non-blocking */
+					    if(I_state ==  NON_BLOCKING)
+					   	{
+					   		flags 		= fcntl(communication->server->id, F_GETFL);
+							fcntl(communication->server->id, F_SETFL, flags | O_NONBLOCK);
+					   	}
+					#endif
+
 	    				/* Instantiate a client */
 	    				communication->client 				= (T_socket*)malloc(sizeof(T_socket));
 						socket_lenght = sizeof(communication->client->parameters);
 	    				/* Accepting the communication */
-					    communication->client->id 	= accept(communication->server->id, (struct sockaddr *)&communication->client->parameters, (socklen_t*)&socket_lenght);
+					    communication->client->id 	= accept(communication->server->id, NULL, NULL);
 					    if(communication->client->id == -1)
 					    {
 					        perror("\n\raccept()");
@@ -148,24 +159,43 @@ T_comm* communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, ch
  * \param 	I_message  		String to be sent
  * \return 					ERROR: Transmission error, NO_ERROR: Success
  */
-T_error socket_sendString(int I_emitter_id, struct 	sockaddr_in* I_parameters, char* I_message)
+T_error socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockaddr_in* I_parameters, char* I_message)
 {
 	/* Declaration */
 	socklen_t 			lenght_param 	= (socklen_t)sizeof(struct sockaddr_in);
 	T_error 			error 			= NO_ERROR;
 
 
-	if (sendto(I_emitter_id, I_message, strlen(I_message)+1, 0, (struct sockaddr*) I_parameters, lenght_param) == -1)
-    {
-        perror("sendto()");
-        error = ERROR;
-    }
-    else
-    {
-#ifdef PRINT_TCPUDP_DATA_SENT
-		printf("\n\rString sent: %.*s to %s:%d", strlen(I_message)-1u , I_message, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
-#endif
-    }
+	switch(I_protocol)
+	{
+		case TCP:
+			if (write(I_emitter_id, I_message, strlen(I_message)+1) == -1)
+		    {
+		        perror("write()");
+		        error = ERROR;
+		    }
+		    else
+		    {
+		#ifdef PRINT_TCPUDP_DATA_SENT
+				printf("\n\rString sent: %.*s through TCP", strlen(I_message)-1u , I_message);
+		#endif
+		    }
+			break;
+
+		case UDP:
+			if (sendto(I_emitter_id, I_message, strlen(I_message)+1, 0, (struct sockaddr*) I_parameters, lenght_param) == -1)
+		    {
+		        perror("sendto()");
+		        error = ERROR;
+		    }
+		    else
+		    {
+		#ifdef PRINT_TCPUDP_DATA_SENT
+				printf("\n\rString sent: %.*s to %s:%d", strlen(I_message)-1u , I_message, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
+		#endif
+		    }
+			break;
+	}
 
     return(error);
 }
@@ -180,7 +210,7 @@ T_error socket_sendString(int I_emitter_id, struct 	sockaddr_in* I_parameters, c
  * \param 	I_lenght  		Lenght of the array
  * \return 					ERROR: Transmission error, NO_ERROR: Success
  */
-T_error socket_sendBytes(int I_emitter_id, struct 	sockaddr_in* I_parameters, unsigned char* I_bytes, unsigned char I_lenght)
+T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockaddr_in* I_parameters, unsigned char* I_bytes, unsigned char I_lenght)
 {
 	/* Declaration */
 	socklen_t 			lenght_param 	= (socklen_t)sizeof(struct sockaddr_in);
@@ -194,24 +224,50 @@ T_error socket_sendBytes(int I_emitter_id, struct 	sockaddr_in* I_parameters, un
 #endif
 
 
-	if (sendto(I_emitter_id, I_bytes, I_lenght, 0u, (struct sockaddr*) I_parameters, lenght_param) == -1)
-    {
-        perror("\n\rsendto()");
-        error = ERROR;
-    }
-    else
-    {
-#ifdef PRINT_TCPUDP_DATA_SENT
-    	/* printf */
-    	for(index = 0u; index < I_lenght; index++)
-    	{
-    		sprintf(byte_ascii, "%x ", I_bytes[index]);
-    		strcpy(&frame_sent[index_frame], byte_ascii);
-    		index_frame = strlen(frame_sent);
-    	}
-		printf("\n\rBytes sent: %s to %s:%d", frame_sent, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
-#endif
-    }
+	switch(I_protocol)
+	{
+		case TCP:
+			if (write(I_emitter_id, I_bytes, I_lenght) == -1)
+		    {
+		        perror("write()");
+		        error = ERROR;
+		    }
+		    else
+		    {
+		#ifdef PRINT_TCPUDP_DATA_SENT
+		    	/* printf */
+		    	for(index = 0u; index < I_lenght; index++)
+		    	{
+		    		sprintf(byte_ascii, "%x ", I_bytes[index]);
+		    		strcpy(&frame_sent[index_frame], byte_ascii);
+		    		index_frame = strlen(frame_sent);
+		    	}
+				printf("\n\rBytes sent: %s through TCP", frame_sent);
+		#endif
+		    }
+			break;
+
+		case UDP:
+			if (sendto(I_emitter_id, I_bytes, I_lenght, 0u, (struct sockaddr*) I_parameters, lenght_param) == -1)
+		    {
+		        perror("\n\rsendto()");
+		        error = ERROR;
+		    }
+		    else
+		    {
+		#ifdef PRINT_TCPUDP_DATA_SENT
+		    	/* printf */
+		    	for(index = 0u; index < I_lenght; index++)
+		    	{
+		    		sprintf(byte_ascii, "%x ", I_bytes[index]);
+		    		strcpy(&frame_sent[index_frame], byte_ascii);
+		    		index_frame = strlen(frame_sent);
+		    	}
+				printf("\n\rBytes sent: %s to %s:%d", frame_sent, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
+		#endif
+		    }
+			break;
+	}
 
     return(error);
 }
@@ -227,23 +283,34 @@ T_error socket_sendBytes(int I_emitter_id, struct 	sockaddr_in* I_parameters, un
  * \param 	I_state  		State of the reception
  * \return 					NO_PACKET_RECEIVED: No problem, PACKET_RECEIVED: Success, RECEPTION_ERROR: Something went wrong
  */
-T_reception_state socket_readPacket(int I_receiver_id, struct sockaddr_in* I_parameters, void* O_data, int I_lenght, T_state I_state)
+T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, struct sockaddr_in* I_parameters, void* O_data, int I_lenght, T_state I_state)
 {
 	/* Declaration */
 	socklen_t 			lenght_param 	= (socklen_t)sizeof(struct sockaddr_in);
 	T_reception_state	state 			= RECEPTION_ERROR;
 	int 				lenght_message;
 
-    switch(I_state)
-    {
-    	case BLOCKING:
-    		lenght_message = recvfrom(I_receiver_id, O_data, I_lenght, 0u, (struct sockaddr*) I_parameters, &lenght_param);
-    		break;
+	switch(I_protocol)
+	{
+		case TCP:
+			lenght_message = read(I_receiver_id, O_data, I_lenght);
+			break;
 
-    	case NON_BLOCKING:
-    		lenght_message = recvfrom(I_receiver_id, O_data, I_lenght, MSG_DONTWAIT, (struct sockaddr*) I_parameters, &lenght_param);
-    		break;
-    }
+		case UDP:
+			switch(I_state)
+		    {
+		    	case BLOCKING:
+		    		lenght_message = recvfrom(I_receiver_id, O_data, I_lenght, 0u, (struct sockaddr*) I_parameters, &lenght_param);
+		    		break;
+
+		    	case NON_BLOCKING:
+		    		lenght_message = recvfrom(I_receiver_id, O_data, I_lenght, MSG_DONTWAIT, (struct sockaddr*) I_parameters, &lenght_param);
+		    		break;
+		    }
+			break;
+	}
+
+    
 
 	if (lenght_message < 0)
 	{

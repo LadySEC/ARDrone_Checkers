@@ -84,6 +84,7 @@ typedef struct
  */
 typedef struct 
 {
+	T_protocol 	protocol;
 	T_socket* 	client;		/*!< client socket */
 	T_socket* 	server;		/*!< server socket */
 }T_comm;
@@ -92,9 +93,9 @@ typedef struct
 /* Prototypes													      			  */
 /**********************************************************************************/
 T_comm* 			communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, char* I_IP_addr_server, int I_port_client, int I_port_server, T_state I_state);
-T_error 			socket_sendString(int I_emitter_id, struct 	sockaddr_in* I_parameters, char* I_message);
-T_error 			socket_sendBytes(int I_emitter_id, struct 	sockaddr_in* I_parameters, unsigned char* I_bytes, unsigned char I_lenght);
-T_reception_state 	socket_readPacket(int I_receiver_id, struct sockaddr_in* I_parameters, void* O_data, int I_lenght, T_state I_state);
+T_error 			socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockaddr_in* I_parameters, char* I_message);
+T_error 			socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockaddr_in* I_parameters, unsigned char* I_bytes, unsigned char I_lenght);
+T_reception_state 	socket_readPacket(T_protocol I_protocol, int I_receiver_id, struct sockaddr_in* I_parameters, void* O_data, int I_lenght, T_state I_state);
 void 				socket_close(T_socket* I_socket);
 
 #endif //! _COMMUNICATION_H_

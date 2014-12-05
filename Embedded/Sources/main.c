@@ -78,9 +78,10 @@ int main (int argc, char *argv[])
 
 #ifdef ENABLE_SUPERVISOR
     /* Initialize the supervisor thread (blocking function) */
-    printf("\n\rStarting th_supervisor");
+    printf("\n\rInitiating communication with the supervisor");
     if(supervisor_initiate() == NO_ERROR)
     {
+        printf("\n\rStarting th_supervisor");
         pthread_create (&th_supervisor, NULL, supervisor_thread_interact, NULL);
     }
     else
@@ -139,6 +140,7 @@ int main (int argc, char *argv[])
         ATcommand_close();
     }
     else
+
     {
         printf("\n\rUnable to initiate the communication with the Parrot server");
     }

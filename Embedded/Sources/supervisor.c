@@ -39,11 +39,17 @@ T_error supervisor_initiate(void)
 
     /* Create a socket */
     // Supervisor socket with non blocking reception
-    G_comm_SPVSR 	= communication_initiate(TCP, NULL, "127.0.0.1", SPVSR_CLIENT_PORT, SPVSR_CLIENT_PORT, NON_BLOCKING);
+    G_comm_SPVSR 	= communication_initiate(TCP, NULL, NULL, SPVSR_CLIENT_PORT, SPVSR_CLIENT_PORT, NON_BLOCKING);
 
     if(G_comm_SPVSR->client->id == -1)
     {
-        error = error;
+        error = ERROR;
+    }
+    else
+    {
+        /* Print the communication */
+        printf("\n\rSPVSR Socket %d connected to %s:%d",   G_comm_SPVSR->client->id, inet_ntoa(G_comm_SPVSR->client->parameters.sin_addr), 
+                                                                    (int)ntohs(G_comm_SPVSR->client->parameters.sin_port));
     }
 
     return(error);
@@ -118,7 +124,7 @@ void supervisor_sendData(T_TCP_DATA I_data, char* arg)
     }
 
     /* Send */
-    socket_sendBytes(G_comm_SPVSR->server->id, &G_comm_SPVSR->client->parameters, frame, frame[1u]+2u);
+    socket_sendBytes(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, frame, frame[1u]+2u);
 }
 
 /**********************************************************************************/
@@ -138,11 +144,11 @@ void* supervisor_thread_interact(void* arg)
 {
     T_bool 	disconnected = FALSE;
     /* Make this thread periodic */
-    struct  periodic_info info;
-    char    test[2u];
+    struct              periodic_info info;
+    char                test[2u];
+    T_reception_state   state;
 
 
-    printf("\n\rStarting supervisor management thread");
     make_periodic (INTERACT_TEMPO, &info);   
 
     while(disconnected == FALSE)
@@ -151,62 +157,69 @@ void* supervisor_thread_interact(void* arg)
         memset((char *) &G_orders, 0, sizeof(G_orders));
 
         /* Read orders from the supervisor */
-        if(socket_readPacket(G_comm_SPVSR->server->id, &G_comm_SPVSR->server->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING) == RECEPTION_ERROR)
+        state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
+        if(state == RECEPTION_ERROR)
         {
             printf("\n\rClient disconnected");
             disconnected = TRUE;
         }
         else
         {
-            /* Processing order */
-            printf("\n\rReceived paquet: %s", G_orders);
-
-            if (strcmp(G_orders, "exit") == 0) 
+            if(state == PACKET_RECEIVED)
             {
-                disconnected = TRUE;
-            }
+                /* Processing order */
+                printf("\n\rReceived paquet: %s", G_orders);
 
-            if (strcmp(G_orders, "takeoff") == 0) 
-            {
-                if(ATcommand_enoughBattery() == TRUE)
+                if (strcmp(G_orders, "exit") == 0) 
                 {
-                    if(ATcommand_FlyingState() == FALSE)
+                    disconnected = TRUE;
+                }
+
+                if (strcmp(G_orders, "takeoff") == 0) 
+                {
+                    if(ATcommand_enoughBattery() == TRUE)
                     {
-                        /* Flat trim */
-                        ATcommand_process(TRIM);
-                        sleep(2u);
-                        /* Take off */
-                        ATcommand_process(TAKEOFF);
-                        /* Wait the flying state */
-                        while(ATcommand_FlyingState() != TRUE);
+                        if(ATcommand_FlyingState() == FALSE)
+                        {
+                            /* Flat trim */
+                            ATcommand_process(TRIM);
+                            sleep(2u);
+                            /* Take off */
+                            ATcommand_process(TAKEOFF);
+                            /* Wait the flying state */
+                            while(ATcommand_FlyingState() != TRUE);
+                        }
+                    }
+                    else
+                    {
+                        /* Not enough battery to takeoff */
+                        ATcommand_process(CONFIGURATION_IDS);
+                        ATcommand_process(LED_ANIMATION);
                     }
                 }
-                else
+
+                if (strcmp(G_orders, "land") == 0) 
                 {
-                    /* Not enough battery to takeoff */
-                    ATcommand_process(CONFIGURATION_IDS);
-                    ATcommand_process(LED_ANIMATION);
+                    if(ATcommand_FlyingState() == TRUE)
+                    {
+                        /* Landing */
+                        ATcommand_process(LANDING);
+                        /* Wait the landing state */
+                        while(ATcommand_FlyingState() != FALSE);
+                    }
+                }
+
+                if (strcmp(G_orders, "begin_m") == 0) 
+                {
+                    ATcommand_moveDelay(PITCH_DOWN,     500000);
+                    ATcommand_moveDelay(HOVERING_BUFF,  2000000);
+                    ATcommand_moveDelay(ROLL_LEFT,      1500000);
                 }
             }
-
-            if (strcmp(G_orders, "land") == 0) 
+            else
             {
-                if(ATcommand_FlyingState() == TRUE)
-                {
-                    /* Landing */
-                    ATcommand_process(LANDING);
-                    /* Wait the landing state */
-                    while(ATcommand_FlyingState() != FALSE);
-                }
+                /* Do nothing */
             }
-
-            if (strcmp(G_orders, "begin_m") == 0) 
-            {
-                ATcommand_moveDelay(PITCH_DOWN,     500000);
-                ATcommand_moveDelay(HOVERING_BUFF,  2000000);
-                ATcommand_moveDelay(ROLL_LEFT,      1500000);
-            }
-
         }
 
 #ifdef PRINT_TCPUDP_DATA_SENT
@@ -220,12 +233,14 @@ void* supervisor_thread_interact(void* arg)
                 (int)ATcommand_navdata()->vx,
                 (int)ATcommand_navdata()->vy);
 #endif
+        #if 1
         /* Share data with the supervisor */
         supervisor_sendData(NAVDATA_TCP,NULL);
         supervisor_sendData(BATTERY_TCP,NULL);
         supervisor_sendData(ANGLES_TCP,NULL);
         supervisor_sendData(ALTITUDE_TCP,NULL);
         supervisor_sendData(SPEEDS_TCP,NULL);
+        #endif
 
         /* Wait until the next period is achieved */
         wait_period (&info);
@@ -233,7 +248,6 @@ void* supervisor_thread_interact(void* arg)
 
     /* Close */
     supervisor_close();
-    printf("\n\rEnding supervisor management thread");
 
     return(NULL);
 }
