@@ -3,7 +3,7 @@
  * \brief 	Manages all interactions with the supervisor
  * \author 	Lady team
  * \version 1.0
- * \date 	21 november 2014
+ * \date 	4 December 2014
  *
  */
 /**********************************************************************************/
@@ -20,9 +20,9 @@ static const char* C_SUPERVISOR_IP				= "192.168.1.4";
 /* Global variables 															  */
 /**********************************************************************************/
 /* Socket */
-int 	G_socket_SPVSR;
+T_comm* 	   G_comm_SPVSR;
 /* Buffer */
-char	G_orders[RECV_BUFF_SIZE];
+char	       G_orders[RECV_BUFF_SIZE];
 
 /**********************************************************************************/
 /* Procedures														      		  */
@@ -39,8 +39,9 @@ T_error supervisor_initiate(void)
 
     /* Create a socket */
     // Supervisor socket with non blocking reception
-    G_socket_SPVSR 	= socket_initiate(TCP, SPVSR_CLIENT_PORT, NON_BLOCKING);
-    if(G_socket_SPVSR == -1)
+    G_comm_SPVSR 	= communication_initiate(TCP, NULL, "127.0.0.1", SPVSR_CLIENT_PORT, SPVSR_CLIENT_PORT, NON_BLOCKING);
+
+    if(G_comm_SPVSR->client->id == -1)
     {
         error = error;
     }
@@ -56,28 +57,68 @@ T_error supervisor_initiate(void)
  */
 void supervisor_close(void)
 {
-    socket_close(G_socket_SPVSR);
+    socket_close(G_comm_SPVSR->client);
+    socket_close(G_comm_SPVSR->server);
+    free(G_comm_SPVSR);
 }
 
-void supervisor_readData(void)
+void supervisor_sendData(T_TCP_DATA I_data, char* arg)
 {
-
-}
-
-void supervisor_sendData(T_TCP_DATA I_data)
-{
-    char frame[256u];
+    char    frame[15u];
+    int     tmp;
 
     /* Mnémonique */
     frame[0u] = I_data;
     switch(I_data)
     {
+        //Tested
         case NAVDATA_TCP:
-            frame[1u] = 1u;
+            frame[1u] = 4u;
             memcpy(&frame[2u], &ATcommand_navdata()->ctrl_state, 4u);
-            socket_sendBytes(G_socket_SPVSR, C_SUPERVISOR_IP, SPVSR_CLIENT_PORT, frame, 6u);
+            break;
+
+        //Tested
+        case BATTERY_TCP:
+            frame[1u] = 1u;
+            frame[2u] = (char)ATcommand_navdata()->vbat_flying_percentage;
+            break;
+
+        //Tested
+        case TARGET_TCP:
+            frame[1u] = 2u;
+            frame[2u] = arg[0u];
+            frame[3u] = arg[1u];
+            break;
+
+        //Tested
+        case ANGLES_TCP:
+            frame[1u] = 12u;
+            tmp       = (int)ATcommand_navdata()->theta;
+            memcpy(&frame[2u], &tmp, 4u);
+            tmp       = (int)ATcommand_navdata()->phi;
+            memcpy(&frame[6u], &tmp, 4u);
+            tmp       = (int)ATcommand_navdata()->psi;
+            memcpy(&frame[10u], &tmp, 4u);
+            break;
+
+        //Tested
+        case ALTITUDE_TCP:
+            frame[1u] = 4u;
+            memcpy(&frame[2u], &ATcommand_navdata()->altitude, 4u);
+            break;
+
+        // Not tested
+        case SPEEDS_TCP:
+            frame[1u] = 8u;
+            tmp       = (int)ATcommand_navdata()->vx;
+            memcpy(&frame[2u], &tmp, 4u);
+            tmp       = (int)ATcommand_navdata()->vy;
+            memcpy(&frame[6u], &tmp, 4u);
             break;
     }
+
+    /* Send */
+    socket_sendBytes(G_comm_SPVSR->server->id, &G_comm_SPVSR->client->parameters, frame, frame[1u]+2u);
 }
 
 /**********************************************************************************/
@@ -97,13 +138,12 @@ void* supervisor_thread_interact(void* arg)
 {
     T_bool 	disconnected = FALSE;
     /* Make this thread periodic */
-    struct periodic_info info;
+    struct  periodic_info info;
+    char    test[2u];
 
 
     printf("\n\rStarting supervisor management thread");
-#ifdef ENABLE_SIGWAIT
     make_periodic (INTERACT_TEMPO, &info);   
-#endif
 
     while(disconnected == FALSE)
     {
@@ -111,7 +151,7 @@ void* supervisor_thread_interact(void* arg)
         memset((char *) &G_orders, 0, sizeof(G_orders));
 
         /* Read orders from the supervisor */
-        if(socket_readPacket(G_socket_SPVSR, C_SUPERVISOR_IP, SPVSR_CLIENT_PORT, &G_orders, sizeof(G_orders), NON_BLOCKING) == RECEPTION_ERROR)
+        if(socket_readPacket(G_comm_SPVSR->server->id, &G_comm_SPVSR->server->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING) == RECEPTION_ERROR)
         {
             printf("\n\rClient disconnected");
             disconnected = TRUE;
@@ -162,19 +202,33 @@ void* supervisor_thread_interact(void* arg)
 
             if (strcmp(G_orders, "begin_m") == 0) 
             {
-                moveDelay(PITCH_DOWN,500000);
-                moveDelay(ROLL_LEFT,1500000);
+                ATcommand_moveDelay(PITCH_DOWN,     500000);
+                ATcommand_moveDelay(HOVERING_BUFF,  2000000);
+                ATcommand_moveDelay(ROLL_LEFT,      1500000);
             }
 
         }
 
-        /* Wait */
-#ifdef ENABLE_SIGWAIT
+#ifdef PRINT_TCPUDP_DATA_SENT
+        printf("\n\rNav: %x, Batt: %d, Ang: %d %d %d, Alt: %d, Speed: %d %d",
+                ATcommand_navdata()->ctrl_state,
+                (char)ATcommand_navdata()->vbat_flying_percentage,
+                (int)ATcommand_navdata()->theta,
+                (int)ATcommand_navdata()->phi,
+                (int)ATcommand_navdata()->psi,
+                ATcommand_navdata()->altitude,
+                (int)ATcommand_navdata()->vx,
+                (int)ATcommand_navdata()->vy);
+#endif
+        /* Share data with the supervisor */
+        supervisor_sendData(NAVDATA_TCP,NULL);
+        supervisor_sendData(BATTERY_TCP,NULL);
+        supervisor_sendData(ANGLES_TCP,NULL);
+        supervisor_sendData(ALTITUDE_TCP,NULL);
+        supervisor_sendData(SPEEDS_TCP,NULL);
+
         /* Wait until the next period is achieved */
         wait_period (&info);
-#else
-        usleep(INTERACT_TEMPO);
-#endif
     }
 
     /* Close */

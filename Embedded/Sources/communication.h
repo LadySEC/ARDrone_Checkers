@@ -3,7 +3,7 @@
  * \brief 	Manages UDP/TCP communications
  * \author 	Lady team
  * \version 1.0
- * \date 	18 november 2014
+ * \date 	4 December 2014
  *
  */
 #ifndef _COMMUNICATION_H_
@@ -68,13 +68,33 @@ typedef enum
 	PACKET_RECEIVED 			/*!< One packet is ready to be read */
 } T_reception_state;
 
+/**
+ * \struct 	T_socket
+ * \brief 	Defines a socket structure
+ */
+typedef struct 
+{
+	int 					id;				/*!< Identifier */
+	struct 	sockaddr_in		parameters;		/*!< Parameters */
+}T_socket;
+
+/**
+ * \struct 	T_comm
+ * \brief 	Defines a communication structure
+ */
+typedef struct 
+{
+	T_socket* 	client;		/*!< client socket */
+	T_socket* 	server;		/*!< server socket */
+}T_comm;
+
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
-int 				socket_initiate(T_protocol I_protocol, int I_port, T_state I_state);
-T_error 			socket_sendString(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, char* I_message);
-T_error 			socket_sendBytes(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, unsigned char* I_bytes, unsigned char I_lenght);
-T_reception_state 	socket_readPacket(int I_socket_id, const char* I_ip_addr_dest, int I_port_dest, void* O_data, int I_lenght, T_state I_state);
-void 				socket_close(int I_socket_id);
+T_comm* 			communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, char* I_IP_addr_server, int I_port_client, int I_port_server, T_state I_state);
+T_error 			socket_sendString(int I_emitter_id, struct 	sockaddr_in* I_parameters, char* I_message);
+T_error 			socket_sendBytes(int I_emitter_id, struct 	sockaddr_in* I_parameters, unsigned char* I_bytes, unsigned char I_lenght);
+T_reception_state 	socket_readPacket(int I_receiver_id, struct sockaddr_in* I_parameters, void* O_data, int I_lenght, T_state I_state);
+void 				socket_close(T_socket* I_socket);
 
 #endif //! _COMMUNICATION_H_

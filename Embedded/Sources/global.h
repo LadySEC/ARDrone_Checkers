@@ -3,7 +3,7 @@
  * \brief 	Common declarations required for the whole project
  * \author 	Lady team
  * \version 1.0
- * \date 	18 november 2014
+ * \date 	4 December 2014
  *
  */
 #ifndef _GLOBAL_H_
@@ -19,16 +19,17 @@
 #include <signal.h>
 
 /**********************************************************************************/
-/* Constants														      		  */
+/* Preprocessors commands														  */
 /**********************************************************************************/
-/* Debug */
-#define DEBUG_NAVDATA
-#define ENABLE_HOVERING
+/* Enable functions */
 //#define ENABLE_SUPERVISOR
-#define ENABLE_KBD_CONTROL
-#define ENABLE_SIGWAIT
-//#define CONFIG_VIDEO
-#define ENABLE_CALCUL_ORDER 
+//#define ENABLE_CALCUL_ORDER 
+//#define ENABLE_CALCUL_TAG  
+//#define ENABLE_CONFIG_VIDEO
+
+/* Debug */
+//#define DEBUG_NAVDATA
+//#define PRINT_TCPUDP_DATA_SENT
 
 /**********************************************************************************/
 /* Types													      				  */

@@ -3,7 +3,7 @@
  * \brief   Main program of the AR-drone embedded client
  * \author  Lady team
  * \version 1.0
- * \date    18 november 2014
+ * \date    4 December 2014
  *
  */
 /**********************************************************************************/
@@ -52,11 +52,11 @@ void RTsignals_init(void)
  */
 int main (int argc, char *argv[])
 {
-    /* Thread */
+    /* Basic threads */
     pthread_t       th_ATcommand;
     pthread_t       th_keyboard;
-    pthread_t       th_calcul_tag;
 
+    /* Additional threads */
 #ifdef ENABLE_SUPERVISOR
     pthread_t       th_supervisor;
 #endif
@@ -64,16 +64,21 @@ int main (int argc, char *argv[])
 #ifdef ENABLE_CALCUL_ORDER
     pthread_t       th_calcul_order;
 #endif
-    printf("Start\n\r");
 
-#ifdef ENABLE_SIGWAIT
+#ifdef ENABLE_CALCUL_TAG
+    pthread_t       th_calcul_tag;
+#endif
+
+
+    printf("\n\rStart\n\r");
+
+    /* Initialize RT signals to enable threads to be periodic */
     printf("\n\rInitializing RT signals");
     RTsignals_init();
-#endif
 
 #ifdef ENABLE_SUPERVISOR
     /* Initialize the supervisor thread (blocking function) */
-    printf("\n\rInitiating communication with the supervisor");
+    printf("\n\rStarting th_supervisor");
     if(supervisor_initiate() == NO_ERROR)
     {
         pthread_create (&th_supervisor, NULL, supervisor_thread_interact, NULL);
@@ -89,36 +94,55 @@ int main (int argc, char *argv[])
     if(ATcommand_initiate() == NO_ERROR)
     {
         /* Initialize the movements thread */
+        printf("\n\rStarting th_ATcommand");
         pthread_create (&th_ATcommand, NULL, ATcommand_thread_movements, NULL);
 
         /* Initialize the keyboard thread */
+        printf("\n\rStarting th_keyboard");
         pthread_create (&th_keyboard, NULL, kbd_thread_drone_controller, NULL);
 
-	/* Initialize the mission thread */
-	pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
+#ifdef ENABLE_CALCUL_ORDER 
+    	/* Initialize the mission thread */
+        printf("\n\rStarting th_calcul_order");
+    	pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
+#endif
 
-	/* Initialize the mission thread */
-	pthread_create (&th_calcul_tag, NULL, calcul_tag_thread, NULL);
-
+#ifdef ENABLE_CALCUL_TAG
+    	/* Initialize the mission thread */
+        printf("\n\rStarting th_calcul_tag");
+    	pthread_create (&th_calcul_tag, NULL, calcul_tag_thread, NULL);
+#endif
         /* Waiting the end of keyboard thread */
         pthread_join(th_keyboard, NULL);
-        printf("\n\rClosing communications");
-
-        /* Close current threads */
-        pthread_cancel(th_ATcommand);
-
-        /* Close all communications */
-        ATcommand_close();
+        printf("\n\rTh_keyboard closed");
 
 #ifdef ENABLE_SUPERVISOR        
+        printf("\n\rClosing th_supervisor");
         pthread_cancel(th_supervisor);
+        printf("\n\rClosing supervisor communication");
         supervisor_close();
 #endif
 
-#ifdef ENABLE_CALCUL_ORDER        
+#ifdef ENABLE_CALCUL_ORDER      
+        printf("\n\rClosing th_calcul_order");  
         pthread_cancel(th_calcul_order);
 #endif
+
+#ifdef ENABLE_CALCUL_TAG
+        printf("\n\rClosing th_calcul_tag");
+        pthread_cancel(th_calcul_tag);
+#endif
+
+        printf("\n\rClosing th_ATcommand");
+        pthread_cancel(th_ATcommand);
+        printf("\n\rClosing AT commands communication");
+        ATcommand_close();
+    }
+    else
+    {
+        printf("\n\rUnable to initiate the communication with the Parrot server");
     }
 
+    printf("\n\r\n\rEnd\n\r");
     return(0);
 }

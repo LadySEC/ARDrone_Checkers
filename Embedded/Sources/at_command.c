@@ -3,7 +3,7 @@
  * \brief 	Manages all AT commands compatible with the AR-Drone firmware
  * \author 	Lady team
  * \version 1.0
- * \date 	18 november 2014
+ * \date 	4 December 2014
  *
  */
 /**********************************************************************************/
@@ -22,8 +22,8 @@ static const char* C_PROFILE_ID 				= "00000000";
 static const char* C_APPLICATION_ID 			= "00000000"; 
 /* Arrays */
 static const char* C_COMMANDS[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
-static const char* C_ORDERS[NB_ORDERS] 			= { "TRIM", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", "PITCH_DOWN", 
-													"VERTICAL_UP", "VERTICAL_DOWN", "CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
+static const char* C_ORDERS[NB_ORDERS] 			= { "TRIM", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "HOVERING_BUFF", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", 
+													"PITCH_DOWN", "VERTICAL_UP", "VERTICAL_DOWN", "CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
 													"RESET_WATCHDOG", "REMOVE_CONFIGS", "CHANGE_SESSION", "CHANGE_PROFILE", "CHANGE_APP", "CHANGE_SSID", "ENABLE_VIDEO", "DISABLE_VIDEO",
 													"ENABLE_VISION", "DISABLE_VISION"};
 
@@ -36,11 +36,11 @@ pthread_mutex_t 		G_mutex_seqNum 			= PTHREAD_MUTEX_INITIALIZER;
 static int 				G_sequenceNumber 		= 1u;
 /* Buffer management */
 static T_packetBuffer	G_packetBuffer;
-/* Socket */
-static int 				G_socket_AT;
-static int 				G_socket_NAV;
+/* Communications */
+static T_comm* 			G_comm_AT;
+static T_comm* 			G_comm_NAV;
 /* Navdata */
-static T_navdata_demo  G_navdata;
+static T_navdata_demo  	G_navdata;
 
 /**********************************************************************************/
 /* Prototypes														     		  */
@@ -49,11 +49,13 @@ static T_navdata_demo  G_navdata;
 T_bool 						ATcommand_FlyingState(void);
 T_bool 						ATcommand_enoughBattery(void);
 /* Static functions */
-static void 				displayNavdata(T_navdata_display I_display);
 static struct T_packet* 	createPacket(T_ATorders order, char* command);
 static void 				deletePacket(struct T_packet* packet);
 static void 				emitPacket(struct T_packet* packet);
 static T_bufferState 		consumeBuffer(void);
+#ifdef DEBUG_NAVDATA
+	static void 				displayNavdata(T_navdata_display I_display);
+#endif
 
 /**********************************************************************************/
 /* Procedures														     		  */
@@ -70,14 +72,31 @@ T_error ATcommand_initiate(void)
 	char 	string[100u];
 	T_error	error = NO_ERROR;
 
+	/* Forward the port 5554 to 15214 */
+	system("iptables -t nat -F");
+	sprintf(string,"iptables -t nat -A POSTROUTING -p UDP --sport %d -j SNAT --to 127.0.0.1:%d", NAV_CLIENT_PORT, NAV_SERVER_PORT);
+	system(string);
+	sprintf(string,"iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport %d -j DNAT --to 127.0.0.1:%d", NAV_SERVER_PORT, NAV_CLIENT_PORT);
+	system(string);
+	usleep(100000);
+
 	/* Create a socket */
 	// AT command socket
-	G_socket_AT 	= socket_initiate(UDP, AT_CLIENT_PORT, BLOCKING);
+	G_comm_AT 	= communication_initiate(UDP, "127.0.0.1", "127.0.0.1", AT_CLIENT_PORT, AT_SERVER_PORT, BLOCKING);
 	// Navdata socket with non blocking reception
-	G_socket_NAV 	= socket_initiate(UDP, NAV_CLIENT_PORT, NON_BLOCKING);
+	G_comm_NAV 	= communication_initiate(UDP, "127.0.0.1", "127.0.0.1", NAV_CLIENT_PORT, NAV_SERVER_PORT, NON_BLOCKING);
 
-	if((G_socket_AT != -1) && (G_socket_NAV != -1))
+	if((G_comm_AT->client->id != -1) && (G_comm_NAV->client->id != -1))
 	{
+		/* Print the communication */
+		printf("\n\rAT Socket %d connected to %s:%d", 	G_comm_AT->client->id, inet_ntoa(G_comm_AT->client->parameters.sin_addr), 
+				    												(int)ntohs(G_comm_AT->client->parameters.sin_port));
+		printf("\n\rNAV Socket %d connected to %s:%d", 	G_comm_NAV->client->id, inet_ntoa(G_comm_NAV->client->parameters.sin_addr), 
+				    												(int)ntohs(G_comm_NAV->client->parameters.sin_port));
+		/* Reset Watchdog first to avoid errors */
+		G_sequenceNumber = 1u;
+		ATcommand_process(RESET_WATCHDOG);
+
 		/* Initiate the configuration */
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(REMOVE_CONFIGS);
@@ -87,9 +106,7 @@ T_error ATcommand_initiate(void)
 		ATcommand_process(CHANGE_PROFILE);
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(CHANGE_APP);
-		ATcommand_process(CONFIGURATION_IDS);
-		ATcommand_process(CHANGE_SSID);
-#ifdef CONFIG_VIDEO
+#ifdef ENABLE_CONFIG_VIDEO
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(DISABLE_VIDEO);
 		ATcommand_process(CONFIGURATION_IDS);
@@ -98,23 +115,21 @@ T_error ATcommand_initiate(void)
 		/* Initiate navdata reception */
 		// Send a request to port 5554
 		ATcommand_process(NAVDATA_REQUEST);
-		// Forward the port 5554 to 15214
-		system("iptables -t nat -F");
-		sprintf(string,"iptables -t nat -A POSTROUTING -p UDP --sport %d -j SNAT --to 127.0.0.1:%d", NAV_CLIENT_PORT, NAV_SERVER_PORT);
-		system(string);
-		sprintf(string,"iptables -t nat -A PREROUTING -p UDP -d 127.0.0.1 --dport %d -j DNAT --to 127.0.0.1:%d", NAV_SERVER_PORT, NAV_CLIENT_PORT);
-		system(string);
-		usleep(100000);
+
 		// Read the received packet
-		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+#ifdef DEBUG_NAVDATA
 		displayNavdata(PROCESSED_NAVDATA);
+#endif
 		// Init navdata demo
 		ATcommand_process(CONFIGURATION_IDS);
 		ATcommand_process(INIT_NAVDATA);
 		usleep(100000);
 		// Read the received packet
-		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+#ifdef DEBUG_NAVDATA
 		displayNavdata(PROCESSED_NAVDATA);
+#endif
 		// Send Ack paquet
 		ATcommand_process(ACK_COMMAND);
 	}
@@ -128,12 +143,16 @@ T_error ATcommand_initiate(void)
 
 /**
  * \fn 		void ATcommand_close(void)
- * \brief 	Close all used sockets
+ * \brief 	Closes all communications
  */
 void ATcommand_close(void)
 {
-	socket_close(G_socket_AT);
-	socket_close(G_socket_NAV);
+	socket_close(G_comm_AT->client);
+	socket_close(G_comm_AT->server);
+	socket_close(G_comm_NAV->client);
+	socket_close(G_comm_NAV->server);
+	free(G_comm_AT);
+	free(G_comm_NAV);
 }
 
 /**
@@ -240,6 +259,7 @@ void ATcommand_process(T_ATorders I_order)
 
 		case HOVERING:
 			sendToBuffer 			= 0u;
+		case HOVERING_BUFF:
 			ATarguments[0u].integer = 0u;
 			/* ROLL */
 			ATarguments[1u].integer = 0u;
@@ -415,7 +435,7 @@ void ATcommand_process(T_ATorders I_order)
 		case CHANGE_SSID:
 			sendToBuffer 			= 0u;
 			strcpy(ATstrings[0u], "network:ssid_single_player");
-			strcpy(ATstrings[1u], "Ardrone2_Lady");
+			strcpy(ATstrings[1u], "Ardrone1_Lady");
 			ATcommand_generate(frame, sizeof(frame), CONFIG, ATarguments, ATstrings);
 			break;
 
@@ -457,25 +477,29 @@ void ATcommand_process(T_ATorders I_order)
 	else
 	{
 		/* Send directly the packet */
-		//--------------------------------------------------------------------------------------------------------
-		//printf("\n\r[%s] ", C_ORDERS[I_order]);
+#ifdef PRINT_TCPUDP_DATA_SENT
+		printf("\n\r[%s] ", C_ORDERS[I_order]);
+#endif
 		if(I_order == NAVDATA_REQUEST)
 		{
-			socket_sendBytes(G_socket_NAV, C_LOCALHOST_IP, NAV_SERVER_PORT, bytes, 5u);
+			socket_sendBytes(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, bytes, 5u);
 		}
 		else
 		{
-			socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, frame);
+			socket_sendString(G_comm_AT->client->id, &G_comm_AT->server->parameters, frame);
 		}
 	}
 }
 
-void moveDelay(T_ATorders I_order, int I_us)
+/**
+ * \fn 		void ATcommand_moveDelay(T_ATorders I_order, int I_us)
+ * \brief 	Fills the buffer with the same order corresponding to a given time
+ *
+ */
+void ATcommand_moveDelay(T_ATorders I_order, int I_us)
 {
 	unsigned int counter;
 	unsigned int nb_iterations = I_us / BUFFER_TEMPO;
-
-	printf("\n\rMove Delay : nb_iterations = %d",nb_iterations);
 
 	for(counter = 0; counter < nb_iterations; counter++)
 	{
@@ -483,6 +507,9 @@ void moveDelay(T_ATorders I_order, int I_us)
 	}
 }
 
+/**********************************************************************************/
+/* Getters														     		  	  */
+/**********************************************************************************/
 /**
  * \fn 		T_bool ATcommand_FlyingState(void)
  * \brief 	Informs if the drone is flying or not
@@ -528,7 +555,12 @@ T_bool ATcommand_enoughBattery(void)
 	return(enough);
 }
 
-
+/**
+ * \fn 		T_bool ATcommand_navdataError(void)
+ * \brief 	Informs if there the watchdog expired
+ *
+ * \return 	TRUE: Watchdog expired, FALSE: Ok
+ */
 T_bool ATcommand_navdataError(void)
 {
 	T_bool error;
@@ -543,42 +575,6 @@ T_bool ATcommand_navdataError(void)
 	}
 
 	return(error);
-}
-
-/**
- * \fn 		static void displayNavdata(T_navdata_display I_display)
- * \brief 	Displays usefull information from navdata
- *
- * \param 	I_display 	Navdata display format 
- */
-static void displayNavdata(T_navdata_display I_display)
-{
-#ifdef DEBUG_NAVDATA
-	switch(I_display)
-	{
-		case ALL_NAVDATA:
-			/* Echo */
-			//--------------------------------------------------------------------------------------------------------
-			/*printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
-				G_navdata.header, G_navdata.ardrone_state, G_navdata.sequence, G_navdata.vision_defined, 
-				G_navdata.tag, G_navdata.size, G_navdata.ctrl_state, G_navdata.vbat_flying_percentage, 
-				G_navdata.theta, G_navdata.phi, G_navdata.psi, G_navdata.altitude , G_navdata.vx, G_navdata.vy,
-				G_navdata.cks_id, G_navdata.cks_size, G_navdata.cks_data);*/
-			break;
-
-		case PROCESSED_NAVDATA:
-			//--------------------------------------------------------------------------------------------------------
-			/*printf("\n\rBatt: %d | Flying: %d | Theta: %d | Phi: %d | Psi: %d | Alt: %d | Vx: %d | Vy: %d | Err: %d", 	G_navdata.vbat_flying_percentage, 
-																						G_navdata.ardrone_state & 0x1u,
-																						(int)G_navdata.theta,
-																						(int)G_navdata.phi,
-																						(int)G_navdata.psi,
-																						G_navdata.altitude,
-																						(int)G_navdata.vx, (int)G_navdata.vy,
-																						(G_navdata.ardrone_state >> 30u) & 0x1u);*/
-			break;
-	}
-#endif
 }
 
 /**
@@ -612,9 +608,7 @@ void* ATcommand_thread_movements(void* arg)
 
 
     printf("\n\rStarting drone moves management thread");
-#ifdef ENABLE_SIGWAIT
     make_periodic(BUFFER_TEMPO, &info);   
-#endif
 
 	while(1)
 	{
@@ -622,19 +616,26 @@ void* ATcommand_thread_movements(void* arg)
 		consumeBuffer();
 	
 		/* Read Navdata */
-		socket_readPacket(G_socket_NAV, C_LOCALHOST_IP, NAV_CLIENT_PORT, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		socket_readPacket(G_comm_NAV->client->id, &G_comm_NAV->server->parameters, &G_navdata, sizeof(G_navdata), NON_BLOCKING);
+		/* Correct Navdata if there is an error */
+		if(ATcommand_navdataError() == TRUE)
+		{
+			/* Inform the user */
+			printf("\n\rNavdata error");
+			/* Reset the sequence number */
+			G_sequenceNumber = 1u;
+			ATcommand_process(RESET_WATCHDOG);
+		}
+
+#ifdef DEBUG_NAVDATA
 		/* Display */
 		displayNavdata(PROCESSED_NAVDATA);
+#endif
 		/* Reset Watchdog */
 		ATcommand_process(RESET_WATCHDOG);
 
-		/* Wait */
-#ifdef ENABLE_SIGWAIT
         /* Wait until the next period is achieved */
        	wait_period (&info);
-#else
-       	usleep(BUFFER_TEMPO);
-#endif
     }
 
     printf("\n\rEnding drone moves management thread");
@@ -706,11 +707,15 @@ static T_bufferState consumeBuffer(void)
     {
     	/* Read the packet */
 		/* Send the command through the local host */
-		//--------------------------------------------------------------------------------------------------------
-		//printf("\n\r[%s] ", C_ORDERS[G_packetBuffer.first->order]);
-		socket_sendString(G_socket_AT, C_LOCALHOST_IP, AT_SERVER_PORT, G_packetBuffer.first->data);
-		//printf("(%d remaining commands)", G_packetBuffer.nb_packets - 1u);
+#ifdef PRINT_TCPUDP_DATA_SENT
+		printf("\n\r[%s] ", C_ORDERS[G_packetBuffer.first->order]);
+#endif
 
+		socket_sendString(G_comm_AT->client->id, &G_comm_AT->server->parameters, G_packetBuffer.first->data);
+
+#ifdef PRINT_TCPUDP_DATA_SENT
+		printf("(%d remaining commands)", G_packetBuffer.nb_packets - 1u);
+#endif
     	/* Update the buffer */
     	tmp_packet = G_packetBuffer.first;
     	G_packetBuffer.first = tmp_packet->next;
@@ -731,4 +736,40 @@ static T_bufferState consumeBuffer(void)
 
     return(state);
 }
+
+/**
+ * \fn 		static void displayNavdata(T_navdata_display I_display)
+ * \brief 	Displays usefull information from navdata
+ *
+ * \param 	I_display 	Navdata display format 
+ */
+#ifdef DEBUG_NAVDATA
+static void displayNavdata(T_navdata_display I_display)
+{
+	switch(I_display)
+	{
+		case ALL_NAVDATA:
+			/* Echo */
+			printf("\n\rNAVDATA: %x %x %x %x | %x  %x  %x %x | %f %f %f | %x | %f %f | %x %x %x", 
+				G_navdata.header, G_navdata.ardrone_state, G_navdata.sequence, G_navdata.vision_defined, 
+				G_navdata.tag, G_navdata.size, G_navdata.ctrl_state, G_navdata.vbat_flying_percentage, 
+				G_navdata.theta, G_navdata.phi, G_navdata.psi, G_navdata.altitude , G_navdata.vx, G_navdata.vy,
+				G_navdata.cks_id, G_navdata.cks_size, G_navdata.cks_data);
+			break;
+
+		case PROCESSED_NAVDATA:
+			printf("\n\rBatt: %d | Flying: %d | Theta: %d | Phi: %d | Psi: %d | Alt: %d | Vx: %d | Vy: %d | Err: %d", 	
+					G_navdata.vbat_flying_percentage, 
+					G_navdata.ardrone_state & 0x1u,
+					(int)G_navdata.theta,
+					(int)G_navdata.phi,
+					(int)G_navdata.psi,
+					G_navdata.altitude,
+					(int)G_navdata.vx, (int)G_navdata.vy,
+					(G_navdata.ardrone_state >> 30u) & 0x1u);
+			break;
+	}
+}
+#endif
+
 

@@ -3,7 +3,7 @@
  * \brief 	Manages all interactions with the supervisor
  * \author 	Lady team
  * \version 1.0
- * \date 	21 november 2014
+ * \date 	4 December 2014
  *
  */
 #ifndef _SUPERVISOR_H_
@@ -36,7 +36,8 @@ typedef enum
 	BATTERY_TCP	=	'B',
 	ANGLES_TCP	= 	'A',
 	SPEEDS_TCP	=	'S',
-	ALTITUDE_TCP=	'H'
+	ALTITUDE_TCP=	'H',
+	DECON_TCP	= 	'D'
 }T_TCP_DATA;
 
 /**********************************************************************************/

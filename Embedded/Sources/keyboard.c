@@ -3,7 +3,7 @@
  * \brief   Process keyboard entries
  * \author  Lady team
  * \version 1.0
- * \date    21 november 2014
+ * \date    4 December 2014
  *
  */
 #include "keyboard.h"
@@ -128,18 +128,19 @@ void*  kbd_thread_drone_controller(void * args)
                     {
                         if(ATcommand_FlyingState() == FALSE)
                         {
-                        #ifdef CONFIG_VIDEO
+                        #ifdef ENABLE_CONFIG_VIDEO
                             /* Enable the bottom camera */
                             ATcommand_process(CONFIGURATION_IDS);
                             ATcommand_process(ENABLE_VISION);
                         #endif
+
                             /* Flat trim */
                             ATcommand_process(TRIM);
                             sleep(2u);
                             /* Take off */
                             ATcommand_process(TAKEOFF);
                             /* Wait the flying state */
-			    printf("\n\r\rINFO : TAKEOFF (ENTER)");
+			                printf("\n\r\rINFO : TAKEOFF (ENTER)");
                             while(ATcommand_FlyingState() != TRUE);
                         }
                         else
@@ -147,9 +148,10 @@ void*  kbd_thread_drone_controller(void * args)
                             /* Landing */
                             ATcommand_process(LANDING);
                             /* Wait the landing state */
-			    printf("\n\r\rINFO : LANDING (ENTER)");
+			                printf("\n\r\rINFO : LANDING (ENTER)");
                             while(ATcommand_FlyingState() != FALSE);
-                        #ifdef CONFIG_VIDEO
+
+                        #ifdef ENABLE_CONFIG_VIDEO
                             /* Disable the bottom camera */
                             ATcommand_process(CONFIGURATION_IDS);
                             ATcommand_process(DISABLE_VISION);
@@ -165,75 +167,65 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case UP_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(PITCH_DOWN);
-                    }
+                    ATcommand_moveDelay(PITCH_DOWN, DEFAULT_DELAY);
                     break;
 
                 case DOWN_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(PITCH_UP);
-                    }
+                    ATcommand_moveDelay(PITCH_UP, DEFAULT_DELAY);
                     break;
 
                 case LEFT_KEY   :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(YAW_LEFT);
-                    }
+                    ATcommand_moveDelay(YAW_LEFT, DEFAULT_DELAY);
                     break;
 
                 case RIGHT_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(YAW_RIGHT);
-                    }
+                    ATcommand_moveDelay(YAW_RIGHT, DEFAULT_DELAY);
                     break;
 
                 case Z_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(VERTICAL_UP);
-                    }
+                    ATcommand_moveDelay(VERTICAL_UP, DEFAULT_DELAY);
                     break;
 
                 case S_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(VERTICAL_DOWN);
-                    }
+                    ATcommand_moveDelay(VERTICAL_DOWN, DEFAULT_DELAY);
                     break;
 
                 case Q_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(ROLL_LEFT);
-                    }
+                    ATcommand_moveDelay(ROLL_LEFT, DEFAULT_DELAY);
                     break;
 
                 case D_KEY :
-                    for(counter = 0u; counter < NB_ORDER_OCCUR; counter++)
-                    {
-                        ATcommand_process(ROLL_RIGHT);
-                    }
+                    ATcommand_moveDelay(ROLL_RIGHT, DEFAULT_DELAY);
                     break;
 
                 case SPACE_KEY :
                     ATcommand_process(TRIM);
                     break;
 
-                    /* Sequence test */
+                    /* Change SSID */
                 case BACKSPACE_KEY :
+                    ATcommand_process(CONFIGURATION_IDS);
+                    ATcommand_process(CHANGE_SSID);
                     break;
 
                 case A_KEY :
+<<<<<<< Updated upstream
 
 	            moveDelay(PITCH_DOWN, 800000);
 		    sleep(3u);
 	    	    moveDelay(ROLL_LEFT, 800000);
 
+=======
+                    /* Disable the bottom camera */
+                    ATcommand_moveDelay(VERTICAL_UP,    2000000);
+                    ATcommand_moveDelay(ROLL_RIGHT,     1000000);
+                    ATcommand_moveDelay(ROLL_LEFT,      1000000);
+                    ATcommand_moveDelay(HOVERING_BUFF,  2000000);
+    	            ATcommand_moveDelay(PITCH_DOWN,     1500000);
+                    ATcommand_moveDelay(HOVERING_BUFF,  2000000);
+    	    	    ATcommand_moveDelay(PITCH_UP,       1500000);
+                    ATcommand_moveDelay(VERTICAL_DOWN,  2000000);
+>>>>>>> Stashed changes
                     break;
 
                 case L_KEY :
@@ -245,6 +237,7 @@ void*  kbd_thread_drone_controller(void * args)
                     ATcommand_process(EMERGENCY);
                     break;
 
+<<<<<<< Updated upstream
 
 		case M_KEY :
 		    //If we clic on 'M' during a mission
@@ -281,14 +274,52 @@ void*  kbd_thread_drone_controller(void * args)
 			//We enter in the MISSION MODE
 			G_triggered_mission = TRUE;
 		    }
+=======
+#if 0
+        		case M_KEY :
+        		    /*If we clic on 'M' during a mission*/
+        		    if(G_triggered_mission == TRUE)
+        		    {
+            			/*If the drone is in flight phase*/
+            			if(ATcommand_FlyingState() == TRUE)
+            			{
+            				ATcommand_process(LANDING);
+            				printf("\n\r---------------------------------------------------");
+            				printf("\n\n\rMISSION - End of the mission");
+            				printf("\n\r---------------------------------------------------");
+            			}
+
+            			/*We exit the MISSION MODE*/
+                        G_triggered_mission = FALSE;
+            		}    
+                    /*If we clic on 'M' outside of the MISSION MODE*/
+        		    else 
+        		    {
+        		       	ATcommand_process(TRIM);
+                        sleep(2u);
+        		
+            			/*If the drone is not in flight phase*/
+            			if(ATcommand_FlyingState() == FALSE)
+            			{
+            				ATcommand_process(TAKEOFF);
+            				while(ATcommand_FlyingState() == FALSE);
+            				printf("\n\r---------------------------------------------------");
+            				printf("\n\n\rMISSION - Takeoff");
+            				printf("\n\r---------------------------------------------------");
+            			}
+
+            			/*We enter in the MISSION MODE */
+            			G_triggered_mission = TRUE;
+        		    }
+>>>>>>> Stashed changes
                     break;
+#endif
             }
         }
-
+#if 0
         /* Manage navdata errors */
         if(ATcommand_navdataError() == TRUE)
         {
-            printf("\n\rNavdata error");
             if(ATcommand_FlyingState() == TRUE)
             {
                 printf("\n\rEmergency landing ...");
@@ -298,11 +329,12 @@ void*  kbd_thread_drone_controller(void * args)
                 while(ATcommand_FlyingState() != FALSE);
             }
         }
+#endif
 
         /* Empty the output buffer */
         fflush(stdout);
     }
-    while((key_selected != CTRL_C_KEY) && (ATcommand_navdataError() == FALSE));
+    while(key_selected != M_KEY);// && (ATcommand_navdataError() == FALSE));
 
     /* Disable the raw mode */
     keyboard_rawMode(FALSE);
@@ -310,7 +342,8 @@ void*  kbd_thread_drone_controller(void * args)
     return NULL;
 }
 
-T_bool get_mission(void){
+T_bool get_mission(void)
+{
     return G_triggered_mission;
 }
 

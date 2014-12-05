@@ -3,7 +3,7 @@
  * \brief 	Manages all AT commands compatible with the AR-Drone firmware
  * \author 	Lady team
  * \version 1.0
- * \date 	18 november 2014
+ * \date 	4 December 2014
  *
  */
 #ifndef _AT_COMMAND_H_
@@ -27,12 +27,10 @@
 #define NB_MAX_CHAR			30u														/*!< Maximum lenght of a string argument */
 #define NB_AT_COMMANDS		9u														/*!< Number of different AT commands */
 #define NB_MAX_COMMANDS		20u														/*!< Size of the commands buffer */
-#define NB_ORDERS			28u 													/*!< Number of high-level orders available */
-#define NB_ORDER_OCCUR		1u
+#define NB_ORDERS			29u 													/*!< Number of high-level orders available */
 /* Temporisations */
 #define BUFFER_TEMPO		(unsigned int)30000										/*!< at_command thread temporisation */
-//#define HOVERING_TEMPO		(unsigned int)200000									/*!< Period for hovering command */
-//#define COUNTER_VALUE		((unsigned int)(HOVERING_TEMPO/BUFFER_TEMPO)) - 1u      /*!< Number of cycles required for sending hovering command */
+#define DEFAULT_DELAY		(unsigned int)3*BUFFER_TEMPO
 /* REF command */
 #define TAKEOFF_COMMAND		290718208 												/*!< Argument for performing a takeoff */
 #define LANDING_COMMAND		290717696 												/*!< Argument for performing a landing */
@@ -78,6 +76,7 @@ typedef enum
 	LANDING,
 	EMERGENCY,
 	HOVERING,
+	HOVERING_BUFF,
 	YAW_LEFT,
 	YAW_RIGHT,
 	ROLL_LEFT,
@@ -192,7 +191,7 @@ typedef enum
 T_error 		ATcommand_initiate(void);
 void 			ATcommand_close(void);
 void 			ATcommand_process(T_ATorders I_order);
-void 			moveDelay(T_ATorders I_order, int I_us);
+void 			ATcommand_moveDelay(T_ATorders I_order, int I_us);
 
 /* Getters */
 T_bool 			ATcommand_FlyingState(void);
