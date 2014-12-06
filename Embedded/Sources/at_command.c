@@ -82,9 +82,9 @@ T_error ATcommand_initiate(void)
 
 	/* Create a socket */
 	// AT command socket
-	G_comm_AT 	= communication_initiate(UDP, "127.0.0.1", "127.0.0.1", AT_CLIENT_PORT, AT_SERVER_PORT, BLOCKING);
+	G_comm_AT 	= communication_initiate(UDP, C_LOCALHOST_IP, C_LOCALHOST_IP, AT_CLIENT_PORT, AT_SERVER_PORT, BLOCKING);
 	// Navdata socket with non blocking reception
-	G_comm_NAV 	= communication_initiate(UDP, "127.0.0.1", "127.0.0.1", NAV_CLIENT_PORT, NAV_SERVER_PORT, NON_BLOCKING);
+	G_comm_NAV 	= communication_initiate(UDP, C_LOCALHOST_IP, C_LOCALHOST_IP, NAV_CLIENT_PORT, NAV_SERVER_PORT, NON_BLOCKING);
 
 	if((G_comm_AT->client->id != -1) && (G_comm_NAV->client->id != -1))
 	{
@@ -637,7 +637,8 @@ void* ATcommand_thread_movements(void* arg)
        	wait_period (&info);
     }
 
-    return NULL;
+    /* Close this thread */
+    pthread_exit(NULL);
 }
 
 /**********************************************************************************/

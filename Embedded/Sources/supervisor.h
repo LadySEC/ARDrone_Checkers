@@ -15,6 +15,8 @@
 #include "global.h"
 #include "communication.h"
 #include "at_command.h"
+#include "keyboard.h"
+ 
 /**********************************************************************************/
 /* Constants													      			  */
 /**********************************************************************************/
@@ -22,7 +24,7 @@
 #define SPVSR_CLIENT_PORT	4000u
 /* Temporisations */
 #define INTERACT_TEMPO		(unsigned int)1000000
-#define	RECV_BUFF_SIZE		512u
+#define	RECV_BUFF_SIZE		20u
 
 /**********************************************************************************/
 /* Types													      				  */

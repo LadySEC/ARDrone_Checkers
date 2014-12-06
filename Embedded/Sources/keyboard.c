@@ -11,7 +11,8 @@
 /**********************************************************************************/
 /* Global variables 								*/
 /**********************************************************************************/
-T_bool G_triggered_mission = FALSE;
+T_bool G_triggered_mission      = FALSE;
+T_bool G_reconnect_supervisor   = FALSE;
 
 /**********************************************************************************/
 /* Threads & Procedures								*/
@@ -88,7 +89,7 @@ unsigned char keyboard_getchar(void)
 }
 
 /**********************************************************************************/
-/* Threads                                                        */
+/* Threads                                                                        */
 /**********************************************************************************/
 /**
  * \fn      void*  kb_thread_drone_controller(void * args)
@@ -198,19 +199,24 @@ void*  kbd_thread_drone_controller(void * args)
                     ATcommand_moveDelay(ROLL_RIGHT, DEFAULT_DELAY);
                     break;
 
+                case W_KEY :
+                    /* Reconnect the supervisor */
+                    G_reconnect_supervisor = TRUE;
+                    break;
+
+                case X_KEY :
+                    /* Exit */
+                    printf("\n\rExit pushed");
+                    break;
+
                 case SPACE_KEY :
                     ATcommand_process(TRIM);
                     break;
                     
                 case BACKSPACE_KEY :
-                #if 0
                     /* Change SSID */
                     ATcommand_process(CONFIGURATION_IDS);
                     ATcommand_process(CHANGE_SSID);
-                #else
-                    /* Exit */
-                    printf("\n\rExit pushed");
-                #endif
                     break;
 
                 case A_KEY :
@@ -285,12 +291,27 @@ void*  kbd_thread_drone_controller(void * args)
         /* Empty the output buffer */
         fflush(stdout);
     }
-    while(key_selected != BACKSPACE_KEY);
+    while(key_selected != X_KEY);
 
     /* Disable the raw mode */
     keyboard_rawMode(FALSE);
 
-    return NULL;
+    /* Close this thread */
+    pthread_exit(NULL);
+}
+
+/**********************************************************************************/
+/* Getters & Setters                                                              */
+/**********************************************************************************/
+
+void keyboard_setRecoSupervisor(T_bool value)
+{
+    G_reconnect_supervisor = value;
+}
+
+T_bool keyboard_getRecoSupervisor(void)
+{
+    return(G_reconnect_supervisor);
 }
 
 T_bool get_mission(void)

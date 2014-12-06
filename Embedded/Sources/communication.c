@@ -30,7 +30,7 @@
  * \param 	I_state  	Socket status configuration
  * \return 				Communication structure
  */
-T_comm* communication_initiate(T_protocol I_protocol, char* I_IP_addr_client, char* I_IP_addr_server, int I_port_client, int I_port_server, T_state I_state)
+T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_client, const char* I_IP_addr_server, int I_port_client, int I_port_server, T_state I_state)
 {
 	/* Declaration */
 	T_comm*  			communication = (T_comm*)malloc(sizeof(T_comm));
@@ -290,6 +290,7 @@ T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, st
 	T_reception_state	state 			= RECEPTION_ERROR;
 	int 				lenght_message;
 
+
 	switch(I_protocol)
 	{
 		case TCP:
@@ -311,7 +312,6 @@ T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, st
 	}
 
     
-
 	if (lenght_message < 0)
 	{
 		state = NO_PACKET_RECEIVED;

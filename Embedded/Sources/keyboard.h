@@ -41,7 +41,9 @@ typedef enum
 	Z_KEY				= 122u,
 	S_KEY 				= 115u,	
 	M_KEY				= 109u,	
-	BACKSPACE_KEY		    	= 8u
+	W_KEY				= 119u,
+	X_KEY 				= 120u,
+	BACKSPACE_KEY		= 8u
 } T_keys;
 
 /**********************************************************************************/
@@ -53,5 +55,7 @@ unsigned char 	       	keyboard_getchar(void);
 void*  					kbd_thread_drone_controller(void * args);
 T_bool					get_mission(void);
 void 					stop_mission(void);
+void 					keyboard_setRecoSupervisor(T_bool value);
+T_bool 					keyboard_getRecoSupervisor(void);
 
 #endif //! _KEYBOARD_H_
