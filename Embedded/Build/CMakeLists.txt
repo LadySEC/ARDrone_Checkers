@@ -13,17 +13,18 @@ IF(WIN32)
   SET(CMAKE_CXX_COMPILER arm-none-linux-gnueabi-g++)
   SET(CMAKE_SYSROOT        "C:/CodeBench")
   SET(CMAKE_FIND_ROOT_PATH "C:/CodeBench")
+  # compiler options
+  SET(CMAKE_C_FLAGS   "" CACHE STRING "" FORCE)
+  SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE STRING "" FORCE)
 ELSE()
   SET(CMAKE_C_COMPILER   arm-linux-gnueabi-gcc)
   SET(CMAKE_CXX_COMPILER arm-linux-gnueabi-g++)
   SET(CMAKE_SYSROOT        /usr/arm-linux-gnueabi/)
   SET(CMAKE_FIND_ROOT_PATH /usr/arm-linux-gnueabi/)
+  # compiler options
+  SET(CMAKE_C_FLAGS   "" CACHE STRING "" FORCE)
+  SET(CMAKE_CXX_FLAGS "-std=c++0x" CACHE STRING "" FORCE)
 ENDIF()
-
-
-# compiler options
-SET(CMAKE_C_FLAGS   "" CACHE STRING "" FORCE)
-SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE STRING "" FORCE)
 
 
 # search for programs in the build host directories
