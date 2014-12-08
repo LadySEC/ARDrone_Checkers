@@ -17,24 +17,34 @@ using namespace cv;
  * \fn Vec3b yuv2rgb(Vec3b I_pixel_yuv)
  * \brief Conversion d'un pixel YUV en RGB
  *
- * \param  Vec3b I_pixel_yuv : pixel YUV
+ * \param  Vec4b I_pixel_yuv : pixel YUV
  * \return Vec3b pixel RGB issue de la conversion
  */
-Vec3b yuv2rgb(Vec2b I_pixel_yuv) {
+Vec3b yuv2rgb(Vec4b I_pixel_yuv)
+{
+	int c0 = 22987;
+	int c1 = -11698;
+	int c2 = -5636;
+	int c3 = 29049;
+	
+	int y = I_pixel_yuv[1];
+	int cb = I_pixel_yuv[0] - 128;
+	int cr = I_pixel_yuv[2] - 128;
 
-    Vec3b pixel_rgb;
-	uchar y, u, v;
-	long long r, g, b;
-	y = I_pixel_yuv[1];
-	u = I_pixel_yuv[0];
-	v = I_pixel_yuv[2];
+	int b = y + (((c3 * cb) + (1 << 13)) >> 14);
+	int g = y + (((c2 * cb + c1 * cr) + (1 << 13)) >> 14);
+	int r = y + (((c0 * cr) + (1 << 13)) >> 14);
 
-    r=(1164*((long long)y - 1600) + 2018*((long long)u - 12800)) / 1000;
-    g=(1164*((long long)y - 1600) -  813*((long long)v - 12800) - 391*((long long)u - 12800)) / 1000;
-    b=(1164*((long long)y - 1600) + 1596*((long long)v - 12800)) / 1000;
+	if (r < 0) r = 0;
+	else if (r > 255) r = 255;
 
-	printf("r %ld g %ld b %ld\r\n", r, g, b);
-    return {(uchar)r, (uchar)g, (uchar)b};
+	if (g < 0) g = 0;
+	else if (g > 255) g = 255;
+
+	if (b < 0) b = 0;
+	else if (b > 255) b = 255;
+	
+	return {(uchar)r, (uchar)g, (uchar)b};
 }
 
 
@@ -139,7 +149,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	long long	posX, posY;
 	T_Position	squarePos = {0, 0};
 	T_Position	pixelPos;
-	Vec2b		pixelYUV;
+	Vec4b		pixelYUV;
 	Vec3b		pixelRGB;
 	std::vector<T_Position> pixelsTarget;
 	
@@ -154,7 +164,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	for (i=C_WINDOW_LEFT; i<img.cols-C_WINDOW_RIGHT; i+=C_DOWNSCALING_STEP) {
 		for (j=C_WINDOW_TOP; j<img.rows-C_WINDOW_BOTTOM; j+=C_DOWNSCALING_STEP) {
 			// On récupère un pixel YUV particulier puis on le convertit en RGB
-			pixelYUV = img.at<Vec2b>(j, i);
+			pixelYUV = img.at<Vec4b>(j, i);
 			pixelRGB = yuv2rgb(pixelYUV);
 			// On recherche uniquement les pixels de couleur de la case de destination
 			if (getMainColor(pixelRGB) == playgroundColors[I_destSquare-1]) {
