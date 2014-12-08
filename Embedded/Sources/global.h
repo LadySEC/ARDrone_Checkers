@@ -22,14 +22,13 @@
 /* Preprocessors commands														  */
 /**********************************************************************************/
 /* Enable functions */
-#define ENABLE_SUPERVISOR
-//#define ENABLE_CALCUL_ORDER 
-//#define ENABLE_CALCUL_TAG  
+//#define ENABLE_SUPERVISOR
+#define ENABLE_CALCUL_ORDER
 //#define ENABLE_CONFIG_VIDEO
 
 /* Debug */
 //#define DEBUG_NAVDATA
-#define PRINT_TCPUDP_DATA_SENT
+//#define PRINT_TCPUDP_DATA_SENT
 
 /**********************************************************************************/
 /* Constants						      			                              */

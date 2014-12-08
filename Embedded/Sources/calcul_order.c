@@ -11,7 +11,7 @@
 /**********************************************************************************/
 #include "calcul_order.h"
 #include "keyboard.h"
-#include "detect_tag_wrapper.h"
+#include "detect_tag.h"
 /**********************************************************************************/
 /* Constants 							  		  */
 /**********************************************************************************/
@@ -26,7 +26,6 @@ int round_mission = 0;
 /**********************************************************************************/
 /* Procedures									*/
 /**********************************************************************************/
-extern Position position_tag;
 /**********************************************************************************/
 /* Threads									*/
 /**********************************************************************************/
@@ -42,7 +41,7 @@ extern Position position_tag;
 void* calcul_order_thread(void* arg)
 {
 	int 		cpt_mission = 0;
-	Position 	pos_tag;
+	T_Position 	pos_tag;
 
     	/* Make this thread periodic */
     	struct periodic_info info;
@@ -53,23 +52,22 @@ void* calcul_order_thread(void* arg)
 		/* Triggered with 'M_KEY' if you are not executing one mission*/
 		if(get_mission() == TRUE)
 		{
-	
+			
 			if(cpt_mission == 0)
 			{
 				printf("\n\r\r----- MISSION - Beggin the mission");
 
 				// - Je reçois l'ordre du superviseur
-
-				// - Je'envoie un chroffre à detect_tag
 			}
 			else
 			{
 				/*If the drone is in flight phase
 				if(ATcommand_FlyingState() == TRUE)
 				{*/
-					printf("\n\r\r----- MISSION - x = %d, y = %d",position_tag.abs,position_tag.ord);
+					pos_tag = W_getPosition(5, 3);
+					printf("\n\r\r----- MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
 					//Donne un mouvement selon la position
-					posTag_ATcommand(position_tag.abs,position_tag.ord);					
+					posTag_ATcommand(pos_tag.abs,pos_tag.ord);					
 				/*}
 				else
 				{

@@ -1,205 +1,197 @@
 #include "detect_tag.h"
+#include "opencv2/opencv.hpp"
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <cmath>
+#include <iostream>
+#include <stdio.h>
+#include <unistd.h>
+#include "global.h"
+#include "../../Common/log.h"
 
-
-//--- modif hugo 04/12/2015 ------------------------------------
-int x_last_found 	= 0;
-int y_last_found 	= 0;
-int repere_x_y_last 	= 0;
-
-void resetReper_x_y_last(){
-    repere_x_y_last 	= 0;
-}
-//--- modif hugo 04/12/2015 ------------------------------------
-
-
-// @function detectAndDisplay
-Position detect_wo_flux(Mat i_frame)
-{
-
-    // Get the cosines of all corners
-    vector<double> cos;
-
-    Position new_pos ;
-    new_pos.found = 0 ;
-
-    int angles = 0;
-    int i = 0;
-
-
-
-    // Use Canny instead of threshold to catch squares with gradient shading
-    //Mat bw ;
-    //Canny(i_frame, bw, 0,50,5) ;
-
-    //Canny(i_frame, bw, 0,50,5);
-    //Find contours
-    //bw = i_frame;
-	threshold(i_frame,i_frame,127,255,THRESH_BINARY_INV); 
-	vector<vector<Point> > contours;
-
-
-    //Mat frame_clone = i_frame.clone() ;
-    //cvtColor( i_frame, bw, CV_BGR2GRAY );
-    //threshold(bw,bw,127,255,ADAPTIVE_THRESH_GAUSSIAN_C);
-    findContours(i_frame, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
-    vector<Point> approx;
-
-
-    for (int i = 0; i < contours.size(); i++)
-    {
-        // Approximate contour with accuracy proportional
-        // to the contour perimeter
-        approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.005, true);
-
-        // Skip small or non-convex objects
-        if (fabs(contourArea(contours[i])) < 100 || !isContourConvex(approx))
-            continue;
-
-        if ( (approx.size() == 3) )
-        {
-            cv::Rect r = cv::boundingRect(contours[i]);
-            new_pos.abs = r.x + (r.width/2);
-            new_pos.ord = r.y + (r.height/2);
-            new_pos.found = 1 ;
-            printf("Triangle Trouvé\n");
-        }
-        else if ( (approx.size() ==4))
-        {
-            // Get the cosines of all corners
-            vector<double> cos;
-            for (int j = 2; j < approx.size()+1; j++)
-                cos.push_back(angle(approx[j%approx.size()], approx[j-2], approx[j-1]));
-            // Sort ascending the cosine values
-            sort(cos.begin(), cos.end());
-            // Get the lowest and the highest cosine
-            double mincos = cos.front();
-            double maxcos = cos.back();
-            // Use the degrees obtained above and the number of vertices
-            // to determinemoi the shape of the contour
-            if (approx.size() == 4 && mincos >= -0.1 && maxcos <= 0.3)
-            {
-                cv::Rect r = cv::boundingRect(contours[i]);
-                new_pos.abs = r.x + (r.width/2);
-                new_pos.ord = r.y + (r.height/2);
-                new_pos.found = 1 ;
-                printf("Rectangle Trouve\n");
-            }
-        }
-        else
-        {
-            // Detect and label circles
-            double area = contourArea(contours[i]);
-            Rect r = boundingRect(contours[i]);
-            int radius = r.width / 2;
-            if (abs(1 - ((double)r.width / r.height)) <= 0.2 && abs(1 - (area / (CV_PI * pow(radius, 2)))) <= 0.2)
-            {
-                cv::Rect r = cv::boundingRect(contours[i]);
-                new_pos.abs = r.x + (r.width/2);
-                new_pos.ord = r.y + (r.height/2);
-                new_pos.found = 1 ;
-                printf("Cercle Trouvé \n");
-            }
-        }
-    }
-
-    return new_pos ;
-}
-
-Position detect(){
-int i,j;
-Position pos;
-
-    //-- 1. Read the video stream
-    int m_ImgHeight = 720;
-    int m_ImgWidth = 1280;
-
-    Mat Img_Source_YUV(m_ImgHeight,m_ImgWidth,CV_8UC2);
-    Mat Img_Destination_Bgr(m_ImgHeight,m_ImgWidth,CV_8UC3);
-    FILE * f;
-
-    uchar* pYUVPixels;
-    int Img_Size= (m_ImgWidth * m_ImgHeight*2);
-    pYUVPixels = new uchar[Img_Size];
-    printf("Demarrage Test Detection\r\n");
-    //while (1)
-    //{
-
-        f=fopen("/tmp/video1_buffer","rb");
-        if ( !f )
-        {
-            printf("fopen error\r\n");
-        }
-
-
-        fread(pYUVPixels,Img_Size,1,f);
-        fclose(f);
-
-        // Suppression du ready pour avoir une nouvelle photo
-
-        do{
-            i=remove("/tmp/video1_ready");
-        }while(i!=0);
-
-
-        Img_Source_YUV.data= pYUVPixels;
-
-        // on traite directement du HSV
-        cvtColor(Img_Source_YUV,Img_Destination_Bgr,COLOR_YUV2GRAY_Y422);
-
-        //-- 2. Apply the classifier to the frame
-        //printf("Avant detect\n");
-        pos = detect_wo_flux( Img_Destination_Bgr);
-        //printf("------------Apres detect\n");
-
-
-        if (pos.found){
-            printf(  "Position Tag:  x = %d ; y = %d\r\n ",  pos.abs, pos.ord) ;
-
-    	//--- modif hugo 04/12/2015 ------------------------------------
-	    x_last_found = pos.abs;
-    	    y_last_found = pos.ord;
-	    repere_x_y_last ++;
-	    // ! ! ! ! repere_x_y_last doit être remise à 0 lorsqu'elle est consommée par "calcul_order.c" ! ! ! !
-    	//--- modif hugo 04/12/2015 ------------------------------------
-
-        }
-        else {
-            printf("Pas encore trouve\r\n");
-
-    	//--- modif hugo 04/12/2015 ------------------------------------
-	    if(repere_x_y_last > 0)
-            {
-	       pos.abs 		= x_last_found;
-    	       pos.ord 		= y_last_found;
-	       pos.found 	= 1;
-	       printf(  "Position Tag (--LAST FOUND -%d--): x = %d ; y = %d\r\n ",repere_x_y_last, pos.abs, pos.ord) ;
-            }
-    	//--- modif hugo 04/12/2015 ------------------------------------
-
-        }
-      //  usleep(200000);
-    //}
-        return pos;
-
-}
-
-
-// Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
-static double angle(Point pt1, Point pt2, Point pt0)
-{
-    double dx1 = pt1.x - pt0.x;
-    double dy1 = pt1.y - pt0.y;
-    double dx2 = pt2.x - pt0.x;
-    double dy2 = pt2.y - pt0.y;
-    return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
-}
-
-
+using namespace std;
+using namespace cv;
 
 /**
- * \fn 		
- * \brief 	Convert a RGB threshold in a YUV format
+ * \fn Vec3b yuv2rgb(Vec3b I_pixel_yuv)
+ * \brief Conversion d'un pixel YUV en RGB
  *
- * \return 	ERROR: Something went wrong during the process, NO_ERROR: Success
+ * \param  Vec3b I_pixel_yuv : pixel YUV
+ * \return Vec3b pixel RGB issue de la conversion
  */
+Vec3b yuv2rgb(Vec2b I_pixel_yuv) {
 
+    Vec3b pixel_rgb;
+	uchar y, u, v;
+	long long r, g, b;
+	y = I_pixel_yuv[1];
+	u = I_pixel_yuv[0];
+	v = I_pixel_yuv[2];
+
+    r=(1164*((long long)y - 1600) + 2018*((long long)u - 12800)) / 1000;
+    g=(1164*((long long)y - 1600) -  813*((long long)v - 12800) - 391*((long long)u - 12800)) / 1000;
+    b=(1164*((long long)y - 1600) + 1596*((long long)v - 12800)) / 1000;
+
+	printf("r %ld g %ld b %ld\r\n", r, g, b);
+    return {(uchar)r, (uchar)g, (uchar)b};
+}
+
+
+char getMainColor(Vec3b I_pixelRGB) {
+	uchar r, g, b;
+	r = I_pixelRGB[0];
+	g = I_pixelRGB[1];
+	b = I_pixelRGB[2];
+	if (r > C_R_MIN_R && r <= C_R_MAX_R && g > C_R_MIN_G && g <= C_R_MAX_G && b > C_R_MIN_B && b < C_R_MAX_B) return 'R';
+	if (r > C_B_MIN_R && r <= C_B_MAX_R && g > C_B_MIN_G && g <= C_B_MAX_G && b > C_B_MIN_B && b < C_B_MAX_B) return 'B';
+	if (r > C_G_MIN_R && r <= C_G_MAX_R && g > C_G_MIN_G && g <= C_G_MAX_G && b > C_G_MIN_B && b < C_G_MAX_B) return 'G';
+	return 'U';
+}
+
+
+Mat readImageFromFile(char * I_pathToFile) {
+	FILE * f;
+	Mat Img_YUV(IMG_HEIGHT,IMG_WIDTH,CV_8UC2);
+	int Img_Size = IMG_WIDTH * IMG_HEIGHT*2;
+    unsigned char* pYUVPixels = new unsigned char[Img_Size];
+
+	f=fopen(I_pathToFile,"rb");
+	if (!f) {
+		//LOG_WriteLevel(LOG_ERROR, "detect_tag: fopen error");
+	}
+	
+	fread(pYUVPixels,Img_Size,1,f);
+	fclose(f);
+	
+	Img_YUV.data = pYUVPixels;
+	
+	return Img_YUV;
+}
+
+
+void freeImage(Mat IO_Img) {
+	free(IO_Img.data);
+}
+
+
+void nextImage() {
+	int err;
+	// Suppression du fichier ready pour avoir une nouvelle image
+	do {
+		err = remove(IMG_READY_PATH);
+	} while(err != 0);
+}
+
+
+T_Position getSquarePosition(int I_currentSquare, int I_destSquare) {
+	T_Position squarePos = {0, 0};
+	if(I_destSquare= 5){
+		switch(I_currentSquare) {
+			case 1 : squarePos = {360,-360};
+			break;
+			case 2 : squarePos = {0,-360};
+			break;
+			case 3 : squarePos = {-360,-360};
+			break;
+			case 4 : squarePos = {360,0};
+			break;
+			case 5 : squarePos = {0,0};
+			break;
+			case 6 : squarePos = {-360,0};
+			break;
+			case 7 : squarePos = {360,360};
+			break;
+			case 8 : squarePos = {0,360};
+			break;
+			case 9 : squarePos = {-360,360};
+			break;
+		}
+	}
+	else{
+		switch(I_destSquare) {
+			case 1 : squarePos = {-360,360};
+			break;
+			case 2 : squarePos = {0,360};
+			break;
+			case 3 : squarePos = {360,360};
+			break;
+			case 4 : squarePos = {-360,0};
+			break;
+			case 5 : squarePos = {0,0};
+			break;
+			case 6 : squarePos = {360,0};
+			break;
+			case 7 : squarePos = {-360,-360};
+			break;
+			case 8 : squarePos = {0,-360};
+			break;
+			case 9 : squarePos = {360,-360};
+			break;
+		}
+	}
+	return squarePos;
+}
+
+
+T_Position getPosition(int I_currentSquare, int I_destSquare) {
+	int 		i,j;
+	long long	posX, posY;
+	T_Position	squarePos = {0, 0};
+	T_Position	pixelPos;
+	Vec2b		pixelYUV;
+	Vec3b		pixelRGB;
+	std::vector<T_Position> pixelsTarget;
+	
+	// On vérifie que le numéro de la case demandée est bien entre 1 et 9
+	// sinon on retourne la position {0, 0} pour ne demander aucun mouvement
+	if (I_destSquare < 1 || I_destSquare > 9) return squarePos;
+	if (I_currentSquare < 1 || I_currentSquare > 9) return squarePos;
+
+    Mat img = readImageFromFile((char*)IMG_PATH);
+	
+	// Sous-échantillonnage de l'image
+	for (i=C_WINDOW_LEFT; i<img.cols-C_WINDOW_RIGHT; i+=C_DOWNSCALING_STEP) {
+		for (j=C_WINDOW_TOP; j<img.rows-C_WINDOW_BOTTOM; j+=C_DOWNSCALING_STEP) {
+			// On récupère un pixel YUV particulier puis on le convertit en RGB
+			pixelYUV = img.at<Vec2b>(j, i);
+			pixelRGB = yuv2rgb(pixelYUV);
+			// On recherche uniquement les pixels de couleur de la case de destination
+			if (getMainColor(pixelRGB) == playgroundColors[I_destSquare-1]) {
+				pixelPos = {i, j};
+				pixelsTarget.push_back(pixelPos);
+				printf("PUTAIN ON A TROUVE MAGGLE\n");
+			}
+		}
+	}
+	
+	// Si on détecte un nombre suffisant de pixels de la couleur voulue,
+	// on calcule la la position moyenne de ces pixels
+	if (pixelsTarget.size() > C_MIN_PIXELS) {
+		posX = 0;
+		posY = 0;
+		for (int i=0; i<pixelsTarget.size(); i++) {
+			pixelPos = pixelsTarget.at(i);
+			posX += pixelPos.abs;
+			posY += pixelPos.ord;
+		}
+		posX /= pixelsTarget.size();
+		posY /= pixelsTarget.size();
+		squarePos = {(int)posX, (int)posY};
+	// Sinon, on donne la direction de la case de destination
+	} else {
+		squarePos = getSquarePosition(I_currentSquare, I_destSquare);
+	}
+
+	freeImage(img);
+	nextImage();
+	
+	return squarePos;
+}
+
+// Wrapper getPosition
+extern "C" {
+    T_Position W_getPosition(int I_currentSquare, int I_destSquare) {
+		return getPosition(I_currentSquare, I_destSquare);
+    }
+}

@@ -1,44 +1,63 @@
-// Version de test 25 Nov
-// Le detect est un cercle 
-
-
-
 #ifndef DETECT_TAG_H
 #define DETECT_TAG_H
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/objdetect/objdetect.hpp"
-//#include "opencv2/video/video.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include <opencv/cv.h>
-#include <cmath>
-#include <iostream>
-#include <stdio.h>
-#include <unistd.h>
-#include "detect_tag_wrapper.h"
-using namespace std;
-using namespace cv;
+#include "opencv2/core/core.hpp"
 
-/*struct Position
-{
-    int abs ;
-    int ord ;
-    int found ;
-};*/
+#define IMG_PATH		"/tmp/video1_buffer"
+#define IMG_READY_PATH	"/tmp/video1_ready"
+#define IMG_WIDTH		1280
+#define IMG_HEIGHT		720
 
-// @function detect
-Position detect();
+// Valeurs seuils de détection des couleurs
+#define C_R_MIN_R 150
+#define C_R_MIN_G 0
+#define C_R_MIN_B 0
+#define C_R_MAX_R 255
+#define C_R_MAX_G 70
+#define C_R_MAX_B 70
 
-Position detect_wo_flux(Mat i_frame);
+#define C_G_MIN_R 0
+#define C_G_MIN_G 70
+#define C_G_MIN_B 0
+#define C_G_MAX_R 40
+#define C_G_MAX_G 255
+#define C_G_MAX_B 65
 
-// Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
-static double angle(Point pt1, Point pt2, Point pt0) ;
+#define C_B_MIN_R 0
+#define C_B_MIN_G 0
+#define C_B_MIN_B 70
+#define C_B_MAX_R 45
+#define C_B_MAX_G 45
+#define C_B_MAX_B 255
 
+// Paramétrages supplémentaires de la détection des couleurs
+#define C_MIN_PIXELS		10
+#define C_DOWNSCALING_STEP	10
+#define C_WINDOW_LEFT		440
+#define C_WINDOW_RIGHT		440
+#define C_WINDOW_TOP		200
+#define C_WINDOW_BOTTOM		120
 
-//--- modif hugo 04/12/2015 ------------------------------------
-void resetReper_x_y_last();
-//--- modif hugo 04/12/2015 ------------------------------------
+typedef struct {
+	int abs;
+	int ord;
+} T_Position;
 
+// Tableau contenant les couleurs des cases
+static char playgroundColors[9] = {
+	'R', 'G', 'R',
+	'G', 'B', 'V',
+	'R', 'G', 'R'};
+
+T_Position getPosition(int I_currentSquare, int I_destSquare);
+
+// Wrapper getPosition
+#ifdef __cplusplus
+extern "C" {
+#endif
+	T_Position W_getPosition(int I_currentSquare, int I_destSquare); 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // DETECT_TAG_H

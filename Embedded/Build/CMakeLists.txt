@@ -21,6 +21,11 @@ ELSE()
 ENDIF()
 
 
+# compiler options
+SET(CMAKE_C_FLAGS   "" CACHE STRING "" FORCE)
+SET(CMAKE_CXX_FLAGS "-std=c++11" CACHE STRING "" FORCE)
+
+
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
@@ -36,13 +41,13 @@ find_package(OpenCV  REQUIRED)
 
 
 include_directories(${OpenCV_INCLUDE_DIRS} ../Sources)
+include_directories(${OpenCV_INCLUDE_DIRS} ../../Common)
 
 SET(TICTACTOE_SRC
+  ../../Common/log.c
   ../Sources/at_command.c
   ../Sources/calcul_order.c
-  ../Sources/calcul_tag.c
   ../Sources/communication.c
-  ../Sources/detect_tag_wrapper.cpp
   ../Sources/detect_tag.cpp
   ../Sources/keyboard.c
   ../Sources/periodic.c

@@ -13,7 +13,6 @@
 #include "keyboard.h"
 #include "supervisor.h"
 #include "calcul_order.h"
-#include "calcul_tag.h"
 /**********************************************************************************/
 /* Global variables                                                               */
 /**********************************************************************************/
@@ -108,11 +107,6 @@ int main (int argc, char *argv[])
     	pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
 #endif
 
-#ifdef ENABLE_CALCUL_TAG
-    	/* Initialize the mission thread */
-        printf("\n\rStarting th_calcul_tag");
-    	pthread_create (&th_calcul_tag, NULL, calcul_tag_thread, NULL);
-#endif
         /* Waiting the end of keyboard thread */
         pthread_join(th_keyboard, NULL);
         printf("\n\rTh_keyboard closed");

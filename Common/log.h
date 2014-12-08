@@ -23,6 +23,10 @@
 #define LOG_ERR_WRITE	0x4 // Error while writing to file
 #define LOG_IGNORED		0xf // The log string was not written to the file because of the log level
 
+#ifdef __cplusplus
+#include <cstdarg>
+#include <iostream>
+#endif
 
 /**
  * \fn 		int LOG_Init(char * I_filename)
