@@ -19,7 +19,10 @@
 /**********************************************************************************/
 /* Global variables 								*/
 /**********************************************************************************/
-
+/* informed the mission's status */
+/*	0 : The drone are going toward the case */
+/*	1 : The drone are returning toward the base */
+int round_mission = 0;
 /**********************************************************************************/
 /* Procedures									*/
 /**********************************************************************************/
@@ -38,10 +41,8 @@ extern Position position_tag;
  */
 void* calcul_order_thread(void* arg)
 {
-    	int cpt_AT_cmd = 0;
-	int cpt_mission = 0;
-	int x = 0, y = 0, found_ou_pas_found = 0;
-	Position pos_tag;
+	int 		cpt_mission = 0;
+	Position 	pos_tag;
 
     	/* Make this thread periodic */
     	struct periodic_info info;
@@ -56,62 +57,19 @@ void* calcul_order_thread(void* arg)
 			if(cpt_mission == 0)
 			{
 				printf("\n\r\r----- MISSION - Beggin the mission");
+
+				// - Je reçois l'ordre du superviseur
+
+				// - Je'envoie un chroffre à detect_tag
 			}
 			else
 			{
-				/*If the drone is in flight phase*/
-				//if(ATcommand_FlyingState() == TRUE)
-				//{
-					//pos_tag = detect_wrapper("MOMO","triangle");
-					x 			= position_tag.abs;
-					y 			= position_tag.ord;
-					found_ou_pas_found 	= position_tag.found;
-					printf("\n\r\r----- MISSION - found = %d, x = %d, y=%d",found_ou_pas_found,x,y);
-					if(found_ou_pas_found == 1)
-					{
-						//Si je suis au dessus du tag			
-						if((x < _X_TOL_MAX && x > _X_TOL_MIN) && (y < _Y_TOL_MAX && y > _Y_TOL_MIN))
-						{
-							stop_mission();
-							printf("\n\r\r----- MISSION - ****** END ****** LANDING");
-						}
-						//Si je ne suis pas au dessus du tag
-						else
-						{
-							if(x < _PIXEL_X_MIDDLE)
-							{
-								if(y < _PIXEL_Y_MIDDLE)
-								{
-									//En bas à gauche
-									printf("\n\r\r----- MISSION - je vais en bas/droite");
-								}
-								else
-								{
-									//En haut à gauche
-									printf("\n\r\rMISSION - je vais en haut/droite");	
-								}
-							}
-							else
-							{	
-								if(y < _PIXEL_Y_MIDDLE)
-								{
-									//En En bas à  droite
-									printf("\n\r\r----- MISSION - je vais en bas/gauche");
-								}
-								else
-								{
-									//En haut à droite
-									printf("\n\r\r----- MISSION - je vais en haut/gauche");	
-								}	
-							}
-						}
-						//voir dans detect_tag.h : remet à 0 cette variable pour ne pas diverger
-						reset_x_y_last();					
-					}
-					else
-					{
-						printf("\n\r\r----- MISSION - HOVERING");	
-					}
+				/*If the drone is in flight phase
+				if(ATcommand_FlyingState() == TRUE)
+				{*/
+					printf("\n\r\r----- MISSION - x = %d, y = %d",position_tag.abs,position_tag.ord);
+					//Donne un mouvement selon la position
+					posTag_ATcommand(position_tag.abs,position_tag.ord);					
 				/*}
 				else
 				{
@@ -123,8 +81,7 @@ void* calcul_order_thread(void* arg)
 		else
 		{
 			printf("\n\r\r----- MISSION - aucune mission");
-			cpt_mission = 0;
-			reset_x_y_last();	
+			cpt_mission = 0;	
 		}	
 		
 		printf("\n\r\r----- MISSION - cpt = %d\n",cpt_mission);
@@ -136,4 +93,66 @@ void* calcul_order_thread(void* arg)
     	printf("\n\rEnding calcul_order_thread");
 
     	return(NULL);
+}
+
+
+void posTag_ATcommand(int x,int y)
+{
+	if(x >= -POS_TOLERANCE && x <= POS_TOLERANCE)		//-120 <= X <= 120, CENTRE
+	{
+		if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)	  //-120 <= Y <= 120, CENTRE
+		{
+			if(round_mission == 0)
+			{			
+				printf("\n\r\r----- MISSION - je suis arrivé à la Case");
+				round_mission = 1;
+			}
+			else
+			{
+				printf("\n\r\r----- MISSION - [END] je suis arrivé à la Base");
+				round_mission = 0;
+			}	
+		}
+		if(y < -POS_TOLERANCE)			  	  //Y < -120 
+		{
+			printf("\n\r\r----- MISSION - je vais en haut");	
+		}
+		if(y > POS_TOLERANCE)			  	  //Y > 120
+		{
+			printf("\n\r\r----- MISSION - je vais en bas");	
+		}
+	}
+	if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)		//-120 <= Y <= 120, CENTRE
+	{
+		if(x < -POS_TOLERANCE)				  //X < -120 
+		{
+			printf("\n\r\r----- MISSION - je vais en gauche");	
+		}
+		if(x > POS_TOLERANCE)				  //X > 120
+		{
+			printf("\n\r\r----- MISSION - je vais en droite");	
+		}
+	}
+	if(x < -POS_TOLERANCE)					//X < -120 
+	{
+		if(y < -POS_TOLERANCE)				  //Y < -120 
+		{
+			printf("\n\r\r----- MISSION - je vais en gauche/haut");
+		}
+		if(y > POS_TOLERANCE)				  //Y > 120
+		{
+			printf("\n\r\r----- MISSION - je vais en gauche/bas");
+		}	
+	}
+	if(x > POS_TOLERANCE)					//X > 120
+	{
+		if(y < -POS_TOLERANCE)				  //Y < -120 
+		{
+			printf("\n\r\r----- MISSION - je vais en droite/haut");
+		}
+		if(y > POS_TOLERANCE)				  //Y > 120
+		{
+			printf("\n\r\r----- MISSION - je vais en droite/bas");
+		}	
+	}
 }
