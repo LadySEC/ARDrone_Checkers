@@ -64,10 +64,6 @@ int main (int argc, char *argv[])
     pthread_t       th_calcul_order;
 #endif
 
-#ifdef ENABLE_CALCUL_TAG
-    pthread_t       th_calcul_tag;
-#endif
-
 
     printf("\n\rStart\n\r");
 
@@ -121,11 +117,6 @@ int main (int argc, char *argv[])
 #ifdef ENABLE_CALCUL_ORDER      
         printf("\n\rClosing th_calcul_order");  
         pthread_cancel(th_calcul_order);
-#endif
-
-#ifdef ENABLE_CALCUL_TAG
-        printf("\n\rClosing th_calcul_tag");
-        pthread_cancel(th_calcul_tag);
 #endif
 
         printf("\n\rClosing th_ATcommand");

@@ -24,7 +24,7 @@
 #define SPVSR_CLIENT_PORT	4000u
 /* Temporisations */
 #define INTERACT_TEMPO		(unsigned int)1000000
-#define	RECV_BUFF_SIZE		20u
+#define	RECV_BUFF_SIZE		512u
 
 /**********************************************************************************/
 /* Types													      				  */
@@ -47,6 +47,7 @@ typedef enum
 /**********************************************************************************/
 T_error supervisor_initiate(void);
 void 	supervisor_close(void);
+unsigned char getSquare(void);
 
 /**********************************************************************************/
 /* Threads														     		  	  */
