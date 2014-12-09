@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QTcpSocket>
 #include <QDebug>
-#include <iostream>
+//#include <iostream>
 #include "global.h"
 
 class client: public QObject
@@ -12,7 +12,9 @@ Q_OBJECT
 public :
     client();
 public slots :
-    void recoit_texte(QString t); // en provenance de l'IHM et écrit sur la socket
+    //void recoit_texte(QString t); // en provenance de l'IHM et écrit sur la socket
+    void recoit_texte(QByteArray message); // en provenance de l'IHM et écrit sur la socket
+
     void connect_server() ;
 private slots :
     void connexion_OK();  // en provenance de la socket et émet un signal vers l'IHM
@@ -21,7 +23,7 @@ private slots :
 signals :
     void socket_connected();
     void socket_disconnected();
-    void vers_IHM_texte(QString);
+    void data_to_IHM(QChar mnemo/*, int sizeOfData*/, QByteArray data);
 private :
     QString IP;
     int port;

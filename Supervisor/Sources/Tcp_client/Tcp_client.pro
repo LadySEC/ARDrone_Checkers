@@ -16,7 +16,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        client.cpp
+        client.cpp \
+    global.cpp
 
 HEADERS  += mainwindow.h \
             client.h \

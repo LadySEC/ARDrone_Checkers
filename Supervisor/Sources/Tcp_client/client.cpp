@@ -18,12 +18,24 @@ void client::connect_server()
     soc.connectToHost(IP,port) ;
 }
 
+/*
 void client::recoit_texte(QString t)
 {
     QTextStream texte(&soc); // on associe un flux à la socket
     texte << t ;        // on écrit dans le flux le texte saisi dans l'IHM
     qDebug() << t;
 }
+*/
+
+void client::recoit_texte(QByteArray message)
+{
+    QTextStream texte(&soc); // on associe un flux à la socket
+    texte << message ;        // on écrit dans le flux le texte saisi dans l'IHM
+    qDebug() << " MESSAGE TO SEND TO THE DRONE : " << message.toHex() << endl ;
+}
+
+
+
 void client::connexion_OK()
 {
     emit socket_connected(); // on envoie un signal à l'IHM
@@ -36,12 +48,64 @@ void client::connexion_stopped()
 
 void client::lecture()
 {
-    QString ligne;
-    while(soc.canReadLine()) // tant qu'il y a quelque chose à lire dans la socket
+    QByteArray ligne;
+
+
+
+    if(soc.bytesAvailable() > 0)
+        ligne+=soc.readAll();
+/*
+    qDebug() << "Message : " ;
+    QString message = " " ;
+    for (int i = 0 ; i < ligne.size() ; i++)
     {
-        ligne = soc.readLine();     // on lit une ligne
-        qDebug() << ligne ;
-        std::cout << ligne.toStdString() << endl ;
-        emit vers_IHM_texte(ligne); // on envoie à l'IHM
+        message += QString("%1").arg(ligne.at(i) , 0, 16) ;
     }
+    qDebug() << message << endl ;
+*/
+    int numOc = 0 ;
+    int taille ;
+    QByteArray mess ;
+    qDebug() << "message : " << ligne.toHex();
+
+    while (numOc < ligne.size())
+    {
+        mess.clear();
+        QChar mnemo = ligne.at(numOc) ;
+        qDebug() << "mnemo : " << mnemo ;
+        numOc++ ;
+        taille = ligne.at(numOc) ;
+        qDebug() << "Nombre d'octets : " << taille ;
+        numOc++ ;
+
+        for (int j = 0 ; j < taille ; j++)
+        {
+            mess.append(ligne.at(numOc+j))  ;
+        }
+        qDebug() << mess.toHex() << endl ;
+
+        emit(data_to_IHM(mnemo/*, taille*/, mess));
+
+        numOc += taille ;
+    }
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
