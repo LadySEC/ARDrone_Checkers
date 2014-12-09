@@ -47,7 +47,8 @@ int statemission = 0;
  */
 void* calcul_order_thread(void* arg)
 {
-	int 		cpt_mission = 0;
+	int 		cpt_mission 	= 0;
+	int		num_square	= 0;
 	T_Position 	pos_tag;
 
     	/* Make this thread periodic */
@@ -56,9 +57,12 @@ void* calcul_order_thread(void* arg)
 
     	while(1)
     	{
-		/* Triggered with 'M_KEY' if you are not executing one mission*/
-		if(get_mission() == TRUE)
+		/* Triggered the mission mode*/
+		if(getSquare() != 0)
 		{
+			/* check the square number sent by the supervisor */
+			num_square = getSquare();
+
 			if(cpt_mission == 0)
 			{
 				printf("\n\r\r----- MISSION - Begin the mission");
@@ -70,8 +74,17 @@ void* calcul_order_thread(void* arg)
 					/* For the supervisor */
 					statemission = 1;
 
-					/* ??? */
-					pos_tag = W_getPosition(5, 2);
+					if (round_mission == 1)
+					{
+						/* direction : case */
+						pos_tag = W_getPosition(5, num_square);
+					}
+					else
+					{
+						/* direction : base */
+						pos_tag = W_getPosition(num_square, 5);
+					}
+
 					printf("\n\r\r----- MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
 
 					/* Sent AT_command according to the (x;y) */
@@ -87,6 +100,7 @@ void* calcul_order_thread(void* arg)
 		else
 		{
 			printf("\n\r\r----- MISSION - aucune mission");
+			statemission = 0;
 			cpt_mission = 0;	
 		}	
 		
