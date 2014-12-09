@@ -246,44 +246,14 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
         		case M_KEY :
-        		    /* If we clic on 'M' during a mission */
         		    if(G_triggered_mission == TRUE)
         		    {
-                    #if 0
-            			//If the drone is in flight phase*
-            			if(ATcommand_FlyingState() == TRUE)
-            			{
-            				ATcommand_process(LANDING);
-            				printf("\n\r---------------------------------------------------");
-            				printf("\n\n\rMISSION - End of the mission");
-            				printf("\n\r---------------------------------------------------");
-            			}
-                    #endif
-
-            			//We exit the MISSION MODE
-                        G_triggered_mission = FALSE;
+                        	G_triggered_mission = FALSE;
         		    }
-        		    /* If we clic on 'M' outside of the MISSION MODE */
         		    else 
         		    {
-                    #if 0
-        		       	ATcommand_process(TRIM);
-                        sleep(2u);
-        		
-            			//If the drone is not in flight phase
-            			if(ATcommand_FlyingState() == FALSE)
-            			{
-            				ATcommand_process(TAKEOFF);
-            				while(ATcommand_FlyingState() == FALSE);
-            				printf("\n\r---------------------------------------------------");
-            				printf("\n\n\rMISSION - Takeoff");
-            				printf("\n\r---------------------------------------------------");
-            			}
-                    #endif
-
-            			//We enter in the MISSION MODE
             			G_triggered_mission = TRUE;
-            		}
+            		    }
                     break;
             }
         }

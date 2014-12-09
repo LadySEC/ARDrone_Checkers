@@ -19,10 +19,17 @@
 /**********************************************************************************/
 /* Global variables 								*/
 /**********************************************************************************/
-/* informed the mission's status */
-/*	0 : The drone are going toward the case */
-/*	1 : The drone are returning toward the base */
+
+/* informed the mission's round 						*/
+/*	0 : The drone are going toward the case 				*/
+/*	1 : The drone are returning toward the base 				*/
 int round_mission = 0;
+
+/* informed the mission's status 						*/
+/*	0 : The drone did not finshed the mission asked by the supervisor 	*/
+/*	1 : The drone fished the mission asked by he supervisor 		*/
+int statemission = 0;
+
 /**********************************************************************************/
 /* Procedures									*/
 /**********************************************************************************/
@@ -52,27 +59,28 @@ void* calcul_order_thread(void* arg)
 		/* Triggered with 'M_KEY' if you are not executing one mission*/
 		if(get_mission() == TRUE)
 		{
-			
 			if(cpt_mission == 0)
 			{
-				printf("\n\r\r----- MISSION - Beggin the mission");
-
-				// - Je reçois l'ordre du superviseur
+				printf("\n\r\r----- MISSION - Begin the mission");
 			}
 			else
 			{
-				/*If the drone is in flight phase
 				if(ATcommand_FlyingState() == TRUE)
-				{*/
+				{
+					/* For the supervisor */
+					statemission = 1;
+
+					/* ??? */
 					pos_tag = W_getPosition(5, 2);
 					printf("\n\r\r----- MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
-					//Donne un mouvement selon la position
+
+					/* Sent AT_command according to the (x;y) */
 					posTag_ATcommand(pos_tag.abs,pos_tag.ord);					
-				/*}
+				}
 				else
 				{
 					printf("\n\r\rMISSION - You have to take off !");					
-				}*/
+				}
 			}
 			cpt_mission ++;	
 		}
@@ -102,28 +110,38 @@ void posTag_ATcommand(int x,int y)
 		{
 			if(round_mission == 0)
 			{			
-				printf("\n\r\r----- MISSION - je suis arrivé à la Case");
+				printf("\n\r\r----- MISSION - je suis arrive a la Case");
+				ATcommand_moveDelay(HOVERING_BUFF, 800000);
+		
+				/* The first round of this mission is finished */
 				round_mission = 1;
-
-                        ATcommand_moveDelay(VERTICAL_UP, 800000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 800000);
-                        ATcommand_moveDelay(VERTICAL_DOWN, 800000);
 			}
 			else
 			{
-				printf("\n\r\r----- MISSION - [END] je suis arrivé à la Base");
+				printf("\n\r\r----- MISSION - [END] je suis arrive a la Base");
+		            	ATcommand_moveDelay(HOVERING_BUFF, 2000000);
+		            	ATcommand_process(LANDING);
+			        printf("\n\r\r              - LANDING");
+
+				/* Reset the mode mission ('M') for the keyboard.c */
+				stop_mission();
+
+				/* The second round of this mission is finished */
 				round_mission = 0;
+
+				/* For the supervisor */
+				statemission = 0;
 			}	
 		}
 		if(y < -POS_TOLERANCE)			  	  //Y < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en haut");
-                        ATcommand_moveDelay(PITCH_DOWN, 100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
 		}
 		if(y > POS_TOLERANCE)			  	  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en bas");	
-                        ATcommand_moveDelay(PITCH_UP, 100000);
+                        ATcommand_moveDelay(PITCH_UP, 		100000);
 		}
 	}
 	if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)		//-120 <= Y <= 120, CENTRE
@@ -131,12 +149,12 @@ void posTag_ATcommand(int x,int y)
 		if(x < -POS_TOLERANCE)				  //X < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche");	
-                        ATcommand_moveDelay(ROLL_LEFT, 100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
 		}
 		if(x > POS_TOLERANCE)				  //X > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en droite");	
-                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
 		}
 	}
 	if(x < -POS_TOLERANCE)					//X < -120 
@@ -144,17 +162,17 @@ void posTag_ATcommand(int x,int y)
 		if(y < -POS_TOLERANCE)				  //Y < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/haut");
-                        ATcommand_moveDelay(ROLL_LEFT, 100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
-                        ATcommand_moveDelay(PITCH_DOWN, 100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
 
 		}
 		if(y > POS_TOLERANCE)				  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/bas");
-                        ATcommand_moveDelay(ROLL_LEFT, 100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
-                        ATcommand_moveDelay(PITCH_UP, 100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
+                        ATcommand_moveDelay(PITCH_UP, 		100000);
 		}	
 	}
 	if(x > POS_TOLERANCE)					//X > 120
@@ -162,16 +180,21 @@ void posTag_ATcommand(int x,int y)
 		if(y < -POS_TOLERANCE)				  //Y < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/haut");
-                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
-                        ATcommand_moveDelay(PITCH_DOWN, 100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
 		}
 		if(y > POS_TOLERANCE)				  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/bas");
-                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
-                        ATcommand_moveDelay(PITCH_UP, 100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
+                        ATcommand_moveDelay(PITCH_UP, 		100000);
 		}	
 	}
+}
+
+int get_stateMission(void)
+{
+	return statemission;
 }

@@ -29,38 +29,6 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>230</y>
-      <width>87</width>
-      <height>62</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QPushButton" name="button_takeoff">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>takeoff</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="button_landing">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>landing</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
       <x>30</x>
       <y>10</y>
       <width>181</width>
@@ -79,22 +47,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button_exit">
+      <widget class="QPushButton" name="button_disconnect">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="text">
         <string>Disconnect</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_connected">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Connected</string>
        </property>
       </widget>
      </item>
@@ -113,7 +71,7 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_title">
     <property name="geometry">
      <rect>
       <x>700</x>
@@ -222,7 +180,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_Current_Status">
+      <widget class="QLabel" name="label_Value_Mission_Status">
        <property name="text">
         <string/>
        </property>
@@ -260,7 +218,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_Current_Square">
+      <widget class="QLabel" name="label_Value_Searched_Square">
        <property name="text">
         <string/>
        </property>
@@ -389,7 +347,7 @@
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>310</y>
+      <y>300</y>
       <width>501</width>
       <height>20</height>
      </rect>
@@ -398,7 +356,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_Column_A">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -411,7 +369,7 @@
      <string>A</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="label_Column_B">
     <property name="geometry">
      <rect>
       <x>710</x>
@@ -424,7 +382,7 @@
      <string>B</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="label_Square_C">
     <property name="geometry">
      <rect>
       <x>840</x>
@@ -437,7 +395,7 @@
      <string>C</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_5">
+   <widget class="QLabel" name="label_Line_1">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -450,7 +408,7 @@
      <string>1</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_6">
+   <widget class="QLabel" name="label_Line_2">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -463,7 +421,7 @@
      <string>2</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7">
+   <widget class="QLabel" name="label_Line_3">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -476,7 +434,7 @@
      <string>3</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>500</x>
@@ -487,9 +445,15 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="4" column="0">
-      <widget class="QPushButton" name="button_green_circle">
+      <widget class="QPushButton" name="button_A_2">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -497,9 +461,15 @@
       </widget>
      </item>
      <item row="4" column="2">
-      <widget class="QPushButton" name="button_red_rectangle">
+      <widget class="QPushButton" name="button_B_2">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -507,9 +477,15 @@
       </widget>
      </item>
      <item row="0" column="4">
-      <widget class="QPushButton" name="button_green_rectangle">
+      <widget class="QPushButton" name="button_C_1">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -517,9 +493,15 @@
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QPushButton" name="button_blue_circle">
+      <widget class="QPushButton" name="button_B_1">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -566,9 +548,15 @@
       </spacer>
      </item>
      <item row="4" column="4">
-      <widget class="QPushButton" name="button_blue_triangle">
+      <widget class="QPushButton" name="button_C_2">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -589,9 +577,15 @@
       </spacer>
      </item>
      <item row="0" column="0">
-      <widget class="QPushButton" name="button_red_triangle">
+      <widget class="QPushButton" name="button_A_1">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -599,9 +593,15 @@
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QPushButton" name="button_blue_rectangle">
+      <widget class="QPushButton" name="button_A_3">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -609,9 +609,15 @@
       </widget>
      </item>
      <item row="6" column="2">
-      <widget class="QPushButton" name="button_green_triangle">
+      <widget class="QPushButton" name="button_B_3">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
@@ -619,14 +625,242 @@
       </widget>
      </item>
      <item row="6" column="4">
-      <widget class="QPushButton" name="button_red_circle">
+      <widget class="QPushButton" name="button_C_3">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="text">
         <string/>
        </property>
       </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="label_Connected">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>20</y>
+      <width>131</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Disconnected</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>41</x>
+      <y>130</y>
+      <width>348</width>
+      <height>257</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QLabel" name="label_Flight_Status">
+         <property name="text">
+          <string>Flight status :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_value_flight_status">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_Battery_Level">
+         <property name="text">
+          <string>Battery level :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_Value_Battery">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="battery_progressBar">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>10</height>
+          </size>
+         </property>
+         <property name="value">
+          <number>24</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>18</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_Altitude">
+           <property name="text">
+            <string>Altitude : </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Altitude">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="altitude_LCD"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_Horizontal_Speed">
+           <property name="text">
+            <string>Horizontal Speed :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Vertical_Speed">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_Vertical_Speed">
+           <property name="text">
+            <string>Vertical Speed :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Horizontal_Speed">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>346</width>
+         <height>13</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="label_Theta_Angle">
+           <property name="text">
+            <string>Theta angle :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Theta_Angle">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_Phi_Angle">
+           <property name="text">
+            <string>Phi angle :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Phi_Angle">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_Psi_Angle">
+           <property name="text">
+            <string>Psi angle :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Value_Psi_Angle">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -638,17 +872,20 @@
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>line</zorder>
-   <zorder>label</zorder>
+   <zorder>label_title</zorder>
    <zorder>line_2</zorder>
    <zorder>line_3</zorder>
    <zorder>line_4</zorder>
    <zorder>line_5</zorder>
-   <zorder>label_2</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_4</zorder>
-   <zorder>label_5</zorder>
-   <zorder>label_6</zorder>
-   <zorder>label_7</zorder>
+   <zorder>label_Column_A</zorder>
+   <zorder>label_Column_B</zorder>
+   <zorder>label_Square_C</zorder>
+   <zorder>label_Line_1</zorder>
+   <zorder>label_Line_2</zorder>
+   <zorder>label_Line_3</zorder>
+   <zorder>label_Connected</zorder>
+   <zorder>label_Flight_Status</zorder>
+   <zorder>label_value_flight_status</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

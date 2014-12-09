@@ -19,9 +19,10 @@
 /* Global variables 															  */
 /**********************************************************************************/
 /* Socket */
-T_comm* 	   G_comm_SPVSR;
+T_comm* 	       G_comm_SPVSR;
 /* Buffer */
-char	       G_orders[RECV_BUFF_SIZE];
+char	           G_orders[RECV_BUFF_SIZE];
+unsigned char      G_square = 0u;
 
 /**********************************************************************************/
 /* Procedures														      		  */
@@ -92,7 +93,6 @@ void supervisor_sendData(T_TCP_DATA I_data, char* arg)
         case TARGET_TCP:
             frame[1u] = 2u;
             frame[2u] = arg[0u];
-            frame[3u] = arg[1u];
             break;
 
         //Tested
@@ -146,12 +146,12 @@ void* supervisor_thread_interact(void* arg)
     struct              periodic_info info;
     char                test[2u];
     T_reception_state   state;
-    char                order_string[30u];
+    char                order_string[50u];
 
 #ifdef PRINT_TCPUDP_DATA_SENT
     T_bool              print = TRUE;
     char                frame_received[(RECV_BUFF_SIZE*3u) + 1u];
-    char                byte_ascii[4u];
+    char                byte_ascii[20u];
     unsigned char       index;
     unsigned char       index_frame = 0u;
 #endif
@@ -186,6 +186,7 @@ void* supervisor_thread_interact(void* arg)
                     {
                         case TAKEOFF_TCP:
                             /* Takeoff */
+                            printf("\n\rTakeoff : %d", G_orders[2u]);
                             if(G_orders[2u] == 1u)
                             {
                                 if(ATcommand_enoughBattery() == TRUE)
@@ -227,12 +228,11 @@ void* supervisor_thread_interact(void* arg)
 
                         /* incomplete */
                         case TARGET_TCP:
+                            printf("\n\rTarget : %d", G_orders[2u]);
                             /* Do nothing for the moment */
-                            ATcommand_moveDelay(PITCH_DOWN,     500000);
-                            ATcommand_moveDelay(HOVERING_BUFF,  2000000);
-                            ATcommand_moveDelay(ROLL_LEFT,      1500000);
+                            G_square = G_orders[2u];
                             /* Update order to print */
-                            sprintf(order_string, "REACH SQUARE %c%c REQUESTED", G_orders[2u], G_orders[3u]);
+                            sprintf(order_string, "REACH SQUARE %d REQUESTED", G_orders[2u]);
                             break;
 
                         /* incomplete */
@@ -248,6 +248,7 @@ void* supervisor_thread_interact(void* arg)
                             break;
 
                         case DECON_TCP:
+                            printf("\n\rDeco : %d", G_orders[2u]);
                             if(G_orders[2u] == 1u)
                             {
                                 disconnected = TRUE;
@@ -265,8 +266,7 @@ void* supervisor_thread_interact(void* arg)
                     if(print == TRUE)
                     {
                         /* printf */
-                        sprintf(byte_ascii, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
-                        strcpy(frame_received, byte_ascii);
+                        sprintf(frame_received, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
                         index_frame = strlen(frame_received);
                         for(index = 0u; index < G_orders[1u]; index++)
                         {
@@ -274,7 +274,7 @@ void* supervisor_thread_interact(void* arg)
                             strcpy(&frame_received[index_frame], byte_ascii);
                             index_frame = strlen(frame_received);
                         }
-                        printf("\n\rBytes received: %s through TCP -> [%s]", frame_received, order_string);
+                        printf("%s through TCP -> [%s]", frame_received, order_string);
                     }
                     else
                     {
@@ -290,7 +290,7 @@ void* supervisor_thread_interact(void* arg)
             }
 
     #ifdef PRINT_TCPUDP_DATA_SENT
-            printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %d %d %d, Alt: %d, Speed: %d %d",
+            printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %f %f %f, Alt: %d, Speed: %d %d",
                     ATcommand_navdata()->ctrl_state,
                     (char)ATcommand_navdata()->vbat_flying_percentage,
                     (int)ATcommand_navdata()->theta,
@@ -307,6 +307,8 @@ void* supervisor_thread_interact(void* arg)
             supervisor_sendData(ANGLES_TCP,NULL);
             supervisor_sendData(ALTITUDE_TCP,NULL);
             supervisor_sendData(SPEEDS_TCP,NULL);
+            test[0] = 2;
+            supervisor_sendData(TARGET_TCP,test);
 
             /* Wait until the next period is achieved */
             wait_period (&info);
@@ -327,4 +329,9 @@ void* supervisor_thread_interact(void* arg)
 
     /* Close this thread */
     pthread_exit(NULL);
+}
+
+unsigned char getSquare(void)
+{
+    return(G_square);
 }
