@@ -159,174 +159,162 @@ void* supervisor_thread_interact(void* arg)
 
     make_periodic (INTERACT_TEMPO, &info);   
 
-    while(1)
+    while(disconnected == FALSE)
     {
-        while(disconnected == FALSE)
+        /* zero out the structure */
+        memset((char *) &G_orders, 0, sizeof(G_orders));
+
+        /* Read orders from the supervisor */
+        state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
+        if(state == RECEPTION_ERROR)
         {
-            /* zero out the structure */
-            memset((char *) &G_orders, 0, sizeof(G_orders));
-
-            /* Read orders from the supervisor */
-            state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
-            if(state == RECEPTION_ERROR)
+            disconnected = TRUE;
+        }
+        else
+        {
+            /* Identifying the state */
+            if(state == PACKET_RECEIVED)
             {
-                disconnected = TRUE;
-            }
-            else
-            {
-                /* Identifying the state */
-                if(state == PACKET_RECEIVED)
-                {
-                    #ifdef PRINT_TCPUDP_DATA_SENT
-                        print = TRUE;
-                    #endif
-
-                    /* Process the received command */
-                    switch((T_TCP_DATA)G_orders[0u])
-                    {
-                        case TAKEOFF_TCP:
-                            /* Takeoff */
-                            printf("\n\rTakeoff : %d", G_orders[2u]);
-                            if(G_orders[2u] == 1u)
-                            {
-                                if(ATcommand_enoughBattery() == TRUE)
-                                {
-                                    if(ATcommand_FlyingState() == FALSE)
-                                    {
-                                        /* Flat trim */
-                                        ATcommand_process(TRIM);
-                                        sleep(2u);
-                                        /* Take off */
-                                        ATcommand_process(TAKEOFF);
-                                        /* Wait the flying state */
-                                        while(ATcommand_FlyingState() != TRUE);
-                                    }
-                                }
-                                else
-                                {
-                                    /* Not enough battery to takeoff */
-                                    ATcommand_process(CONFIGURATION_IDS);
-                                    ATcommand_process(LED_ANIMATION);
-                                }
-                                /* Update order to print */
-                                strcpy(order_string, "TAKEOFF REQUESTED");
-                            }
-                            /* Landing */
-                            else
-                            {
-                                if(ATcommand_FlyingState() == TRUE)
-                                {
-                                    /* Landing */
-                                    ATcommand_process(LANDING);
-                                    /* Wait the landing state */
-                                    while(ATcommand_FlyingState() != FALSE);
-                                }
-                                /* Update order to print */
-                                strcpy(order_string, "LANDING REQUESTED");
-                            }
-                            break;
-
-                        /* incomplete */
-                        case TARGET_TCP:
-                            printf("\n\rTarget : %d", G_orders[2u]);
-                            /* Do nothing for the moment */
-                            G_square = G_orders[2u];
-                            /* Update order to print */
-                            sprintf(order_string, "REACH SQUARE %d REQUESTED", G_orders[2u]);
-                            break;
-
-                        /* incomplete */
-                        case STOP_TCP:
-                            if(G_orders[2u] == 1u)
-                            {
-                                strcpy(order_string, "RESUME GAME REQUESTED");
-                            }
-                            else
-                            {
-                                strcpy(order_string, "PAUSE GAME REQUESTED");
-                            }
-                            break;
-
-                        case DECON_TCP:
-                            printf("\n\rDeco : %d", G_orders[2u]);
-                            if(G_orders[2u] == 1u)
-                            {
-                                disconnected = TRUE;
-                                strcpy(order_string, "DISCONNECTION REQUESTED");
-                            }
-                            break;
-
-                        default:
-                        #ifdef PRINT_TCPUDP_DATA_SENT
-                            print = FALSE;
-                        #endif
-                            break;
-                    }
                 #ifdef PRINT_TCPUDP_DATA_SENT
-                    if(print == TRUE)
-                    {
-                        /* printf */
-                        sprintf(frame_received, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
-                        index_frame = strlen(frame_received);
-                        for(index = 0u; index < G_orders[1u]; index++)
-                        {
-                            sprintf(byte_ascii, " %x", G_orders[index + 2u]);
-                            strcpy(&frame_received[index_frame], byte_ascii);
-                            index_frame = strlen(frame_received);
-                        }
-                        printf("%s through TCP -> [%s]", frame_received, order_string);
-                    }
-                    else
-                    {
-                        printf("\n\rBytes received: ? through TCP");
-                    }
+                    print = TRUE;
                 #endif
-                        
+
+                /* Process the received command */
+                switch((T_TCP_DATA)G_orders[0u])
+                {
+                    case TAKEOFF_TCP:
+                        /* Takeoff */
+                        printf("\n\rTakeoff : %d", G_orders[2u]);
+                        if(G_orders[2u] == 1u)
+                        {
+                            if(ATcommand_enoughBattery() == TRUE)
+                            {
+                                if(ATcommand_FlyingState() == FALSE)
+                                {
+                                    /* Flat trim */
+                                    ATcommand_process(TRIM);
+                                    sleep(2u);
+                                    /* Take off */
+                                    ATcommand_process(TAKEOFF);
+                                    /* Wait the flying state */
+                                    while(ATcommand_FlyingState() != TRUE);
+                                }
+                            }
+                            else
+                            {
+                                /* Not enough battery to takeoff */
+                                ATcommand_process(CONFIGURATION_IDS);
+                                ATcommand_process(LED_ANIMATION);
+                            }
+                            /* Update order to print */
+                            strcpy(order_string, "TAKEOFF REQUESTED");
+                        }
+                        /* Landing */
+                        else
+                        {
+                            if(ATcommand_FlyingState() == TRUE)
+                            {
+                                /* Landing */
+                                ATcommand_process(LANDING);
+                                /* Wait the landing state */
+                                while(ATcommand_FlyingState() != FALSE);
+                            }
+                            /* Update order to print */
+                            strcpy(order_string, "LANDING REQUESTED");
+                        }
+                        break;
+
+                    /* incomplete */
+                    case TARGET_TCP:
+                        printf("\n\rTarget : %d", G_orders[2u]);
+                        /* Do nothing for the moment */
+                        G_square = G_orders[2u];
+                        /* Update order to print */
+                        sprintf(order_string, "REACH SQUARE %d REQUESTED", G_orders[2u]);
+                        break;
+
+                    /* incomplete */
+                    case STOP_TCP:
+                        if(G_orders[2u] == 1u)
+                        {
+                            strcpy(order_string, "RESUME GAME REQUESTED");
+                        }
+                        else
+                        {
+                            strcpy(order_string, "PAUSE GAME REQUESTED");
+                        }
+                        break;
+
+                    case DECON_TCP:
+                        printf("\n\rDeco : %d", G_orders[2u]);
+                        if(G_orders[2u] == 1u)
+                        {
+                            disconnected = TRUE;
+                            strcpy(order_string, "DISCONNECTION REQUESTED");
+                        }
+                        break;
+
+                    default:
+                    #ifdef PRINT_TCPUDP_DATA_SENT
+                        print = FALSE;
+                    #endif
+                        break;
+                }
+            #ifdef PRINT_TCPUDP_DATA_SENT
+                if(print == TRUE)
+                {
+                    /* printf */
+                    sprintf(frame_received, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
+                    index_frame = strlen(frame_received);
+                    for(index = 0u; index < G_orders[1u]; index++)
+                    {
+                        sprintf(byte_ascii, " %x", G_orders[index + 2u]);
+                        strcpy(&frame_received[index_frame], byte_ascii);
+                        index_frame = strlen(frame_received);
+                    }
+                    printf("%s through TCP -> [%s]", frame_received, order_string);
                 }
                 else
                 {
-                    /* Do nothing */
+                    printf("\n\rBytes received: ? through TCP");
                 }
+            #endif
+                    
             }
-
-    #ifdef PRINT_TCPUDP_DATA_SENT
-            printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %f %f %f, Alt: %d, Speed: %d %d",
-                    ATcommand_navdata()->ctrl_state,
-                    (char)ATcommand_navdata()->vbat_flying_percentage,
-                    (int)ATcommand_navdata()->theta,
-                    (int)ATcommand_navdata()->phi,
-                    (int)ATcommand_navdata()->psi,
-                    ATcommand_navdata()->altitude,
-                    (int)ATcommand_navdata()->vx,
-                    (int)ATcommand_navdata()->vy);
-    #endif
-
-            /* Share data with the supervisor */
-            supervisor_sendData(NAVDATA_TCP,NULL);
-            supervisor_sendData(BATTERY_TCP,NULL);
-            supervisor_sendData(ANGLES_TCP,NULL);
-            supervisor_sendData(ALTITUDE_TCP,NULL);
-            supervisor_sendData(SPEEDS_TCP,NULL);
-            test[0] = 2;
-            supervisor_sendData(TARGET_TCP,test);
-
-            /* Wait until the next period is achieved */
-            wait_period (&info);
+            else
+            {
+                /* Do nothing */
+            }
         }
 
-        printf("\n\rSupervisor disconnected");
-        /* Wait a reconnection */
-        while(keyboard_getRecoSupervisor() == FALSE);
-        keyboard_setRecoSupervisor(FALSE);
-        printf("\n\rReconnecting the supervisor");
-        /* Initialize the condition */
-        disconnected = FALSE;
-        /* Close */
-        supervisor_close();
-        /* Open */
-        supervisor_initiate();
+#ifdef PRINT_TCPUDP_DATA_SENT
+        printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %f %f %f, Alt: %d, Speed: %d %d",
+                ATcommand_navdata()->ctrl_state,
+                (char)ATcommand_navdata()->vbat_flying_percentage,
+                (int)ATcommand_navdata()->theta,
+                (int)ATcommand_navdata()->phi,
+                (int)ATcommand_navdata()->psi,
+                ATcommand_navdata()->altitude,
+                (int)ATcommand_navdata()->vx,
+                (int)ATcommand_navdata()->vy);
+#endif
+
+        /* Share data with the supervisor */
+        supervisor_sendData(NAVDATA_TCP,NULL);
+        supervisor_sendData(BATTERY_TCP,NULL);
+        supervisor_sendData(ANGLES_TCP,NULL);
+        supervisor_sendData(ALTITUDE_TCP,NULL);
+        supervisor_sendData(SPEEDS_TCP,NULL);
+        test[0] = 2;
+        supervisor_sendData(TARGET_TCP,test);
+
+        /* Wait until the next period is achieved */
+        wait_period (&info);
     }
 
+    printf("\n\rSupervisor disconnected");
+    /* Close */
+    supervisor_close();
     /* Close this thread */
     pthread_exit(NULL);
 }
