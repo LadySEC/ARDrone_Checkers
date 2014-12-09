@@ -41,10 +41,10 @@
 #define NAV_CLIENT_PORT		15214u 													/*!< UDP client port for starting navdata emission */
 #define NAV_SERVER_PORT		5554u 													/*!< UDP server port for reading navdata */
 /* Commands constants */
-#define YAW_CONSTANT		0.2f//0.3f
-#define PITCH_CONSTANT		0.2f//0.2f
-#define ROLL_CONSTANT		0.2f//0.1f
-#define VERTICAL_CONSTANT	0.2f//0.5f
+#define YAW_CONSTANT		0.15f//0.3f
+#define PITCH_CONSTANT		0.15f//0.2f
+#define ROLL_CONSTANT		0.15f//0.1f
+#define VERTICAL_CONSTANT	0.15f//0.5f
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
