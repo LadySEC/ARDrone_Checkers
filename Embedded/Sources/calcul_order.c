@@ -64,7 +64,7 @@ void* calcul_order_thread(void* arg)
 				/*If the drone is in flight phase
 				if(ATcommand_FlyingState() == TRUE)
 				{*/
-					pos_tag = W_getPosition(5, 3);
+					pos_tag = W_getPosition(5, 2);
 					printf("\n\r\r----- MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
 					//Donne un mouvement selon la position
 					posTag_ATcommand(pos_tag.abs,pos_tag.ord);					
@@ -104,6 +104,10 @@ void posTag_ATcommand(int x,int y)
 			{			
 				printf("\n\r\r----- MISSION - je suis arrivé à la Case");
 				round_mission = 1;
+
+                        ATcommand_moveDelay(VERTICAL_UP, 800000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 800000);
+                        ATcommand_moveDelay(VERTICAL_DOWN, 800000);
 			}
 			else
 			{
@@ -113,11 +117,13 @@ void posTag_ATcommand(int x,int y)
 		}
 		if(y < -POS_TOLERANCE)			  	  //Y < -120 
 		{
-			printf("\n\r\r----- MISSION - je vais en haut");	
+			printf("\n\r\r----- MISSION - je vais en haut");
+                        ATcommand_moveDelay(PITCH_DOWN, 100000);
 		}
 		if(y > POS_TOLERANCE)			  	  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en bas");	
+                        ATcommand_moveDelay(PITCH_UP, 100000);
 		}
 	}
 	if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)		//-120 <= Y <= 120, CENTRE
@@ -125,10 +131,12 @@ void posTag_ATcommand(int x,int y)
 		if(x < -POS_TOLERANCE)				  //X < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche");	
+                        ATcommand_moveDelay(ROLL_LEFT, 100000);
 		}
 		if(x > POS_TOLERANCE)				  //X > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en droite");	
+                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
 		}
 	}
 	if(x < -POS_TOLERANCE)					//X < -120 
@@ -136,10 +144,17 @@ void posTag_ATcommand(int x,int y)
 		if(y < -POS_TOLERANCE)				  //Y < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/haut");
+                        ATcommand_moveDelay(ROLL_LEFT, 100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 100000);
+
 		}
 		if(y > POS_TOLERANCE)				  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/bas");
+                        ATcommand_moveDelay(ROLL_LEFT, 100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
+                        ATcommand_moveDelay(PITCH_UP, 100000);
 		}	
 	}
 	if(x > POS_TOLERANCE)					//X > 120
@@ -147,10 +162,16 @@ void posTag_ATcommand(int x,int y)
 		if(y < -POS_TOLERANCE)				  //Y < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/haut");
+                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 100000);
 		}
 		if(y > POS_TOLERANCE)				  //Y > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/bas");
+                        ATcommand_moveDelay(ROLL_RIGHT, 100000);
+                        ATcommand_moveDelay(HOVERING_BUFF, 100000);
+                        ATcommand_moveDelay(PITCH_UP, 100000);
 		}	
 	}
 }
