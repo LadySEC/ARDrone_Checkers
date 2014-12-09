@@ -31,12 +31,13 @@
 #define C_B_MAX_B 255
 
 // Paramétrages supplémentaires de la détection des couleurs
-#define C_MIN_PIXELS		10
-#define C_DOWNSCALING_STEP	10
-#define C_WINDOW_LEFT		440
-#define C_WINDOW_RIGHT		440
-#define C_WINDOW_TOP		200
-#define C_WINDOW_BOTTOM		120
+#define C_MIN_PIXELS		15
+#define C_DOWNSCALING_STEP	5
+#define C_WINDOW_LEFT		280
+#define C_WINDOW_RIGHT		280
+#define C_WINDOW_TOP		0
+#define C_WINDOW_BOTTOM		0
+#define C_DIST_TO_TARGET	300
 
 typedef struct {
 	int abs;

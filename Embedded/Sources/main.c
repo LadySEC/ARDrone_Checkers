@@ -13,6 +13,7 @@
 #include "keyboard.h"
 #include "supervisor.h"
 #include "calcul_order.h"
+#include "../../Common/log.h"
 /**********************************************************************************/
 /* Global variables                                                               */
 /**********************************************************************************/
@@ -51,9 +52,13 @@ void RTsignals_init(void)
  */
 int main (int argc, char *argv[])
 {
+	int logLevel = LOG_DEBUG;
     /* Basic threads */
     pthread_t       th_ATcommand;
     pthread_t       th_keyboard;
+	
+	if (argc == 2) { logLevel = atoi(argv[1]); }
+	LOG_Init("log.log", logLevel);
 
     /* Additional threads */
 #ifdef ENABLE_SUPERVISOR
@@ -138,6 +143,8 @@ int main (int argc, char *argv[])
     {
         printf("\n\rUnable to initiate the communication with the Parrot server");
     }
+	
+	LOG_End();
 
     printf("\n\r\n\rEnd\n\r");
     return(0);

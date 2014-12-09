@@ -10,6 +10,10 @@
 #ifndef _LOG_H_
 #define _LOG_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define LOG_DEBUG		4	// Verbose mode, used to log repetitive actions such as AT commands
 #define LOG_INFO		3	// Information mode, used to log interesting actions and events
 #define	LOG_WARN		2	// Warning mode, used to log unexpected events or small problems
@@ -23,10 +27,7 @@
 #define LOG_ERR_WRITE	0x4 // Error while writing to file
 #define LOG_IGNORED		0xf // The log string was not written to the file because of the log level
 
-#ifdef __cplusplus
-#include <cstdarg>
-#include <iostream>
-#endif
+
 
 /**
  * \fn 		int LOG_Init(char * I_filename)
@@ -70,5 +71,8 @@ int LOG_WriteLevel(int I_logLevel, char * I_format, ...);
  */
 int LOG_End();
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
