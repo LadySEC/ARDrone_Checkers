@@ -32,22 +32,23 @@ static const uint qt_meta_data_client[] = {
  // signals: signature, parameters, type, tag, flags
        8,    7,    7,    7, 0x05,
       27,    7,    7,    7, 0x05,
-      49,    7,    7,    7, 0x05,
+      60,   49,    7,    7, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      75,   73,    7,    7, 0x0a,
-      97,    7,    7,    7, 0x0a,
-     114,    7,    7,    7, 0x08,
-     129,    7,    7,    7, 0x08,
-     149,    7,    7,    7, 0x08,
+      98,   90,    7,    7, 0x0a,
+     123,    7,    7,    7, 0x0a,
+     140,    7,    7,    7, 0x08,
+     155,    7,    7,    7, 0x08,
+     175,    7,    7,    7, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_client[] = {
     "client\0\0socket_connected()\0"
-    "socket_disconnected()\0vers_IHM_texte(QString)\0"
-    "t\0recoit_texte(QString)\0connect_server()\0"
+    "socket_disconnected()\0mnemo,data\0"
+    "data_to_IHM(QChar,QByteArray)\0message\0"
+    "recoit_texte(QByteArray)\0connect_server()\0"
     "connexion_OK()\0connexion_stopped()\0"
     "lecture()\0"
 };
@@ -60,8 +61,8 @@ void client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         switch (_id) {
         case 0: _t->socket_connected(); break;
         case 1: _t->socket_disconnected(); break;
-        case 2: _t->vers_IHM_texte((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 3: _t->recoit_texte((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 2: _t->data_to_IHM((*reinterpret_cast< QChar(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
+        case 3: _t->recoit_texte((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         case 4: _t->connect_server(); break;
         case 5: _t->connexion_OK(); break;
         case 6: _t->connexion_stopped(); break;
@@ -123,9 +124,9 @@ void client::socket_disconnected()
 }
 
 // SIGNAL 2
-void client::vers_IHM_texte(QString _t1)
+void client::data_to_IHM(QChar _t1, QByteArray _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE
