@@ -146,12 +146,12 @@ void* supervisor_thread_interact(void* arg)
     struct              periodic_info info;
     char                test[2u];
     T_reception_state   state;
-    char                order_string[30u];
+    char                order_string[50u];
 
 #ifdef PRINT_TCPUDP_DATA_SENT
     T_bool              print = TRUE;
     char                frame_received[(RECV_BUFF_SIZE*3u) + 1u];
-    char                byte_ascii[4u];
+    char                byte_ascii[20u];
     unsigned char       index;
     unsigned char       index_frame = 0u;
 #endif
@@ -266,8 +266,7 @@ void* supervisor_thread_interact(void* arg)
                     if(print == TRUE)
                     {
                         /* printf */
-                        sprintf(byte_ascii, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
-                        strcpy(frame_received, byte_ascii);
+                        sprintf(frame_received, "\n\rBytes received: %x %x", G_orders[0u], G_orders[1u]);
                         index_frame = strlen(frame_received);
                         for(index = 0u; index < G_orders[1u]; index++)
                         {
@@ -275,7 +274,7 @@ void* supervisor_thread_interact(void* arg)
                             strcpy(&frame_received[index_frame], byte_ascii);
                             index_frame = strlen(frame_received);
                         }
-                        printf("\n\rBytes received: %s through TCP -> [%s]", frame_received, order_string);
+                        printf("%s through TCP -> [%s]", frame_received, order_string);
                     }
                     else
                     {
