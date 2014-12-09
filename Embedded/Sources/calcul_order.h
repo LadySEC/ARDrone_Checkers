@@ -34,5 +34,5 @@ void 	posTag_ATcommand(int x,int y);
 /* Threads						     		  	  */
 /**********************************************************************************/
 void* 	calcul_order_thread(void* arg);
-
+int	get_stateMission(void);
 #endif //! _SUPERVISOR_H_
