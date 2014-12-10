@@ -74,7 +74,7 @@ void* calcul_order_thread(void* arg)
 					/* For the supervisor */
 					statemission = 1;
 
-					if (round_mission == 1)
+					if (round_mission == 0)
 					{
 						/* direction : case */
 						pos_tag = W_getPosition(5, num_square);
@@ -124,11 +124,22 @@ void posTag_ATcommand(int x,int y)
 		{
 			if(round_mission == 0)
 			{			
-				printf("\n\r\r----- MISSION - je suis arrive a la Case");
+				/*printf("\n\r\r----- MISSION - je suis arrive a la Case");
 				ATcommand_moveDelay(HOVERING_BUFF, 800000);
 		
-				/* The first round of this mission is finished */
-				round_mission = 1;
+				// The first round of this mission is finished 
+				round_mission = 1;*/
+
+				printf("\n\r\r----- MISSION - [END] je suis arrive a la Case");
+		            	ATcommand_process(LANDING);
+			        printf("\n\r\r              - LANDING");
+
+				/* Reset the mode mission ('M') for the keyboard.c */
+				stop_mission();
+
+				/* For the supervisor */
+				statemission = 0;
+
 			}
 			else
 			{
