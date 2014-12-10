@@ -27,7 +27,7 @@
 #define NB_MAX_CHAR			30u														/*!< Maximum lenght of a string argument */
 #define NB_AT_COMMANDS		9u														/*!< Number of different AT commands */
 #define NB_MAX_COMMANDS		20u														/*!< Size of the commands buffer */
-#define NB_ORDERS			29u 													/*!< Number of high-level orders available */
+#define NB_ORDERS			33u 													/*!< Number of high-level orders available */
 /* Temporisations */
 #define BUFFER_TEMPO		(unsigned int)30000										/*!< at_command thread temporisation */
 #define DEFAULT_DELAY		(unsigned int)3*BUFFER_TEMPO
@@ -85,6 +85,10 @@ typedef enum
 	PITCH_DOWN,
 	VERTICAL_UP,
 	VERTICAL_DOWN,
+	PITCH_DOWN_ROLL_RIGHT,
+	PITCH_DOWN_ROLL_LEFT,
+	PITCH_UP_ROLL_RIGHT,
+	PITCH_UP_ROLL_LEFT,
 	CONFIGURATION_IDS,
 	INIT_NAVDATA,
 	LED_ANIMATION,

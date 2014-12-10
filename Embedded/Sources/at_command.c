@@ -23,7 +23,7 @@ static const char* C_APPLICATION_ID 			= "00000000";
 /* Arrays */
 static const char* C_COMMANDS[NB_AT_COMMANDS] 	= { "AT*REF", "AT*PCMD", "AT*PCMD_MAG", "AT*FTRIM", "AT*CONFIG", "AT*CONFIG_IDS", "AT*COMWDG", "AT*CALIB", "AT*CTRL" };
 static const char* C_ORDERS[NB_ORDERS] 			= { "TRIM", "TAKEOFF", "LANDING", "EMERGENCY", "HOVERING", "HOVERING_BUFF", "YAW_LEFT", "YAW_RIGHT", "ROLL_LEFT", "ROLL_RIGHT", "PITCH_UP", 
-    "PITCH_DOWN", "VERTICAL_UP", "VERTICAL_DOWN", "CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
+    "PITCH_DOWN", "VERTICAL_UP", "VERTICAL_DOWN", "PITCH_DOWN_ROLL_RIGHT", "PITCH_DOWN_ROLL_LEFT", "PITCH_UP_ROLL_RIGHT", "PITCH_UP_ROLL_LEFT","CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
     "RESET_WATCHDOG", "REMOVE_CONFIGS", "CHANGE_SESSION", "CHANGE_PROFILE", "CHANGE_APP", "CHANGE_SSID", "ENABLE_VIDEO", "DISABLE_VIDEO",
     "ENABLE_VISION", "DISABLE_VISION"};
 
@@ -356,6 +356,50 @@ void ATcommand_process(T_ATorders I_order)
             ATarguments[1u].integer = 0u;
             ATarguments[2u].integer = 0u;
             ATarguments[3u].floating = -VERTICAL_CONSTANT;
+            ATarguments[4u].integer = 0u;
+            ATarguments[5u].integer = 0u;
+            ATarguments[6u].integer = 0u;
+            ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
+            break;
+
+        case PITCH_DOWN_ROLL_RIGHT:
+            ATarguments[0u].integer = 1u;
+            ATarguments[1u].floating = ROLL_CONSTANT;
+            ATarguments[2u].floating = -PITCH_CONSTANT;
+            ATarguments[3u].integer = 0u;
+            ATarguments[4u].integer = 0u;
+            ATarguments[5u].integer = 0u;
+            ATarguments[6u].integer = 0u;
+            ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
+            break;
+
+        case PITCH_DOWN_ROLL_LEFT:
+            ATarguments[0u].integer = 1u;
+            ATarguments[1u].floating = -ROLL_CONSTANT;
+            ATarguments[2u].floating = -PITCH_CONSTANT;
+            ATarguments[3u].integer = 0u;
+            ATarguments[4u].integer = 0u;
+            ATarguments[5u].integer = 0u;
+            ATarguments[6u].integer = 0u;
+            ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
+            break;
+
+        case PITCH_UP_ROLL_RIGHT:
+            ATarguments[0u].integer = 1u;
+            ATarguments[1u].floating = ROLL_CONSTANT;
+            ATarguments[2u].floating = PITCH_CONSTANT;
+            ATarguments[3u].integer = 0u;
+            ATarguments[4u].integer = 0u;
+            ATarguments[5u].integer = 0u;
+            ATarguments[6u].integer = 0u;
+            ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
+            break;
+
+        case PITCH_UP_ROLL_LEFT:
+            ATarguments[0u].integer = 1u;
+            ATarguments[1u].floating = -ROLL_CONSTANT;
+            ATarguments[2u].floating = PITCH_CONSTANT;
+            ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
             ATarguments[6u].integer = 0u;
