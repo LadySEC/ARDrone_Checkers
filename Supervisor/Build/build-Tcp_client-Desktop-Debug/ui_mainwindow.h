@@ -140,7 +140,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         layoutWidget = new QWidget(centralWidget);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(30, 10, 181, 90));
+        layoutWidget->setGeometry(QRect(120, 10, 181, 90));
         verticalLayout = new QVBoxLayout(layoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -165,7 +165,7 @@ public:
         line->setFrameShadow(QFrame::Sunken);
         label_title = new QLabel(centralWidget);
         label_title->setObjectName(QStringLiteral("label_title"));
-        label_title->setGeometry(QRect(160, 620, 301, 17));
+        label_title->setGeometry(QRect(580, 620, 301, 17));
         layoutWidget1 = new QWidget(centralWidget);
         layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
         layoutWidget1->setGeometry(QRect(770, 70, 136, 66));
@@ -408,10 +408,10 @@ public:
 
         label_Connected = new QLabel(centralWidget);
         label_Connected->setObjectName(QStringLiteral("label_Connected"));
-        label_Connected->setGeometry(QRect(230, 20, 131, 22));
+        label_Connected->setGeometry(QRect(320, 20, 131, 22));
         layoutWidget6 = new QWidget(centralWidget);
         layoutWidget6->setObjectName(QStringLiteral("layoutWidget6"));
-        layoutWidget6->setGeometry(QRect(41, 130, 348, 257));
+        layoutWidget6->setGeometry(QRect(20, 140, 348, 257));
         verticalLayout_5 = new QVBoxLayout(layoutWidget6);
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setContentsMargins(11, 11, 11, 11);
@@ -580,7 +580,7 @@ public:
 
         pushButton_image = new QPushButton(centralWidget);
         pushButton_image->setObjectName(QStringLiteral("pushButton_image"));
-        pushButton_image->setGeometry(QRect(20, 540, 100, 100));
+        pushButton_image->setGeometry(QRect(10, 0, 100, 100));
         pushButton_image->setMinimumSize(QSize(100, 100));
         MainWindow->setCentralWidget(centralWidget);
         layoutWidget->raise();
