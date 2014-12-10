@@ -88,7 +88,7 @@ public:
     QPushButton *button_B_3;
     QPushButton *button_C_3;
     QLabel *label_Connected;
-    QWidget *widget;
+    QWidget *layoutWidget6;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_13;
     QLabel *label_Flight_Status;
@@ -120,6 +120,7 @@ public:
     QHBoxLayout *horizontalLayout_7;
     QLabel *label_Psi_Angle;
     QLabel *label_Value_Psi_Angle;
+    QPushButton *pushButton_image;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -164,7 +165,7 @@ public:
         line->setFrameShadow(QFrame::Sunken);
         label_title = new QLabel(centralWidget);
         label_title->setObjectName(QStringLiteral("label_title"));
-        label_title->setGeometry(QRect(700, 630, 301, 17));
+        label_title->setGeometry(QRect(160, 620, 301, 17));
         layoutWidget1 = new QWidget(centralWidget);
         layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
         layoutWidget1->setGeometry(QRect(770, 70, 136, 66));
@@ -408,10 +409,10 @@ public:
         label_Connected = new QLabel(centralWidget);
         label_Connected->setObjectName(QStringLiteral("label_Connected"));
         label_Connected->setGeometry(QRect(230, 20, 131, 22));
-        widget = new QWidget(centralWidget);
-        widget->setObjectName(QStringLiteral("widget"));
-        widget->setGeometry(QRect(41, 130, 348, 257));
-        verticalLayout_5 = new QVBoxLayout(widget);
+        layoutWidget6 = new QWidget(centralWidget);
+        layoutWidget6->setObjectName(QStringLiteral("layoutWidget6"));
+        layoutWidget6->setGeometry(QRect(41, 130, 348, 257));
+        verticalLayout_5 = new QVBoxLayout(layoutWidget6);
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setContentsMargins(11, 11, 11, 11);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
@@ -419,12 +420,12 @@ public:
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setSpacing(6);
         horizontalLayout_13->setObjectName(QStringLiteral("horizontalLayout_13"));
-        label_Flight_Status = new QLabel(widget);
+        label_Flight_Status = new QLabel(layoutWidget6);
         label_Flight_Status->setObjectName(QStringLiteral("label_Flight_Status"));
 
         horizontalLayout_13->addWidget(label_Flight_Status);
 
-        label_value_flight_status = new QLabel(widget);
+        label_value_flight_status = new QLabel(layoutWidget6);
         label_value_flight_status->setObjectName(QStringLiteral("label_value_flight_status"));
 
         horizontalLayout_13->addWidget(label_value_flight_status);
@@ -435,17 +436,17 @@ public:
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(6);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
-        label_Battery_Level = new QLabel(widget);
+        label_Battery_Level = new QLabel(layoutWidget6);
         label_Battery_Level->setObjectName(QStringLiteral("label_Battery_Level"));
 
         horizontalLayout_6->addWidget(label_Battery_Level);
 
-        label_Value_Battery = new QLabel(widget);
+        label_Value_Battery = new QLabel(layoutWidget6);
         label_Value_Battery->setObjectName(QStringLiteral("label_Value_Battery"));
 
         horizontalLayout_6->addWidget(label_Value_Battery);
 
-        battery_progressBar = new QProgressBar(widget);
+        battery_progressBar = new QProgressBar(layoutWidget6);
         battery_progressBar->setObjectName(QStringLiteral("battery_progressBar"));
         battery_progressBar->setEnabled(true);
         battery_progressBar->setMinimumSize(QSize(150, 10));
@@ -466,17 +467,17 @@ public:
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setSpacing(6);
         horizontalLayout_12->setObjectName(QStringLiteral("horizontalLayout_12"));
-        label_Altitude = new QLabel(widget);
+        label_Altitude = new QLabel(layoutWidget6);
         label_Altitude->setObjectName(QStringLiteral("label_Altitude"));
 
         horizontalLayout_12->addWidget(label_Altitude);
 
-        label_Value_Altitude = new QLabel(widget);
+        label_Value_Altitude = new QLabel(layoutWidget6);
         label_Value_Altitude->setObjectName(QStringLiteral("label_Value_Altitude"));
 
         horizontalLayout_12->addWidget(label_Value_Altitude);
 
-        altitude_LCD = new QLCDNumber(widget);
+        altitude_LCD = new QLCDNumber(layoutWidget6);
         altitude_LCD->setObjectName(QStringLiteral("altitude_LCD"));
 
         horizontalLayout_12->addWidget(altitude_LCD);
@@ -487,12 +488,12 @@ public:
         horizontalLayout_11 = new QHBoxLayout();
         horizontalLayout_11->setSpacing(6);
         horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
-        label_Horizontal_Speed = new QLabel(widget);
+        label_Horizontal_Speed = new QLabel(layoutWidget6);
         label_Horizontal_Speed->setObjectName(QStringLiteral("label_Horizontal_Speed"));
 
         horizontalLayout_11->addWidget(label_Horizontal_Speed);
 
-        label_Value_Vertical_Speed = new QLabel(widget);
+        label_Value_Vertical_Speed = new QLabel(layoutWidget6);
         label_Value_Vertical_Speed->setObjectName(QStringLiteral("label_Value_Vertical_Speed"));
 
         horizontalLayout_11->addWidget(label_Value_Vertical_Speed);
@@ -503,12 +504,12 @@ public:
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
-        label_Vertical_Speed = new QLabel(widget);
+        label_Vertical_Speed = new QLabel(layoutWidget6);
         label_Vertical_Speed->setObjectName(QStringLiteral("label_Vertical_Speed"));
 
         horizontalLayout_10->addWidget(label_Vertical_Speed);
 
-        label_Value_Horizontal_Speed = new QLabel(widget);
+        label_Value_Horizontal_Speed = new QLabel(layoutWidget6);
         label_Value_Horizontal_Speed->setObjectName(QStringLiteral("label_Value_Horizontal_Speed"));
 
         horizontalLayout_10->addWidget(label_Value_Horizontal_Speed);
@@ -529,12 +530,12 @@ public:
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setSpacing(6);
         horizontalLayout_9->setObjectName(QStringLiteral("horizontalLayout_9"));
-        label_Theta_Angle = new QLabel(widget);
+        label_Theta_Angle = new QLabel(layoutWidget6);
         label_Theta_Angle->setObjectName(QStringLiteral("label_Theta_Angle"));
 
         horizontalLayout_9->addWidget(label_Theta_Angle);
 
-        label_Value_Theta_Angle = new QLabel(widget);
+        label_Value_Theta_Angle = new QLabel(layoutWidget6);
         label_Value_Theta_Angle->setObjectName(QStringLiteral("label_Value_Theta_Angle"));
 
         horizontalLayout_9->addWidget(label_Value_Theta_Angle);
@@ -545,12 +546,12 @@ public:
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
-        label_Phi_Angle = new QLabel(widget);
+        label_Phi_Angle = new QLabel(layoutWidget6);
         label_Phi_Angle->setObjectName(QStringLiteral("label_Phi_Angle"));
 
         horizontalLayout_8->addWidget(label_Phi_Angle);
 
-        label_Value_Phi_Angle = new QLabel(widget);
+        label_Value_Phi_Angle = new QLabel(layoutWidget6);
         label_Value_Phi_Angle->setObjectName(QStringLiteral("label_Value_Phi_Angle"));
 
         horizontalLayout_8->addWidget(label_Value_Phi_Angle);
@@ -561,12 +562,12 @@ public:
         horizontalLayout_7 = new QHBoxLayout();
         horizontalLayout_7->setSpacing(6);
         horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
-        label_Psi_Angle = new QLabel(widget);
+        label_Psi_Angle = new QLabel(layoutWidget6);
         label_Psi_Angle->setObjectName(QStringLiteral("label_Psi_Angle"));
 
         horizontalLayout_7->addWidget(label_Psi_Angle);
 
-        label_Value_Psi_Angle = new QLabel(widget);
+        label_Value_Psi_Angle = new QLabel(layoutWidget6);
         label_Value_Psi_Angle->setObjectName(QStringLiteral("label_Value_Psi_Angle"));
 
         horizontalLayout_7->addWidget(label_Value_Psi_Angle);
@@ -577,6 +578,10 @@ public:
 
         verticalLayout_5->addLayout(verticalLayout_2);
 
+        pushButton_image = new QPushButton(centralWidget);
+        pushButton_image->setObjectName(QStringLiteral("pushButton_image"));
+        pushButton_image->setGeometry(QRect(20, 540, 100, 100));
+        pushButton_image->setMinimumSize(QSize(100, 100));
         MainWindow->setCentralWidget(centralWidget);
         layoutWidget->raise();
         layoutWidget->raise();
@@ -598,8 +603,7 @@ public:
         label_Line_2->raise();
         label_Line_3->raise();
         label_Connected->raise();
-        label_Flight_Status->raise();
-        label_value_flight_status->raise();
+        pushButton_image->raise();
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1009, 25));
@@ -665,6 +669,7 @@ public:
         label_Value_Phi_Angle->setText(QString());
         label_Psi_Angle->setText(QApplication::translate("MainWindow", "Psi angle :", 0));
         label_Value_Psi_Angle->setText(QString());
+        pushButton_image->setText(QString());
     } // retranslateUi
 
 };

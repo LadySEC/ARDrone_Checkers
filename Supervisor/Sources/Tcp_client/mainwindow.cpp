@@ -15,10 +15,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    this->setWindowIcon(QIcon(DRONE_IMAGE_PATH));
+    this->setIconSize(QSize(100,100));
+    this->setWindowTitle("AR Drone Tic-Tac-Toe : The Game !");
+
     
     state_of_mission = mission_stopped ;
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-
+    ui->pushButton_image->setIcon(QIcon(DRONE_IMAGE_PATH));
+    ui->pushButton_image->setIconSize(QSize(100,100));
     link_connect();
 
     display_no_communication();
@@ -111,6 +117,9 @@ void MainWindow::unmark_connexion()
     ui->label_Connected->setText("Disconnected...");
     ui->button_connect->setEnabled(true);
     ui->button_disconnect->setEnabled(false);
+    if (state_of_mission != mission_stopped)
+        state_of_mission = mission_stopped ;
+
     forbid_start_mission();
     display_no_communication();
 }
