@@ -37,7 +37,7 @@
 #define C_WINDOW_RIGHT		280
 #define C_WINDOW_TOP		0
 #define C_WINDOW_BOTTOM		0
-#define C_DIST_TO_TARGET	300
+#define C_DIST_TO_TARGET	360
 
 typedef struct {
 	int abs;

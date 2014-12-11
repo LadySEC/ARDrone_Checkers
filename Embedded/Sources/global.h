@@ -28,7 +28,7 @@
 
 /* Debug */
 //#define DEBUG_NAVDATA
-#define PRINT_TCPUDP_DATA_SENT
+//#define PRINT_TCPUDP_DATA_SENT
 
 /**********************************************************************************/
 /* Constants						      			                              */
