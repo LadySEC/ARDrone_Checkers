@@ -12,20 +12,24 @@
 #include "calcul_order.h"
 #include "keyboard.h"
 #include "detect_tag.h"
+
 /**********************************************************************************/
 /* Constants 							  		  */
 /**********************************************************************************/
+/*** it represents the size between the camera position on the drone and it takeoff base */
+int const offset_y 	= 35;
+/*** it represents the time when the ATcomman are sending */
+int const I_offset_time = (2 * _CALCUL_PERIOD / 3);
 
 /**********************************************************************************/
 /* Global variables 								*/
 /**********************************************************************************/
-
-/* informed the mission's round 						*/
+/*** Informed the mission's round 						*/
 /*	0 : The drone are going toward the case 				*/
 /*	1 : The drone are returning toward the base 				*/
 int round_mission = 0;
 
-/* informed the mission's status 						*/
+/*** Informed the mission's status 						*/
 /*	0 : The drone did not finshed the mission asked by the supervisor 	*/
 /*	1 : The drone fished the mission asked by he supervisor 		*/
 int statemission = 0;
@@ -33,6 +37,7 @@ int statemission = 0;
 /**********************************************************************************/
 /* Procedures									*/
 /**********************************************************************************/
+
 /**********************************************************************************/
 /* Threads									*/
 /**********************************************************************************/
@@ -45,6 +50,7 @@ int statemission = 0;
  * This thread reads received datas from the image processing thread
  * And then calcul the next orders
  */
+
 void* calcul_order_thread(void* arg)
 {
 	int 		cpt_mission 	= 0;
@@ -65,7 +71,10 @@ void* calcul_order_thread(void* arg)
 
 			if(cpt_mission == 0)
 			{
-				printf("\n\r\r----- MISSION - Begin the mission");
+				printf("\n\r\r----- MISSION - * Begin the mission *");
+				printf("\n\r\r-----         - Temps AT_commande = %d",I_offset_time);
+				printf("\n\r\r-----         - Angle roll        = %d",ROLL_CONSTANT);
+				printf("\n\r\r-----         - Angle pitch       = %d",PITCH_CONSTANT);
 			}
 			else
 			{
@@ -120,19 +129,13 @@ void posTag_ATcommand(int x,int y)
 {
 	if(x >= -POS_TOLERANCE && x <= POS_TOLERANCE)		//-120 <= X <= 120, CENTRE
 	{
-		if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)	  //-120 <= Y <= 120, CENTRE
+		if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))	  //-120-offset_y <= Y <= 120-offset_y, CENTRE
 		{
 			if(round_mission == 0)
 			{			
-				/*printf("\n\r\r----- MISSION - je suis arrive a la Case");
-				ATcommand_moveDelay(HOVERING_BUFF, 800000);
-		
+	
 				// The first round of this mission is finished 
-				round_mission = 1;*/
-
-				printf("\n\r\r----- MISSION - [END] je suis arrive a la Case");
-		            	ATcommand_process(LANDING);
-			        printf("\n\r\r              - LANDING");
+				//round_mission = 1;
 
 				/* Reset the mode mission ('M') for the keyboard.c */
 				stop_mission();
@@ -140,11 +143,18 @@ void posTag_ATcommand(int x,int y)
 				/* For the supervisor */
 				statemission = 0;
 
+				printf("\n\r\r----- MISSION - [END1] je suis arrive a la Case");
+
+				/* For a perfect take off :) */
+				ATcommand_moveDelay(HOVERING_BUFF, 	_CALCUL_PERIOD);
+		            	ATcommand_process(LANDING);
+			        printf("\n\r\r              - LANDING");
+
 			}
 			else
 			{
-				printf("\n\r\r----- MISSION - [END] je suis arrive a la Base");
-		            	ATcommand_moveDelay(HOVERING_BUFF, 2000000);
+				printf("\n\r\r----- MISSION - [END2] je suis arrive a la Base");
+		            	ATcommand_moveDelay(HOVERING_BUFF, 	_CALCUL_PERIOD);
 		            	ATcommand_process(LANDING);
 			        printf("\n\r\r              - LANDING");
 
@@ -158,63 +168,63 @@ void posTag_ATcommand(int x,int y)
 				statemission = 0;
 			}	
 		}
-		if(y < -POS_TOLERANCE)			  	  //Y < -120 
+		if(y < (-POS_TOLERANCE-offset_y))			  	  //Y < -120-offset_y
 		{
 			printf("\n\r\r----- MISSION - je vais en haut");
-                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
+                        ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 		}
-		if(y > POS_TOLERANCE)			  	  //Y > 120
+		if(y > (POS_TOLERANCE-offset_y))			  	  //Y > 120-offset_y
 		{
 			printf("\n\r\r----- MISSION - je vais en bas");	
-                        ATcommand_moveDelay(PITCH_UP, 		100000);
+                        ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}
 	}
-	if(y >= -POS_TOLERANCE && y <= POS_TOLERANCE)		//-120 <= Y <= 120, CENTRE
+	if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))		//-120-offset_y <= Y <= 120-offset_y, CENTRE
 	{
 		if(x < -POS_TOLERANCE)				  //X < -120 
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche");	
-                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
 		}
 		if(x > POS_TOLERANCE)				  //X > 120
 		{
 			printf("\n\r\r----- MISSION - je vais en droite");	
-                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
 		}
 	}
 	if(x < -POS_TOLERANCE)					//X < -120 
 	{
-		if(y < -POS_TOLERANCE)				  //Y < -120 
+		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/haut");
-                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
-                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
+                        ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 
 		}
-		if(y > POS_TOLERANCE)				  //Y > 120
+		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
 		{
 			printf("\n\r\r----- MISSION - je vais en gauche/bas");
-                        ATcommand_moveDelay(ROLL_LEFT, 		100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
-                        ATcommand_moveDelay(PITCH_UP, 		100000);
+                        ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
+                        ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}	
 	}
 	if(x > POS_TOLERANCE)					//X > 120
 	{
-		if(y < -POS_TOLERANCE)				  //Y < -120 
+		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y 
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/haut");
-                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
-                        ATcommand_moveDelay(PITCH_DOWN, 	100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
+                        ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 		}
-		if(y > POS_TOLERANCE)				  //Y > 120
+		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
 		{
 			printf("\n\r\r----- MISSION - je vais en droite/bas");
-                        ATcommand_moveDelay(ROLL_RIGHT, 	100000);
-                        ATcommand_moveDelay(HOVERING_BUFF, 	100000);
-                        ATcommand_moveDelay(PITCH_UP, 		100000);
+                        ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
+                        ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
+                        ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}	
 	}
 }
