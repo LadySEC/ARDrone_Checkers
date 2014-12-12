@@ -26,6 +26,7 @@ static const char* C_ORDERS[NB_ORDERS] 			= { "TRIM", "TAKEOFF", "LANDING", "EME
     "PITCH_DOWN", "VERTICAL_UP", "VERTICAL_DOWN", "PITCH_DOWN_ROLL_RIGHT", "PITCH_DOWN_ROLL_LEFT", "PITCH_UP_ROLL_RIGHT", "PITCH_UP_ROLL_LEFT","CONFIGURATION_IDS", "INIT_NAVDATA", "LED_ANIMATION", "ACK_COMMAND", "NAVDATA_REQUEST", 
     "RESET_WATCHDOG", "REMOVE_CONFIGS", "CHANGE_SESSION", "CHANGE_PROFILE", "CHANGE_APP", "CHANGE_SSID", "ENABLE_VIDEO", "DISABLE_VIDEO",
     "ENABLE_VISION", "DISABLE_VISION"};
+static const char* C_DYNAMIC_PARAM[NB_DYNAMIC_PARAMETERS] = { "PITCH ANGLE", "ROLL ANGLE", "YAW ANGLE", "VERTICAL THRUST", "MOVE TEMPO"}; 
 
 /**********************************************************************************/
 /* Global variables 															  */
@@ -41,6 +42,8 @@ static T_comm* 			G_comm_AT;
 static T_comm* 			G_comm_NAV;
 /* Navdata */
 static T_navdata_demo  	G_navdata;
+/* Parameters*/
+float                   G_dynamic_parameters[NB_DYNAMIC_PARAMETERS] = {PITCH_ANGLE_INIT, ROLL_ANGLE_INIT, YAW_ANGLE_INIT, VERTICAL_THRUST_INIT, MOVE_TEMPO_INIT};
 
 /**********************************************************************************/
 /* Prototypes														     		  */
@@ -279,7 +282,7 @@ void ATcommand_process(T_ATorders I_order)
             ATarguments[1u].integer = 0u;
             ATarguments[2u].integer = 0u;
             ATarguments[3u].integer = 0u;
-            ATarguments[4u].floating = YAW_CONSTANT;
+            ATarguments[4u].floating = G_dynamic_parameters[YAW_ANGLE];
             ATarguments[5u].integer = 0u;
             ATarguments[6u].integer = 0u;
             ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
@@ -290,7 +293,7 @@ void ATcommand_process(T_ATorders I_order)
             ATarguments[1u].integer = 0u;
             ATarguments[2u].integer = 0u;
             ATarguments[3u].integer = 0u;
-            ATarguments[4u].floating = -YAW_CONSTANT;
+            ATarguments[4u].floating = -G_dynamic_parameters[YAW_ANGLE];;
             ATarguments[5u].integer = 0u;
             ATarguments[6u].integer = 0u;
             ATcommand_generate(frame, sizeof(frame), PCMD_MAG, ATarguments, ATstrings);
@@ -298,7 +301,7 @@ void ATcommand_process(T_ATorders I_order)
 
         case ROLL_RIGHT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = ROLL_CONSTANT;
+            ATarguments[1u].floating = G_dynamic_parameters[ROLL_ANGLE];
             ATarguments[2u].integer = 0u;
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
@@ -309,7 +312,7 @@ void ATcommand_process(T_ATorders I_order)
 
         case ROLL_LEFT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = -ROLL_CONSTANT;
+            ATarguments[1u].floating = -G_dynamic_parameters[ROLL_ANGLE];
             ATarguments[2u].integer = 0u;
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
@@ -321,7 +324,7 @@ void ATcommand_process(T_ATorders I_order)
         case PITCH_UP:
             ATarguments[0u].integer = 1u;
             ATarguments[1u].integer = 0u;
-            ATarguments[2u].floating = PITCH_CONSTANT;
+            ATarguments[2u].floating = G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -332,7 +335,7 @@ void ATcommand_process(T_ATorders I_order)
         case PITCH_DOWN:
             ATarguments[0u].integer = 1u;
             ATarguments[1u].integer = 0u;
-            ATarguments[2u].floating = -PITCH_CONSTANT;
+            ATarguments[2u].floating = -G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -344,7 +347,7 @@ void ATcommand_process(T_ATorders I_order)
             ATarguments[0u].integer = 1u;
             ATarguments[1u].integer = 0u;
             ATarguments[2u].integer = 0u;
-            ATarguments[3u].floating = VERTICAL_CONSTANT;
+            ATarguments[3u].floating = G_dynamic_parameters[VERTICAL_THRUST];
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
             ATarguments[6u].integer = 0u;
@@ -355,7 +358,7 @@ void ATcommand_process(T_ATorders I_order)
             ATarguments[0u].integer = 1u;
             ATarguments[1u].integer = 0u;
             ATarguments[2u].integer = 0u;
-            ATarguments[3u].floating = -VERTICAL_CONSTANT;
+            ATarguments[3u].floating = -G_dynamic_parameters[VERTICAL_THRUST];
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
             ATarguments[6u].integer = 0u;
@@ -364,8 +367,8 @@ void ATcommand_process(T_ATorders I_order)
 
         case PITCH_DOWN_ROLL_RIGHT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = ROLL_CONSTANT;
-            ATarguments[2u].floating = -PITCH_CONSTANT;
+            ATarguments[1u].floating = G_dynamic_parameters[ROLL_ANGLE];
+            ATarguments[2u].floating = -G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -375,8 +378,8 @@ void ATcommand_process(T_ATorders I_order)
 
         case PITCH_DOWN_ROLL_LEFT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = -ROLL_CONSTANT;
-            ATarguments[2u].floating = -PITCH_CONSTANT;
+            ATarguments[1u].floating = -G_dynamic_parameters[ROLL_ANGLE];
+            ATarguments[2u].floating = -G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -386,8 +389,8 @@ void ATcommand_process(T_ATorders I_order)
 
         case PITCH_UP_ROLL_RIGHT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = ROLL_CONSTANT;
-            ATarguments[2u].floating = PITCH_CONSTANT;
+            ATarguments[1u].floating = G_dynamic_parameters[ROLL_ANGLE];
+            ATarguments[2u].floating = G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -397,8 +400,8 @@ void ATcommand_process(T_ATorders I_order)
 
         case PITCH_UP_ROLL_LEFT:
             ATarguments[0u].integer = 1u;
-            ATarguments[1u].floating = -ROLL_CONSTANT;
-            ATarguments[2u].floating = PITCH_CONSTANT;
+            ATarguments[1u].floating = -G_dynamic_parameters[ROLL_ANGLE];
+            ATarguments[2u].floating = G_dynamic_parameters[PITCH_ANGLE];
             ATarguments[3u].integer = 0u;
             ATarguments[4u].integer = 0u;
             ATarguments[5u].integer = 0u;
@@ -630,6 +633,12 @@ T_bool ATcommand_navdataError(void)
 T_navdata_demo* ATcommand_navdata(void)
 {
     return(&G_navdata);
+}
+
+void incDynamicParameter(T_angle_param I_param, float I_incrementation)
+{
+    G_dynamic_parameters[I_param] += I_incrementation;
+    printf("\n\r%s = %f",C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
 }
 
 /**********************************************************************************/
