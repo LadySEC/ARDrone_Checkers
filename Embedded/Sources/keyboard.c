@@ -250,20 +250,9 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case A_KEY :
-                #if 1
     	            ATcommand_moveDelay(PITCH_DOWN,     800000);
     		        ATcommand_moveDelay(HOVERING_BUFF,  3000000);
     	    	    ATcommand_moveDelay(ROLL_LEFT,      800000);
-                #else
-                    ATcommand_moveDelay(VERTICAL_UP,    2000000);
-                    ATcommand_moveDelay(ROLL_RIGHT,     1000000);
-                    ATcommand_moveDelay(ROLL_LEFT,      1000000);
-                    ATcommand_moveDelay(HOVERING_BUFF,  2000000);
-    	            ATcommand_moveDelay(PITCH_DOWN,     1500000);
-                    ATcommand_moveDelay(HOVERING_BUFF,  2000000);
-    	    	    ATcommand_moveDelay(PITCH_UP,       1500000);
-                    ATcommand_moveDelay(VERTICAL_DOWN,  2000000);
-                #endif
                     break;
 
                 case L_KEY :
@@ -291,7 +280,11 @@ void*  kbd_thread_drone_controller(void * args)
         /* Empty the output buffer */
         fflush(stdout);
     }
+#ifdef ENABLE_SUPERVISOR
     while(key_selected != X_KEY);
+#else
+    while(1);
+#endif
 
     /* Disable the raw mode */
     keyboard_rawMode(FALSE);

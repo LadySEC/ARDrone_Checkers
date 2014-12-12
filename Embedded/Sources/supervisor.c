@@ -19,10 +19,13 @@
 /* Global variables 															  */
 /**********************************************************************************/
 /* Socket */
-T_comm* 	       G_comm_SPVSR;
+T_comm* 	        G_comm_SPVSR;
 /* Buffer */
-char	           G_orders[RECV_BUFF_SIZE];
-unsigned char      G_square = 0u;
+char	            G_orders[RECV_BUFF_SIZE];
+unsigned char       G_square = 0u;
+/* communication */
+T_bool              G_disconnected = FALSE;
+T_bool              G_comm_lost    = FALSE;
 
 /**********************************************************************************/
 /* Procedures														      		  */
@@ -36,6 +39,10 @@ unsigned char      G_square = 0u;
 T_error supervisor_initiate(void)
 {
     T_error error = NO_ERROR;
+
+    /* Initialisation */
+    G_disconnected  = FALSE;
+    G_comm_lost     = FALSE;
 
     /* Create a socket */
     // Supervisor socket with non blocking reception
@@ -141,7 +148,6 @@ void supervisor_sendData(T_TCP_DATA I_data, char* arg)
  */
 void* supervisor_thread_interact(void* arg)
 {
-    T_bool 	disconnected = FALSE;
     /* Make this thread periodic */
     struct              periodic_info info;
     char                test[2u];
@@ -159,7 +165,7 @@ void* supervisor_thread_interact(void* arg)
 
     make_periodic (INTERACT_TEMPO, &info);   
 
-    while(disconnected == FALSE)
+    while((G_disconnected == FALSE) && (G_comm_lost == FALSE))
     {
         /* zero out the structure */
         memset((char *) &G_orders, 0, sizeof(G_orders));
@@ -168,7 +174,8 @@ void* supervisor_thread_interact(void* arg)
         state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
         if(state == RECEPTION_ERROR)
         {
-            disconnected = TRUE;
+            G_comm_lost = TRUE;
+            printf("\n\rCommunication with the supervisor lost");
         }
         else
         {
@@ -183,8 +190,6 @@ void* supervisor_thread_interact(void* arg)
                 switch((T_TCP_DATA)G_orders[0u])
                 {
                     case TAKEOFF_TCP:
-                        /* Takeoff */
-                        printf("\n\rTakeoff : %d", G_orders[2u]);
                         if(G_orders[2u] == 1u)
                         {
                             if(ATcommand_enoughBattery() == TRUE)
@@ -226,7 +231,6 @@ void* supervisor_thread_interact(void* arg)
 
                     /* incomplete */
                     case TARGET_TCP:
-                        printf("\n\rTarget : %d", G_orders[2u]);
                         /* Do nothing for the moment */
                         G_square = G_orders[2u];
                         /* Update order to print */
@@ -246,10 +250,9 @@ void* supervisor_thread_interact(void* arg)
                         break;
 
                     case DECON_TCP:
-                        printf("\n\rDeco : %d", G_orders[2u]);
                         if(G_orders[2u] == 1u)
                         {
-                            disconnected = TRUE;
+                            G_disconnected = TRUE;
                             strcpy(order_string, "DISCONNECTION REQUESTED");
                         }
                         break;
@@ -314,6 +317,7 @@ void* supervisor_thread_interact(void* arg)
 
     printf("\n\rSupervisor disconnected");
     /* Close */
+    printf("\n\rClosing supervisor communication");
     supervisor_close();
     /* Close this thread */
     pthread_exit(NULL);
@@ -322,4 +326,9 @@ void* supervisor_thread_interact(void* arg)
 unsigned char getSquare(void)
 {
     return(G_square);
+}
+
+T_bool supervisor_commLost(void)
+{
+    return(G_comm_lost);
 }

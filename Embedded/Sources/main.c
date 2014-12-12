@@ -76,20 +76,6 @@ int main (int argc, char *argv[])
     printf("\n\rInitializing RT signals");
     RTsignals_init();
 
-#ifdef ENABLE_SUPERVISOR
-    /* Initialize the supervisor thread (blocking function) */
-    printf("\n\rInitiating communication with the supervisor");
-    if(supervisor_initiate() == NO_ERROR)
-    {
-        printf("\n\rStarting th_supervisor");
-        pthread_create (&th_supervisor, NULL, supervisor_thread_interact, NULL);
-    }
-    else
-    {
-        printf("\n\rUnable to connect the supervisor");
-    }
-#endif
-
     /* Initialize the communication with the Parrot server */
     printf("\n\rInitiating communication with the Parrot server");
     if(ATcommand_initiate() == NO_ERROR)
@@ -108,15 +94,33 @@ int main (int argc, char *argv[])
     	pthread_create (&th_calcul_order, NULL, calcul_order_thread, NULL);
 #endif
 
+#ifdef ENABLE_SUPERVISOR
+        do
+        {
+            /* Initialize the supervisor thread (blocking function) */
+            printf("\n\rInitiating communication with the supervisor");
+            if(supervisor_initiate() == NO_ERROR)
+            {
+                printf("\n\rStarting th_supervisor");
+                pthread_create (&th_supervisor, NULL, supervisor_thread_interact, NULL);
+
+                /* Waiting the end of supervisor thread */
+                pthread_join(th_supervisor, NULL);
+                printf("\n\rTh_supervisor closed");
+            }
+            else
+            {
+                printf("\n\rUnable to connect the supervisor");
+            }  
+        }
+        while(supervisor_commLost() == TRUE);
+
+        printf("\n\rClosing th_keyboard");  
+        pthread_cancel(th_keyboard);
+#else
         /* Waiting the end of keyboard thread */
         pthread_join(th_keyboard, NULL);
         printf("\n\rTh_keyboard closed");
-
-#ifdef ENABLE_SUPERVISOR        
-        printf("\n\rClosing th_supervisor");
-        pthread_cancel(th_supervisor);
-        printf("\n\rClosing supervisor communication");
-        supervisor_close();
 #endif
 
 #ifdef ENABLE_CALCUL_ORDER      

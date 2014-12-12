@@ -48,6 +48,7 @@ typedef enum
 T_error supervisor_initiate(void);
 void 	supervisor_close(void);
 unsigned char getSquare(void);
+T_bool supervisor_commLost(void);
 
 /**********************************************************************************/
 /* Threads														     		  	  */
