@@ -40,11 +40,16 @@
 #define AT_SERVER_PORT		5556u 													/*!< UDP server port */
 #define NAV_CLIENT_PORT		15214u 													/*!< UDP client port for starting navdata emission */
 #define NAV_SERVER_PORT		5554u 													/*!< UDP server port for reading navdata */
-/* Commands constants */
-#define YAW_CONSTANT		0.15f//0.3f
-#define PITCH_CONSTANT		0.15f//0.2f
-#define ROLL_CONSTANT		0.15f//0.1f
-#define VERTICAL_CONSTANT	0.15f//0.5f
+/* Dynamic parameters */
+#define NB_DYNAMIC_PARAMETERS	5u
+#define YAW_ANGLE_INIT			0.15f
+#define PITCH_ANGLE_INIT		0.15f
+#define ROLL_ANGLE_INIT			0.15f
+#define VERTICAL_THRUST_INIT	0.15f
+#define MOVE_TEMPO_INIT			800000.0f
+#define ANGLE_DEFAULT_INC		0.02f	
+#define TEMPO_DEFAUL_INC		50000.0f
+
 /**********************************************************************************/
 /* Types													      				  */
 /**********************************************************************************/
@@ -189,6 +194,15 @@ typedef enum
     BUFFER_FULL,
 }T_bufferState;
 
+typedef enum 
+{
+	PITCH_ANGLE = 0u,
+	ROLL_ANGLE,
+	YAW_ANGLE,
+	VERTICAL_THRUST,
+	MOVE_TEMPO
+}T_angle_param;
+
 /**********************************************************************************/
 /* Prototypes													      			  */
 /**********************************************************************************/
@@ -202,6 +216,10 @@ T_bool 			ATcommand_FlyingState(void);
 T_bool 			ATcommand_enoughBattery(void);
 T_bool 			ATcommand_navdataError(void);
 T_navdata_demo* ATcommand_navdata(void);
+
+/* Setters */
+void 			incDynamicParameter(T_angle_param I_param, float I_incrementation);
+
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
