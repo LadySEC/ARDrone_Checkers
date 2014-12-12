@@ -73,8 +73,8 @@ void* calcul_order_thread(void* arg)
 			{
 				printf("\n\r\r----- MISSION - * Begin the mission *");
 				printf("\n\r\r-----         - Temps AT_commande = %d",I_offset_time);
-				printf("\n\r\r-----         - Angle roll        = %d",ROLL_CONSTANT);
-				printf("\n\r\r-----         - Angle pitch       = %d",PITCH_CONSTANT);
+				printf("\n\r\r-----         - Angle roll        = %f",getDynamicParameter(ROLL_ANGLE));
+				printf("\n\r\r-----         - Angle pitch       = %f",getDynamicParameter(PITCH_ANGLE));
 			}
 			else
 			{

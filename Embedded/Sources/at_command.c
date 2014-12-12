@@ -635,6 +635,11 @@ T_navdata_demo* ATcommand_navdata(void)
     return(&G_navdata);
 }
 
+float getDynamicParameter(T_angle_param I_param)
+{
+    return(G_dynamic_parameters[I_param]);
+}
+
 void incDynamicParameter(T_angle_param I_param, float I_incrementation)
 {
     G_dynamic_parameters[I_param] += I_incrementation;

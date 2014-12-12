@@ -216,6 +216,7 @@ T_bool 			ATcommand_FlyingState(void);
 T_bool 			ATcommand_enoughBattery(void);
 T_bool 			ATcommand_navdataError(void);
 T_navdata_demo* ATcommand_navdata(void);
+float 			getDynamicParameter(T_angle_param I_param);
 
 /* Setters */
 void 			incDynamicParameter(T_angle_param I_param, float I_incrementation);

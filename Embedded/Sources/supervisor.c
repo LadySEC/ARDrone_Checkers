@@ -26,6 +26,8 @@ unsigned char       G_square = 0u;
 /* communication */
 T_bool              G_disconnected = FALSE;
 T_bool              G_comm_lost    = FALSE;
+/* Mission */
+T_bool              G_mission_started = FALSE;
 
 /**********************************************************************************/
 /* Procedures														      		  */
@@ -233,6 +235,8 @@ void* supervisor_thread_interact(void* arg)
                     case TARGET_TCP:
                         /* Do nothing for the moment */
                         G_square = G_orders[2u];
+                        /* Start the mission */
+                        G_mission_started = TRUE;
                         /* Update order to print */
                         sprintf(order_string, "REACH SQUARE %d REQUESTED", G_orders[2u]);
                         break;
@@ -303,13 +307,24 @@ void* supervisor_thread_interact(void* arg)
 #endif
 
         /* Share data with the supervisor */
+        // Mission management 
+        if((G_mission_started == TRUE) && (get_stateMission() == 0))
+        {
+            /* End of mission */
+            printf("\n\rSupervisor has detected the end of the mission");
+            /* Share it */
+            test[0] = G_square;
+            supervisor_sendData(TARGET_TCP,test);
+            /* Initialization */
+            G_square      = 0u;
+            G_mission_started = FALSE;
+        }
+
         supervisor_sendData(NAVDATA_TCP,NULL);
         supervisor_sendData(BATTERY_TCP,NULL);
         supervisor_sendData(ANGLES_TCP,NULL);
         supervisor_sendData(ALTITUDE_TCP,NULL);
         supervisor_sendData(SPEEDS_TCP,NULL);
-        test[0] = 2;
-        supervisor_sendData(TARGET_TCP,test);
 
         /* Wait until the next period is achieved */
         wait_period (&info);

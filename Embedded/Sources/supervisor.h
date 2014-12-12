@@ -16,6 +16,7 @@
 #include "communication.h"
 #include "at_command.h"
 #include "keyboard.h"
+#include "calcul_order.h"
  
 /**********************************************************************************/
 /* Constants													      			  */

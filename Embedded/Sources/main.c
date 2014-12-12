@@ -97,6 +97,19 @@ int main (int argc, char *argv[])
 #ifdef ENABLE_SUPERVISOR
         do
         {
+            /* Test if the connection was already lost */
+            if(supervisor_commLost() == TRUE)
+            {
+                /* Emergency landing = Security */
+                if(ATcommand_FlyingState() == TRUE)
+                {
+                    /* Landing */
+                    ATcommand_process(LANDING);
+                    /* Wait the landing state */
+                    while(ATcommand_FlyingState() != FALSE);
+                }
+            }
+
             /* Initialize the supervisor thread (blocking function) */
             printf("\n\rInitiating communication with the supervisor");
             if(supervisor_initiate() == NO_ERROR)
