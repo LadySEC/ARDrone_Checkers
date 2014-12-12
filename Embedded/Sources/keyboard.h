@@ -55,7 +55,5 @@ unsigned char 	       	keyboard_getchar(void);
 void*  					kbd_thread_drone_controller(void * args);
 T_bool					get_mission(void);
 void 					stop_mission(void);
-void 					keyboard_setRecoSupervisor(T_bool value);
-T_bool 					keyboard_getRecoSupervisor(void);
 
 #endif //! _KEYBOARD_H_

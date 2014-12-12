@@ -12,7 +12,6 @@
 /* Global variables 								*/
 /**********************************************************************************/
 T_bool G_triggered_mission      = FALSE;
-T_bool G_reconnect_supervisor   = FALSE;
 
 /**********************************************************************************/
 /* Threads & Procedures								*/
@@ -168,40 +167,71 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case UP_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(PITCH_DOWN, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(PITCH_ANGLE, ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case DOWN_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(PITCH_UP, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(PITCH_ANGLE, -ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case LEFT_KEY   :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(YAW_LEFT, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(YAW_ANGLE, ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case RIGHT_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(YAW_RIGHT, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(YAW_ANGLE, -ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case Z_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(VERTICAL_UP, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(VERTICAL_THRUST, ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case S_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(VERTICAL_DOWN, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(VERTICAL_THRUST, -ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case Q_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(ROLL_LEFT, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(ROLL_ANGLE, ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case D_KEY :
+                #ifdef ENABLE_DRONE_CONTROL_KEYBOARD
                     ATcommand_moveDelay(ROLL_RIGHT, DEFAULT_DELAY);
+                #else
+                    incDynamicParameter(ROLL_ANGLE, -ANGLE_DEFAULT_INC);
+                #endif
                     break;
 
                 case W_KEY :
-                    /* Reconnect the supervisor */
-                    G_reconnect_supervisor = TRUE;
+                    
                     break;
 
                 case X_KEY :
@@ -273,17 +303,6 @@ void*  kbd_thread_drone_controller(void * args)
 /**********************************************************************************/
 /* Getters & Setters                                                              */
 /**********************************************************************************/
-
-void keyboard_setRecoSupervisor(T_bool value)
-{
-    G_reconnect_supervisor = value;
-}
-
-T_bool keyboard_getRecoSupervisor(void)
-{
-    return(G_reconnect_supervisor);
-}
-
 T_bool get_mission(void)
 {
     return G_triggered_mission;
