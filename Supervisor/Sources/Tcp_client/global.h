@@ -28,6 +28,9 @@
     static const QString ICON_RED_CIRCLE_PATH = "..\\..\\..\\tags\\red_circle.jpg";
     static const QString ICON_BLUE_CIRCLE_PATH = "..\\..\\..\\tags\\blue_circle.jpg";
     static const QString ICON_GREEN_CIRCLE_PATH = "..\\..\\..\\tags\\green_circle.jpg";
+    static const QString DRONE_IMAGE_PATH = "..\\..\\tags\\drone.png";
+    static const QString PATH_TO_CIRCLE = "..\\..\\tags\\black_circle.png" ;
+    static const QString PATH_TO_CROSS = "..\\..\\tags\\black_cross.png" ;
 
 #endif
 
