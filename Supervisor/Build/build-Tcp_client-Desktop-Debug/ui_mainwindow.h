@@ -17,7 +17,6 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
@@ -102,7 +101,6 @@ public:
     QHBoxLayout *horizontalLayout_12;
     QLabel *label_Altitude;
     QLabel *label_Value_Altitude;
-    QLCDNumber *altitude_LCD;
     QHBoxLayout *horizontalLayout_11;
     QLabel *label_Horizontal_Speed;
     QLabel *label_Value_Vertical_Speed;
@@ -476,11 +474,6 @@ public:
         label_Value_Altitude->setObjectName(QStringLiteral("label_Value_Altitude"));
 
         horizontalLayout_12->addWidget(label_Value_Altitude);
-
-        altitude_LCD = new QLCDNumber(layoutWidget6);
-        altitude_LCD->setObjectName(QStringLiteral("altitude_LCD"));
-
-        horizontalLayout_12->addWidget(altitude_LCD);
 
 
         verticalLayout_4->addLayout(horizontalLayout_12);

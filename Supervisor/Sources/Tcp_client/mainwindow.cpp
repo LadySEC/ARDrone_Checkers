@@ -27,9 +27,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pushButton_image->setIconSize(QSize(100,100));
     link_connect();
 
+    /*
+    ui->label_Vertical_Speed->setVisible(false);
+    ui->label_Horizontal_Speed->setVisible(false);
+    ui->label_Value_Horizontal_Speed->setVisible(false);
+    ui->label_Value_Vertical_Speed->setVisible(false);
+    */
+
     display_no_communication();
 
-    set_icons_playground_without_communication(); ;
+    set_icons_playground_without_communication();
+
+    joueur = 0;
 }
 
 MainWindow::~MainWindow()
@@ -43,7 +52,6 @@ void MainWindow::link_connect()
 
     QObject::connect( this, SIGNAL(change_battery_value(int)), ui->battery_progressBar, SLOT(setValue(int)));
 
-    //QObject::connect(this, SIGNAL(change_altitude_value(int)), ui->altitude_LCD, SLOT(display(int)));
     QObject::connect(this, SIGNAL(change_altitude_value(QString)), ui->label_Value_Altitude, SLOT(setText(QString)));
 
     QObject::connect(this, SIGNAL(change_horizon_speed_value(QString)), ui->label_Value_Horizontal_Speed, SLOT(setText(QString)));
@@ -59,7 +67,6 @@ void MainWindow::link_connect()
 
     QObject::connect( &C, SIGNAL(socket_connected()), this, SLOT(mark_connexion()) ) ;
     QObject::connect( &C, SIGNAL(socket_disconnected()), this, SLOT(unmark_connexion()) ) ;
-
 
     QObject::connect(ui->button_start, SIGNAL(clicked()), this, SLOT(start_mission()));
     QObject::connect(ui->button_stop, SIGNAL(clicked()), this, SLOT(stop_mission()));
@@ -102,9 +109,6 @@ void MainWindow::mark_connexion()
     ui->battery_progressBar->setVisible(true);
     ui->label_Value_Battery->setVisible(false);
 
-    //ui->altitude_LCD->setVisible(true);
-    //ui->label_Value_Altitude->setVisible(false);
-
     allow_start_mission();  
     state_of_mission = mission_ready;
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
@@ -113,7 +117,6 @@ void MainWindow::mark_connexion()
 
 void MainWindow::unmark_connexion()
 {
-    // RAJOUTER AUTORISATION DE DECONNECTER, SEULEMENT SI LA MISSION N'EST PAS COMMENCÉE
     ui->label_Connected->setText("Disconnected...");
     ui->button_connect->setEnabled(true);
     ui->button_disconnect->setEnabled(false);
@@ -122,6 +125,7 @@ void MainWindow::unmark_connexion()
 
     forbid_start_mission();
     display_no_communication();
+    set_icons_playground_without_communication();
 }
 
 
@@ -192,8 +196,7 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
     {
         uint altitude = 0 ;
         altitude += (data.at(0) + (data.at(1)<<8) + (data.at(2) <<16) + (data.at(3)<<24));
-        //emit change_altitude_value(altitude);
-        emit change_altitude_value(QString::number(altitude));
+        emit change_altitude_value(QString::number(altitude/10)+ " cm");
 
     }
     else if (mnemo == 'S')
@@ -215,7 +218,10 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
     }
     else if (mnemo == 'G')
     {
-
+        /*
+        int square = data.at(2);
+        mark_square_found(square);
+        */
     }
     else if (mnemo == 'A')
     {
@@ -229,17 +235,14 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
 
         if (psi < 0){
             psi = (  psi +16842753) ;
-            //qDebug() << "PSI NEGATIF" << psi ;
         }
 
         if (phi < 0){
             phi =  (  phi +16842753) ;
-            //qDebug() << "PHI NEGATIF" << phi ;
         }
 
         if (theta < 0){
             theta = ( theta +16842753) ;
-            //qDebug() << "THETA NEGATIF" << theta ;
         }
 
         emit change_theta_value(QString::number(theta/1000.0) + " °");
@@ -261,7 +264,6 @@ void MainWindow::send_takeoff()
 {
     if ((state_of_mission == mission_stopped) || (state_of_mission == mission_paused) || (state_of_mission == mission_ready))
     {
-        //C.recoit_texte("takeoff");
         QByteArray message ;
         message.append('T') ;
         message.append(0x01) ;
@@ -277,7 +279,6 @@ void MainWindow::send_landing()
 {
     if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
     {
-        //C.recoit_texte("land");
         QByteArray message ;
         message.append('T') ;
         message.append(0x01) ;
@@ -296,7 +297,6 @@ void MainWindow::send_exit()
     {
         send_landing();
     }
-    //C.recoit_texte("exit");
     QByteArray message ;
     message.append('D') ;
     message.append(0x01) ;
@@ -309,7 +309,6 @@ void MainWindow::send_G_A_1()
 {
     if (state_of_mission == mission_init)
     {
-        //C.recoit_texte("M_Bl_Re");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -327,7 +326,6 @@ void MainWindow::send_G_A_2()
 {
     if (state_of_mission == mission_init)
     {
-       // C.recoit_texte("M_Bl_Tr");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -345,7 +343,6 @@ void MainWindow::send_G_A_3()
 {
     if (state_of_mission == mission_init)
     {
-       //C.recoit_texte("M_Bl_Ci");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -363,7 +360,6 @@ void MainWindow::send_G_B_1()
 {
     if (state_of_mission == mission_init)
     {
-        //C.recoit_texte("M_Ro_Re");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -382,7 +378,6 @@ void MainWindow::send_G_B_2()
 {
     if (state_of_mission == mission_init)
     {
-        //C.recoit_texte("M_Ro_Tr");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -400,7 +395,6 @@ void MainWindow::send_G_B_3()
 {
     if (state_of_mission == mission_init)
     {
-       // C.recoit_texte("M_Ro_Ci");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -418,7 +412,6 @@ void MainWindow::send_G_C_1()
 {
     if (state_of_mission == mission_init)
     {
-       // C.recoit_texte("M_Gr_Re");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -428,7 +421,6 @@ void MainWindow::send_G_C_1()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C1");
         display_position() ;
-
     }
 }
 
@@ -436,7 +428,6 @@ void MainWindow::send_G_C_2()
 {
     if (state_of_mission == mission_init)
     {
-        //C.recoit_texte("M_Gr_Tr");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -454,7 +445,6 @@ void MainWindow::send_G_C_3()
 {
     if (state_of_mission == mission_init)
     {
-       // C.recoit_texte("M_Gr_Ci");
         QByteArray message ;
         message.append('G') ;
         message.append(0x01) ;
@@ -547,12 +537,11 @@ void MainWindow::display_position()
 {
     ui->label_Searched_Square->setVisible(true);
     ui->label_Value_Searched_Square->setVisible(true);
-    /*
     ui->label_Current_Abscisse->setVisible(true);
     ui->label_Current_Ordonnee->setVisible(true);
     ui->label_Ordonnee->setVisible(true);
     ui->label_Abscisse->setVisible(true);
-    */
+
 }
 
 void MainWindow::hide_position()
@@ -577,7 +566,6 @@ void MainWindow::display_no_communication()
         ui->label_Value_Battery->setVisible(true);
     ui->label_Value_Battery->setText(NO_COMMUNICATION);
 
-    ui->altitude_LCD->setVisible(false);
     if (!ui->label_Value_Altitude->isVisible())
         ui->label_Value_Altitude->setVisible(true);
     ui->label_Value_Altitude->setText(NO_COMMUNICATION);
@@ -594,6 +582,89 @@ void MainWindow::display_no_communication()
     hide_position();
 
 }
+
+
+
+
+
+void MainWindow::mark_square_found(int square)
+{
+    QString path_to_marking_image ;
+    if (joueur == 0)
+    {
+        path_to_marking_image = PATH_TO_CIRCLE ;
+        joueur = 1 ;
+    }
+    else
+    {
+        path_to_marking_image = PATH_TO_CROSS ;
+        joueur = 0 ;
+    }
+
+    switch (square)
+    {
+    case 1 :
+        ui->button_A_1->setStyleSheet("background-color: white;");
+        ui->button_A_1->setIcon(QIcon(path_to_marking_image));
+        ui->button_A_1->setIconSize(QSize(100,100));
+        ui->button_A_1->setEnabled(false);
+        break ;
+    case 2 :
+        ui->button_B_1->setStyleSheet("background-color: white;");
+        ui->button_B_1->setIcon(QIcon(path_to_marking_image));
+        ui->button_B_1->setIconSize(QSize(100,100));
+        ui->button_B_1->setEnabled(false);
+        break ;
+    case 3 :
+        ui->button_C_1->setStyleSheet("background-color: white;");
+        ui->button_C_1->setIcon(QIcon(path_to_marking_image));
+        ui->button_C_1->setIconSize(QSize(100,100));
+        ui->button_C_1->setEnabled(false);
+        break ;
+    case 4 :
+        ui->button_A_2->setStyleSheet("background-color: white;");
+        ui->button_A_2->setIcon(QIcon(path_to_marking_image));
+        ui->button_A_2->setIconSize(QSize(100,100));
+        ui->button_A_2->setEnabled(false);
+        break ;
+    case 5 :
+        ui->button_B_2->setStyleSheet("background-color: white;");
+        ui->button_B_2->setIcon(QIcon(path_to_marking_image));
+        ui->button_B_2->setIconSize(QSize(100,100));
+        ui->button_B_2->setEnabled(false);
+        break ;
+    case 6 :
+        ui->button_C_2->setStyleSheet("background-color: white;");
+        ui->button_C_2->setIcon(QIcon(path_to_marking_image));
+        ui->button_C_2->setIconSize(QSize(100,100));
+        ui->button_C_2->setEnabled(false);
+        break ;
+    case 7 :
+        ui->button_A_3->setStyleSheet("background-color: white;");
+        ui->button_A_3->setIcon(QIcon(path_to_marking_image));
+        ui->button_A_3->setIconSize(QSize(100,100));
+        ui->button_A_3->setEnabled(false);
+        break ;
+    case 8 :
+        ui->button_B_3->setStyleSheet("background-color: white;");
+        ui->button_B_3->setIcon(QIcon(path_to_marking_image));
+        ui->button_B_3->setIconSize(QSize(100,100));
+        ui->button_B_3->setEnabled(false);
+        break ;
+    case 9 :
+        ui->button_C_3->setStyleSheet("background-color: white;");
+        ui->button_C_3->setIcon(QIcon(path_to_marking_image));
+        ui->button_C_3->setIconSize(QSize(100,100));
+        ui->button_C_3->setEnabled(false);
+        break ;
+    }
+
+}
+
+
+
+
+
 
 
 void MainWindow::set_icons_playground_with_communication()
@@ -613,46 +684,14 @@ void MainWindow::set_icons_playground_with_communication()
 
 void MainWindow::set_icons_playground_without_communication()
 {
-    //ui->button_A_1->setIcon(QIcon(ICON_RED_RECTANGLE_PATH));
-    //ui->button_A_1->setIconSize(QSize(100, 100));
     ui->button_A_1->setStyleSheet("background-color: grey;");
-
-    //ui->button_B_2->setIcon(QIcon(ICON_BLUE_RECTANGLE_PATH));
-    //ui->button_B_2->setIconSize(QSize(100, 100));
     ui->button_B_2->setStyleSheet("background-color: grey;");
-
-    //ui->button_C_3->setIcon(QIcon(ICON_GREEN_RECTANGLE_PATH));
-    //ui->button_C_3->setIconSize(QSize(100, 100));
     ui->button_C_3->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_A_2->setIcon(QIcon(ICON_RED_TRIANGLE_PATH));
-    //ui->button_A_2->setIconSize(QSize(100, 100));
     ui->button_A_2->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_B_3->setIcon(QIcon(ICON_BLUE_TRIANGLE_PATH));
-    //ui->button_B_3->setIconSize(QSize(100, 100));
     ui->button_B_3->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_C_1->setIcon(QIcon(ICON_GREEN_TRIANGLE_PATH));
-    //ui->button_C_1->setIconSize(QSize(100, 100));
     ui->button_C_1->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_A_3->setIcon(QIcon(ICON_RED_CIRCLE_PATH));
-    //ui->button_A_3->setIconSize(QSize(100, 100));
     ui->button_A_3->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_B_1->setIcon(QIcon(ICON_BLUE_CIRCLE_PATH));
-    //ui->button_B_1->setIconSize(QSize(100, 100));
     ui->button_B_1->setStyleSheet("background-color: grey;");
-
-
-    //ui->button_C_2->setIcon(QIcon(ICON_GREEN_CIRCLE_PATH));
-    //ui->button_C_2->setIconSize(QSize(100, 100));
     ui->button_C_2->setStyleSheet("background-color: grey;");
 
 }

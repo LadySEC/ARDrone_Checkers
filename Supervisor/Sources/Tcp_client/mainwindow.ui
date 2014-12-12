@@ -748,9 +748,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLCDNumber" name="altitude_LCD"/>
-         </item>
         </layout>
        </item>
        <item>

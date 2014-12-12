@@ -57,7 +57,6 @@ signals :
     void change_phi_value(QString new_value);
     void change_psi_value(QString new_value);
 
-
 private:
 
     /** Allow the user to ask for the drone to look for a tag.
@@ -99,8 +98,11 @@ private:
     void set_icons_playground_without_communication();
     void set_icons_playground_with_communication();
 
+    void mark_square_found(int square) ;
 
     mission_state state_of_mission ;
+
+    int joueur ;
 
     Ui::MainWindow *ui;
     client C ;

@@ -15,7 +15,8 @@
     static const QString ICON_BLUE_CIRCLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/blue_circle.jpg";
     static const QString ICON_GREEN_CIRCLE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/green_circle.jpg";
     static const QString DRONE_IMAGE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/drone.png";
-
+    static const QString PATH_TO_CIRCLE = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/black_circle.png" ;
+    static const QString PATH_TO_CROSS = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/black_cross.png" ;
 
 #elif defined(_WIN32) || defined(WIN32)   /* _Win32 is usually defined by compilers targeting 32 or   64 bit Windows systems */
     static const QString ICON_RED_RECTANGLE_PATH = "..\\..\\..\\tags\\red_rectangle.jpg";
@@ -50,6 +51,5 @@ QString mission_state_to_QString(mission_state current_state) ;
 
 static int NUM_PORT_CLIENT = 4000 ;
 static QString ADDR_IP_CLIENT = "192.168.1.1";
-
 
 #endif // GLOBAL_H
