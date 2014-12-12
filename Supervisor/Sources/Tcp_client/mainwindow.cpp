@@ -217,11 +217,10 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
         emit change_vertical_speed_value(QString::number(ver_speed/1000));
     }
     else if (mnemo == 'G')
-    {
-        /*
+    {/*
         int square = data.at(2);
         mark_square_found(square);
-        */
+*/
     }
     else if (mnemo == 'A')
     {
