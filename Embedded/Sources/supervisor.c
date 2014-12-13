@@ -269,8 +269,8 @@ void* supervisor_thread_interact(void* arg)
                     #endif
                         break;
                 }
-                
-            #ifdef PRINT_TCPUDP_DATA_SENT
+
+            #ifdef PRINT_TCPUDP_DATA_RECEIVED
                 if(print == TRUE)
                 {
                     /* printf */
