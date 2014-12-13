@@ -280,7 +280,7 @@ void*  kbd_thread_drone_controller(void * args)
         /* Empty the output buffer */
         fflush(stdout);
     }
-#ifdef ENABLE_SUPERVISOR
+#ifndef ENABLE_SUPERVISOR
     while(key_selected != X_KEY);
 #else
     while(1);

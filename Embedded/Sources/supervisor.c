@@ -75,6 +75,8 @@ void supervisor_close(void)
     socket_close(G_comm_SPVSR->client);
     socket_close(G_comm_SPVSR->server);
     free(G_comm_SPVSR);
+
+     printf("\n\rSupervisor communication closed");
 }
 
 void supervisor_sendData(T_TCP_DATA I_data, char* arg)
@@ -267,6 +269,7 @@ void* supervisor_thread_interact(void* arg)
                     #endif
                         break;
                 }
+                
             #ifdef PRINT_TCPUDP_DATA_SENT
                 if(print == TRUE)
                 {
@@ -332,7 +335,6 @@ void* supervisor_thread_interact(void* arg)
 
     printf("\n\rSupervisor disconnected");
     /* Close */
-    printf("\n\rClosing supervisor communication");
     supervisor_close();
     /* Close this thread */
     pthread_exit(NULL);

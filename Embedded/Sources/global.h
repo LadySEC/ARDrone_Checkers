@@ -22,6 +22,7 @@
 /* Preprocessors commands														  */
 /**********************************************************************************/
 /* Enable functions */
+#define ENABLE_KEYBOARD
 #define ENABLE_SUPERVISOR
 #define ENABLE_CALCUL_ORDER
 //#define ENABLE_CONFIG_VIDEO

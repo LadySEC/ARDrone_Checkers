@@ -156,6 +156,8 @@ void ATcommand_close(void)
     socket_close(G_comm_NAV->server);
     free(G_comm_AT);
     free(G_comm_NAV);
+
+    printf("\n\rAT commands communication closed");
 }
 
 /**
