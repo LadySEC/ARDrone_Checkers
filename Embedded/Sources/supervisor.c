@@ -158,7 +158,7 @@ void* supervisor_thread_interact(void* arg)
     T_reception_state   state;
     char                order_string[50u];
 
-#ifdef PRINT_TCPUDP_DATA_SENT
+#ifdef PRINT_TCP_DATA_RECEIVED
     T_bool              print = TRUE;
     char                frame_received[(RECV_BUFF_SIZE*3u) + 1u];
     char                byte_ascii[20u];
@@ -171,24 +171,52 @@ void* supervisor_thread_interact(void* arg)
 
     while((G_disconnected == FALSE) && (G_comm_lost == FALSE))
     {
-        /* zero out the structure */
-        memset((char *) &G_orders, 0, sizeof(G_orders));
+        /* Share data with the supervisor */
+    #ifdef PRINT_TCPUDP_DATA_SENT
+        printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %f %f %f, Alt: %d, Speed: %d %d",
+                ATcommand_navdata()->ctrl_state,
+                (char)ATcommand_navdata()->vbat_flying_percentage,
+                (int)ATcommand_navdata()->theta,
+                (int)ATcommand_navdata()->phi,
+                (int)ATcommand_navdata()->psi,
+                ATcommand_navdata()->altitude,
+                (int)ATcommand_navdata()->vx,
+                (int)ATcommand_navdata()->vy);
+    #endif
 
-        /* Read orders from the supervisor */
-        state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
-        if(state == RECEPTION_ERROR)
+        // Mission management 
+        if((G_mission_started == TRUE) && (get_stateMission() == 0))
         {
-            G_comm_lost = TRUE;
-            printf("\n\rCommunication with the supervisor lost");
+            /* End of mission */
+            printf("\n\rSupervisor has detected the end of the mission");
+            /* Share it */
+            test[0] = G_square;
+            supervisor_sendData(TARGET_TCP,test);
+            /* Initialization */
+            G_square      = 0u;
+            G_mission_started = FALSE;
         }
-        else
+        // Others data
+        supervisor_sendData(NAVDATA_TCP,NULL);
+        supervisor_sendData(BATTERY_TCP,NULL);
+        supervisor_sendData(ANGLES_TCP,NULL);
+        supervisor_sendData(ALTITUDE_TCP,NULL);
+        supervisor_sendData(SPEEDS_TCP,NULL);
+
+        /* Read an process orders from the supervisor */
+        memset((char *) &G_orders, 0, sizeof(G_orders));
+        state = socket_readPacket(G_comm_SPVSR->protocol, G_comm_SPVSR->client->id, &G_comm_SPVSR->client->parameters, &G_orders, sizeof(G_orders), NON_BLOCKING);
+        switch(state)
         {
-            /* Identifying the state */
-            if(state == PACKET_RECEIVED)
-            {
-                #ifdef PRINT_TCPUDP_DATA_SENT
-                    print = TRUE;
-                #endif
+            case RECEPTION_ERROR:
+                G_comm_lost = TRUE;
+                printf("\n\rCommunication with the supervisor lost");
+                break;
+
+            case PACKET_RECEIVED:
+            #ifdef PRINT_TCP_DATA_RECEIVED
+                print = TRUE;
+            #endif
 
                 /* Process the received command */
                 switch((T_TCP_DATA)G_orders[0u])
@@ -235,6 +263,7 @@ void* supervisor_thread_interact(void* arg)
 
                     /* incomplete */
                     case TARGET_TCP:
+
                         /* Do nothing for the moment */
                         G_square = G_orders[2u];
                         /* Start the mission */
@@ -264,13 +293,13 @@ void* supervisor_thread_interact(void* arg)
                         break;
 
                     default:
-                    #ifdef PRINT_TCPUDP_DATA_SENT
+                    #ifdef PRINT_TCP_DATA_RECEIVED
                         print = FALSE;
                     #endif
                         break;
                 }
 
-            #ifdef PRINT_TCPUDP_DATA_RECEIVED
+            #ifdef PRINT_TCP_DATA_RECEIVED
                 if(print == TRUE)
                 {
                     /* printf */
@@ -289,45 +318,12 @@ void* supervisor_thread_interact(void* arg)
                     printf("\n\rBytes received: ? through TCP");
                 }
             #endif
-                    
-            }
-            else
-            {
+                break;
+
+            case NO_PACKET_RECEIVED:
                 /* Do nothing */
-            }
+                break;
         }
-
-#ifdef PRINT_TCPUDP_DATA_SENT
-        printf("\n\r[SHARE_DATA] Nav: %x, Batt: %d, Ang: %f %f %f, Alt: %d, Speed: %d %d",
-                ATcommand_navdata()->ctrl_state,
-                (char)ATcommand_navdata()->vbat_flying_percentage,
-                (int)ATcommand_navdata()->theta,
-                (int)ATcommand_navdata()->phi,
-                (int)ATcommand_navdata()->psi,
-                ATcommand_navdata()->altitude,
-                (int)ATcommand_navdata()->vx,
-                (int)ATcommand_navdata()->vy);
-#endif
-
-        /* Share data with the supervisor */
-        // Mission management 
-        if((G_mission_started == TRUE) && (get_stateMission() == 0))
-        {
-            /* End of mission */
-            printf("\n\rSupervisor has detected the end of the mission");
-            /* Share it */
-            test[0] = G_square;
-            supervisor_sendData(TARGET_TCP,test);
-            /* Initialization */
-            G_square      = 0u;
-            G_mission_started = FALSE;
-        }
-
-        supervisor_sendData(NAVDATA_TCP,NULL);
-        supervisor_sendData(BATTERY_TCP,NULL);
-        supervisor_sendData(ANGLES_TCP,NULL);
-        supervisor_sendData(ALTITUDE_TCP,NULL);
-        supervisor_sendData(SPEEDS_TCP,NULL);
 
         /* Wait until the next period is achieved */
         wait_period (&info);

@@ -30,7 +30,7 @@
 
 /* Debug */
 //#define DEBUG_NAVDATA
-#define DEBUG_MISSION
+//#define DEBUG_MISSION
 //#define PRINT_TCPUDP_DATA_SENT
 #define PRINT_TCP_DATA_RECEIVED
 
