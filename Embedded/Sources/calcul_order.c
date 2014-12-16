@@ -135,8 +135,6 @@ void posTag_ATcommand(int x,int y)
 
 				printf("----- MISSION - [END1] je suis arrive a la Case\n\r");
 
-				/* For a perfect take off :) */
-				ATcommand_moveDelay(HOVERING_BUFF, 	_CALCUL_PERIOD);
 				ATcommand_process(LANDING);
 				printf("              - LANDING\n\r");
 				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing\n");
