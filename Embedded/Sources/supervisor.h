@@ -40,7 +40,8 @@ typedef enum
 	ANGLES_TCP	= 	'A',
 	SPEEDS_TCP	=	'S',
 	ALTITUDE_TCP=	'H',
-	DECON_TCP	= 	'D'
+	DECON_TCP	= 	'D',
+	EMERGENCY_TCP=	'E'
 }T_TCP_DATA;
 
 /**********************************************************************************/

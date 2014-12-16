@@ -44,6 +44,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 	switch(I_protocol)
 	{
 		case TCP:
+			LOG_WriteLevel(LOG_INFO, "communication : initiating a TCP communication\n");
 			/* Instantiate a server */
 			communication->server 		= (T_socket*)malloc(sizeof(T_socket));
 			communication->server->id 	= socket(PF_INET , SOCK_STREAM, IPPROTO_TCP);
@@ -64,7 +65,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			    communication->server->parameters.sin_port 			= htons(I_port_server);
 			 
 			 	/* bind socket to port */
-			 	printf("\n\rWaiting for the supervisor ...");
+			 	LOG_WriteLevel(LOG_INFO, "communication : waiting a connection from a TCP client\n");
 			    if( bind(communication->server->id, (struct sockaddr*)&communication->server->parameters, sizeof(communication->server->parameters)) == -1)
 			    {
 			        perror("\n\rbind()");
@@ -78,15 +79,6 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 	    			}
 	    			else
 	    			{
-	    			#if 0
-	    				/* Set the socket as non-blocking */
-					    if(I_state ==  NON_BLOCKING)
-					   	{
-					   		flags 		= fcntl(communication->server->id, F_GETFL);
-							fcntl(communication->server->id, F_SETFL, flags | O_NONBLOCK);
-					   	}
-					#endif
-
 	    				/* Instantiate a client */
 	    				communication->client 				= (T_socket*)malloc(sizeof(T_socket));
 						socket_lenght = sizeof(communication->client->parameters);
@@ -102,6 +94,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			break;
 
 		case UDP:
+			LOG_WriteLevel(LOG_INFO, "communication : initiating a UDP communication\n");
 			/* Instantiate a client */
 			communication->client 		= (T_socket*)malloc(sizeof(T_socket));
 			communication->client->id 	= socket(AF_INET ,SOCK_DGRAM, IPPROTO_UDP);
@@ -176,8 +169,8 @@ T_error socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockad
 		    }
 		    else
 		    {
-		#ifdef PRINT_TCPUDP_DATA_SENT
-				printf("\n\rString sent: %.*s through TCP", strlen(I_message)-1u , I_message);
+		#ifdef PRINT_TCP_DATA_SENT
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP string sent: %.*s\n", strlen(I_message)-1u , I_message);
 		#endif
 		    }
 			break;
@@ -190,8 +183,11 @@ T_error socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockad
 		    }
 		    else
 		    {
-		#ifdef PRINT_TCPUDP_DATA_SENT
-				printf("\n\rString sent: %.*s to %s:%d", strlen(I_message)-1u , I_message, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
+		#ifdef PRINT_UDP_DATA_SENT
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP string sent to %s:%d: %.*s\n", 
+		    					inet_ntoa(I_parameters->sin_addr), 
+		    					(int)ntohs(I_parameters->sin_port),
+		    					strlen(I_message)-1u , I_message);
 		#endif
 		    }
 			break;
@@ -234,7 +230,7 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    }
 		    else
 		    {
-		#ifdef PRINT_TCPUDP_DATA_SENT
+		#ifdef PRINT_TCP_DATA_SENT
 		    	/* printf */
 		    	for(index = 0u; index < I_lenght; index++)
 		    	{
@@ -242,7 +238,7 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    		strcpy(&frame_sent[index_frame], byte_ascii);
 		    		index_frame = strlen(frame_sent);
 		    	}
-				printf("\n\rBytes sent: %s through TCP", frame_sent);
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP bytes sent: %s\n", frame_sent);
 		#endif
 		    }
 			break;
@@ -255,7 +251,7 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    }
 		    else
 		    {
-		#ifdef PRINT_TCPUDP_DATA_SENT
+		#ifdef PRINT_UDP_DATA_SENT
 		    	/* printf */
 		    	for(index = 0u; index < I_lenght; index++)
 		    	{
@@ -263,7 +259,10 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    		strcpy(&frame_sent[index_frame], byte_ascii);
 		    		index_frame = strlen(frame_sent);
 		    	}
-				printf("\n\rBytes sent: %s to %s:%d", frame_sent, inet_ntoa(I_parameters->sin_addr), (int)ntohs(I_parameters->sin_port));
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP bytes sent to %s:%d: %s\n", 
+		    					inet_ntoa(I_parameters->sin_addr), 
+		    					(int)ntohs(I_parameters->sin_port),
+		    					frame_sent);
 		#endif
 		    }
 			break;
@@ -340,6 +339,7 @@ T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, st
 void socket_close(T_socket* I_socket)
 {
 	/* Close the socket */
+	LOG_WriteLevel(LOG_INFO, "communication : closing socket %d\n", I_socket->id);
 	close(I_socket->id);
 	free(I_socket);
 }
