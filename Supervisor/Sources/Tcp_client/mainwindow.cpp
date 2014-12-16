@@ -27,6 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pushButton_image->setIconSize(QSize(100,100));
     link_connect();
 
+    ui->button_emergency->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
+    ui->button_emergency->setIconSize(QSize(70,70));
+    ui->button_start->setIcon(QIcon(START_PATH));
+    ui->button_start->setIconSize(QSize(70,70));
+    ui->button_stop->setIcon(QIcon(STOP_PATH));
+    ui->button_stop->setIconSize(QSize(70,70));
+
+
     /*
     ui->label_Vertical_Speed->setVisible(false);
     ui->label_Horizontal_Speed->setVisible(false);
@@ -70,7 +78,8 @@ void MainWindow::link_connect()
 
     QObject::connect(ui->button_start, SIGNAL(clicked()), this, SLOT(start_mission()));
     QObject::connect(ui->button_stop, SIGNAL(clicked()), this, SLOT(stop_mission()));
-    QObject::connect(ui->button_pause, SIGNAL(clicked()), this, SLOT(pause_mission()));
+    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing()));
+    //QObject::connect(ui->button_pause, SIGNAL(clicked()), this, SLOT(pause_mission()));
 
 
     QObject::connect(ui->button_A_1, SIGNAL(clicked()), this, SLOT(send_G_A_1()));
@@ -140,7 +149,7 @@ void MainWindow::start_mission()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 
 
-
+        allow_emergency();
         allow_pause_stop_mission();
         allow_orders_to_squares();
     }
@@ -160,10 +169,56 @@ void MainWindow::stop_mission()
         hide_position() ;
 
         forbid_pause_stop_mission();
+        forbid_emergency() ;
         forbid_orders_to_squares();
     }
 }
 
+
+void MainWindow::emergency_landing()
+{
+    if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
+    {
+        send_emergency(0x0) ;
+        //allow_resume_after_emergency();
+        state_of_mission = mission_stopped_emergency;
+        ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
+
+        hide_position() ;
+
+        forbid_pause_stop_mission();
+        forbid_orders_to_squares();
+
+        ui->button_emergency->setIcon(QIcon(RESET_PATH));
+        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing()));
+        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency())) ;
+    }
+}
+
+void MainWindow::reset_after_emergency()
+{
+    if ((state_of_mission == mission_stopped_emergency))
+    {
+        send_emergency(0x1) ;
+        allow_start_mission();
+        state_of_mission = mission_ready;
+        ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
+
+        /*
+        hide_position() ;
+
+        forbid_pause_stop_mission();
+        forbid_orders_to_squares();
+        */
+        forbid_emergency() ;
+
+        ui->button_emergency->setIcon(QIcon(RESET_PATH));
+        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency()));
+        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing())) ;
+    }
+}
+
+/*
 void MainWindow::pause_mission()
 {
     if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
@@ -179,7 +234,7 @@ void MainWindow::pause_mission()
         forbid_orders_to_squares();
     }
 }
-
+*/
 
 void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray data)
 {
@@ -217,10 +272,10 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
         emit change_vertical_speed_value(QString::number(ver_speed/1000));
     }
     else if (mnemo == 'G')
-    {/*
-        int square = data.at(2);
+    {
+        int square = data.at(0);
         mark_square_found(square);
-*/
+
     }
     else if (mnemo == 'A')
     {
@@ -268,9 +323,10 @@ void MainWindow::send_takeoff()
         message.append(0x01) ;
         message.append(0x01);
         C.recoit_texte(message);
+        /*
         state_of_mission = mission_init ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-
+        */
     }
 }
 
@@ -284,9 +340,21 @@ void MainWindow::send_landing()
         quint8 value = 0x0 ;
         message.append(value) ;
         C.recoit_texte(message);
+        /*
         state_of_mission = mission_init ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
+        */
+    }
+}
 
+void MainWindow::send_emergency(quint8 value)
+{
+    {
+        QByteArray message ;
+        message.append('E') ;
+        message.append(0x01) ;
+        message.append(value) ;
+        C.recoit_texte(message);
     }
 }
 
@@ -484,16 +552,28 @@ void MainWindow::forbid_start_mission()
  * ******************/
 void MainWindow::allow_pause_stop_mission()
 {
-    ui->button_pause->setEnabled(true);
+    //ui->button_pause->setEnabled(true);
     ui->button_stop->setEnabled(true);
 }
 
 void MainWindow::forbid_pause_stop_mission()
 {
-    ui->button_pause->setEnabled(false);
+    //ui->button_pause->setEnabled(false);
     ui->button_stop->setEnabled(false);
 }
 
+/** ******************
+ * EMERGENCY
+ * ******************/
+void MainWindow::allow_emergency()
+{
+    ui->button_emergency->setEnabled(true);
+}
+
+void MainWindow::forbid_emergency()
+{
+    ui->button_emergency->setEnabled(false);
+}
 
 /** ******************
  * SENDING ORDERS TO LOOK FOR A SQUARE
