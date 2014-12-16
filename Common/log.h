@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#define	LOG_PRINTF		1	// Change this value to enable (1) or disable (0) the display of the log messages on the standard output
+#define	LOG_PRINTF		0	// Change this value to enable (1) or disable (0) the display of the log messages on the standard output
 
 #define LOG_DEBUG		4	// Verbose mode, used to log repetitive actions such as AT commands
 #define LOG_INFO		3	// Information mode, used to log interesting actions and events

@@ -86,7 +86,7 @@ int LOG_WriteFormattedLine(char * I_str, int I_logLevel) {
 	timeNow = time(NULL);
 	strftime(timeStr, sizeof(timeStr), LOG_TIME_FORMAT, localtime(&timeNow));
 	snprintf(buff, sizeof(buff), LOG_FORMAT, timeStr, getpid(), LOG_LogLevelToString(I_logLevel), I_str);
-#if LOG_PRINTF ==  1
+#if LOG_PRINTF == 1
 	printf("%s\r\n", buff);
 #endif
 	return LOG_WriteLine(buff);
