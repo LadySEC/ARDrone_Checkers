@@ -57,10 +57,10 @@ T_error supervisor_initiate(void)
     else
     {
         /* Print the communication */
-        LOG_WriteLevel(LOG_INFO, "supervisor : socket %d connected to %s:%d\n", 
+        LOG_WriteLevel(LOG_INFO, "supervisor : socket %d connected to %s:%d", 
                         G_comm_SPVSR->client->id, inet_ntoa(G_comm_SPVSR->client->parameters.sin_addr), 
                         (int)ntohs(G_comm_SPVSR->client->parameters.sin_port));
-        LOG_WriteLevel(LOG_INFO, "supervisor : communication opened\n");
+        LOG_WriteLevel(LOG_INFO, "supervisor : communication opened");
     }
 
     return(error);
@@ -78,7 +78,7 @@ void supervisor_close(void)
     socket_close(G_comm_SPVSR->server);
     free(G_comm_SPVSR);
 
-    LOG_WriteLevel(LOG_INFO, "supervisor : communication closed\n");
+    LOG_WriteLevel(LOG_INFO, "supervisor : communication closed");
 }
 
 void supervisor_sendData(T_TCP_DATA I_data, char* arg)
@@ -169,18 +169,18 @@ void* supervisor_thread_interact(void* arg)
 #endif
 
     make_periodic (INTERACT_TEMPO, &info);   
-    LOG_WriteLevel(LOG_INFO, "supervisor : thread period set to %dus\n",INTERACT_TEMPO);
+    LOG_WriteLevel(LOG_INFO, "supervisor : thread period set to %dus",INTERACT_TEMPO);
 
     while((G_disconnected == FALSE) && (G_comm_lost == FALSE))
     {
         /* Share data with the supervisor */
     #ifdef DEBUG_NAVDATA
-        LOG_WriteLevel(LOG_DEBUG, "supervisor : Nav: %x | Batt: %d | Ang: %f %f %f | Alt: %d | Speed: %d %d\n",
+        LOG_WriteLevel(LOG_DEBUG, "supervisor : Nav: %x | Batt: %d | Ang: %f %f %f | Alt: %d | Speed: %d %d",
                 ATcommand_navdata()->ctrl_state,
                 (char)ATcommand_navdata()->vbat_flying_percentage,
                 (int)ATcommand_navdata()->theta,
                 (int)ATcommand_navdata()->phi,
-                (int)ATcommand_navdata()->psi,
+                (int)ATcommand_navdata()->psi
                 ATcommand_navdata()->altitude,
                 (int)ATcommand_navdata()->vx,
                 (int)ATcommand_navdata()->vy);
@@ -190,7 +190,7 @@ void* supervisor_thread_interact(void* arg)
         if((G_mission_started == TRUE) && (get_stateMission() == 0))
         {
             /* End of mission */
-            LOG_WriteLevel(LOG_INFO, "supervisor : end of mission detected\n");
+            LOG_WriteLevel(LOG_INFO, "supervisor : end of mission detected");
             /* Share it */
             test[0] = G_square;
             supervisor_sendData(TARGET_TCP,test);
@@ -212,7 +212,7 @@ void* supervisor_thread_interact(void* arg)
         {
             case RECEPTION_ERROR:
                 G_comm_lost = TRUE;
-                LOG_WriteLevel(LOG_WARN, "supervisor : communication lost\n");
+                LOG_WriteLevel(LOG_WARN, "supervisor : communication lost");
                 break;
 
             case PACKET_RECEIVED:
@@ -246,7 +246,7 @@ void* supervisor_thread_interact(void* arg)
                                 ATcommand_process(LED_ANIMATION);
                             }
                             /* Update order to print */
-                            strcpy(order_string, "TAKEOFF REQUESTED");
+                            strcpy(order_string, "TAKEOFF");
                         }
                         /* Landing */
                         else
@@ -259,7 +259,7 @@ void* supervisor_thread_interact(void* arg)
                                 while(ATcommand_FlyingState() != FALSE);
                             }
                             /* Update order to print */
-                            strcpy(order_string, "LANDING REQUESTED");
+                            strcpy(order_string, "LANDING");
                         }
                         break;
 
@@ -271,18 +271,18 @@ void* supervisor_thread_interact(void* arg)
                         /* Start the mission */
                         G_mission_started = TRUE;
                         /* Update order to print */
-                        sprintf(order_string, "REACH SQUARE %d REQUESTED", G_orders[2u]);
+                        sprintf(order_string, "REACH SQUARE %d", G_orders[2u]);
                         break;
 
                     /* incomplete */
                     case STOP_TCP:
                         if(G_orders[2u] == 1u)
                         {
-                            strcpy(order_string, "RESUME GAME REQUESTED");
+                            strcpy(order_string, "RESUME GAME");
                         }
                         else
                         {
-                            strcpy(order_string, "PAUSE GAME REQUESTED");
+                            strcpy(order_string, "PAUSE GAME");
                         }
                         break;
 
@@ -290,13 +290,13 @@ void* supervisor_thread_interact(void* arg)
                         if(G_orders[2u] == 1u)
                         {
                             G_disconnected = TRUE;
-                            strcpy(order_string, "DISCONNECTION REQUESTED");
+                            strcpy(order_string, "DISCONNECTION");
                         }
                         break;
 
                     case EMERGENCY_TCP:
                         ATcommand_process(EMERGENCY);
-                        strcpy(order_string, "EMERGENCY REQUESTED");
+                        strcpy(order_string, "EMERGENCY");
                         break;
 
                     default:
@@ -318,11 +318,11 @@ void* supervisor_thread_interact(void* arg)
                         strcpy(&frame_received[index_frame], byte_ascii);
                         index_frame = strlen(frame_received);
                     }
-                    LOG_WriteLevel(LOG_DEBUG, "%s -> [%s]\n", frame_received, order_string);
+                    LOG_WriteLevel(LOG_DEBUG, "%s -> %s order", frame_received, order_string);
                 }
                 else
                 {
-                    LOG_WriteLevel(LOG_DEBUG, "supervisor : incorrect data received\n");
+                    LOG_WriteLevel(LOG_DEBUG, "supervisor : incorrect data received");
                 }
             #endif
                 break;
@@ -337,7 +337,7 @@ void* supervisor_thread_interact(void* arg)
     }
 
     /* Inform the disconnection */
-    LOG_WriteLevel(LOG_INFO, "supervisor : disconnected\n");
+    LOG_WriteLevel(LOG_INFO, "supervisor : disconnected");
     /* Close */
     supervisor_close();
     /* Close this thread */
@@ -352,4 +352,9 @@ unsigned char getSquare(void)
 T_bool supervisor_commLost(void)
 {
     return(G_comm_lost);
+}
+
+void supervisor_setDisconnection(T_bool value)
+{
+    G_disconnected = value;
 }

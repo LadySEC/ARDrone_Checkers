@@ -44,7 +44,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 	switch(I_protocol)
 	{
 		case TCP:
-			LOG_WriteLevel(LOG_INFO, "communication : initiating a TCP communication\n");
+			LOG_WriteLevel(LOG_INFO, "communication : initiating a TCP communication");
 			/* Instantiate a server */
 			communication->server 		= (T_socket*)malloc(sizeof(T_socket));
 			communication->server->id 	= socket(PF_INET , SOCK_STREAM, IPPROTO_TCP);
@@ -65,7 +65,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			    communication->server->parameters.sin_port 			= htons(I_port_server);
 			 
 			 	/* bind socket to port */
-			 	LOG_WriteLevel(LOG_INFO, "communication : waiting a connection from a TCP client\n");
+			 	LOG_WriteLevel(LOG_INFO, "communication : waiting a connection from a TCP client");
 			    if( bind(communication->server->id, (struct sockaddr*)&communication->server->parameters, sizeof(communication->server->parameters)) == -1)
 			    {
 			        perror("\n\rbind()");
@@ -94,7 +94,7 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			break;
 
 		case UDP:
-			LOG_WriteLevel(LOG_INFO, "communication : initiating a UDP communication\n");
+			LOG_WriteLevel(LOG_INFO, "communication : initiating a UDP communication");
 			/* Instantiate a client */
 			communication->client 		= (T_socket*)malloc(sizeof(T_socket));
 			communication->client->id 	= socket(AF_INET ,SOCK_DGRAM, IPPROTO_UDP);
@@ -170,7 +170,7 @@ T_error socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockad
 		    else
 		    {
 		#ifdef PRINT_TCP_DATA_SENT
-		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP string sent: %.*s\n", strlen(I_message)-1u , I_message);
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP string sent: %.*s", strlen(I_message)-1u , I_message);
 		#endif
 		    }
 			break;
@@ -184,7 +184,7 @@ T_error socket_sendString(T_protocol I_protocol, int I_emitter_id, struct sockad
 		    else
 		    {
 		#ifdef PRINT_UDP_DATA_SENT
-		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP string sent to %s:%d: %.*s\n", 
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP string sent to %s:%d: %.*s", 
 		    					inet_ntoa(I_parameters->sin_addr), 
 		    					(int)ntohs(I_parameters->sin_port),
 		    					strlen(I_message)-1u , I_message);
@@ -212,12 +212,10 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 	socklen_t 			lenght_param 	= (socklen_t)sizeof(struct sockaddr_in);
 	T_error 			error 			= NO_ERROR;
 
-#ifdef PRINT_TCPUDP_DATA_SENT
 	char				frame_sent[(I_lenght*3u) + 1u];
 	char 				byte_ascii[4u];
 	unsigned char		index;
 	unsigned char  		index_frame = 0u;
-#endif
 
 
 	switch(I_protocol)
@@ -238,7 +236,7 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    		strcpy(&frame_sent[index_frame], byte_ascii);
 		    		index_frame = strlen(frame_sent);
 		    	}
-		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP bytes sent: %s\n", frame_sent);
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : TCP bytes sent: %s", frame_sent);
 		#endif
 		    }
 			break;
@@ -259,7 +257,7 @@ T_error socket_sendBytes(T_protocol I_protocol, int I_emitter_id, struct sockadd
 		    		strcpy(&frame_sent[index_frame], byte_ascii);
 		    		index_frame = strlen(frame_sent);
 		    	}
-		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP bytes sent to %s:%d: %s\n", 
+		    	LOG_WriteLevel(LOG_DEBUG, "communication : UDP bytes sent to %s:%d: %s", 
 		    					inet_ntoa(I_parameters->sin_addr), 
 		    					(int)ntohs(I_parameters->sin_port),
 		    					frame_sent);
@@ -339,7 +337,7 @@ T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, st
 void socket_close(T_socket* I_socket)
 {
 	/* Close the socket */
-	LOG_WriteLevel(LOG_INFO, "communication : closing socket %d\n", I_socket->id);
+	LOG_WriteLevel(LOG_INFO, "communication : closing socket %d", I_socket->id);
 	close(I_socket->id);
 	free(I_socket);
 }

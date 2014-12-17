@@ -15,6 +15,7 @@
 #include "global.h"
 #include <termios.h>
 #include "at_command.h"
+#include "supervisor.h"
 
 /**********************************************************************************/
 /* Constants													      			  */

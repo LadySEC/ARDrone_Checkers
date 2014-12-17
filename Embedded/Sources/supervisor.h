@@ -51,6 +51,7 @@ T_error supervisor_initiate(void);
 void 	supervisor_close(void);
 unsigned char getSquare(void);
 T_bool supervisor_commLost(void);
+void supervisor_setDisconnection(T_bool value);
 
 /**********************************************************************************/
 /* Threads														     		  	  */

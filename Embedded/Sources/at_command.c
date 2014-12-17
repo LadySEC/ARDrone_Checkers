@@ -131,7 +131,7 @@ T_error ATcommand_initiate(void)
         // Send Ack paquet
         ATcommand_process(ACK_COMMAND);
 
-        LOG_WriteLevel(LOG_INFO, "at_command : communication opened\n");
+        LOG_WriteLevel(LOG_INFO, "at_command : communication opened");
     }
     else
     {
@@ -154,7 +154,7 @@ void ATcommand_close(void)
     free(G_comm_AT);
     free(G_comm_NAV);
 
-    LOG_WriteLevel(LOG_INFO, "at_command : communication closed\n");
+    LOG_WriteLevel(LOG_INFO, "at_command : communication closed");
 }
 
 /**
@@ -520,14 +520,14 @@ void ATcommand_process(T_ATorders I_order)
         /* Add a packet to the buffer */
         emitPacket(createPacket(I_order, frame));
 #ifdef PRINT_UDP_DATA_SENT
-        LOG_WriteLevel(LOG_DEBUG, "at_command : %s COMMAND BUFFERED\n", C_ORDERS[I_order]);
+        LOG_WriteLevel(LOG_DEBUG, "at_command : %s command buffered", C_ORDERS[I_order]);
 #endif
     }
     else
     {
         /* Send directly the packet */
 #ifdef PRINT_UDP_DATA_SENT
-        LOG_WriteLevel(LOG_DEBUG, "at_command : %s COMMAND REQUESTED\n", C_ORDERS[I_order]);
+        LOG_WriteLevel(LOG_DEBUG, "at_command : %s command requested", C_ORDERS[I_order]);
 #endif
         if(I_order == NAVDATA_REQUEST)
         {
@@ -645,7 +645,7 @@ float getDynamicParameter(T_angle_param I_param)
 void incDynamicParameter(T_angle_param I_param, float I_incrementation)
 {
     G_dynamic_parameters[I_param] += I_incrementation;
-    LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f\n", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
+    LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
 }
 
 /**********************************************************************************/
@@ -668,7 +668,7 @@ void* ATcommand_thread_movements(void* arg)
 
 
     make_periodic(BUFFER_TEMPO, &info); 
-    LOG_WriteLevel(LOG_INFO, "at_command : thread period set to %dus\n", BUFFER_TEMPO);  
+    LOG_WriteLevel(LOG_INFO, "at_command : thread period set to %dus", BUFFER_TEMPO);  
 
     while(1)
     {
@@ -681,7 +681,7 @@ void* ATcommand_thread_movements(void* arg)
         if(ATcommand_navdataError() == TRUE)
         {
             /* Inform the user */
-            LOG_WriteLevel(LOG_ERROR, "at_command : incorrect navdata\n", BUFFER_TEMPO); 
+            LOG_WriteLevel(LOG_ERROR, "at_command : incorrect navdata", BUFFER_TEMPO); 
             /* Reset the sequence number */
             G_sequenceNumber = 1u;
             ATcommand_process(RESET_WATCHDOG);
@@ -763,7 +763,7 @@ static T_bufferState consumeBuffer(void)
         /* Read the packet */
         /* Send the command through the local host */
 #ifdef PRINT_UDP_DATA_SENT
-        LOG_WriteLevel(LOG_DEBUG, "at_command : %s COMMAND REQUESTED (%d remaining packets from the buffer)\n", 
+        LOG_WriteLevel(LOG_DEBUG, "at_command : %s command requested (%d remaining packets)", 
                         C_ORDERS[G_packetBuffer.first->order],
                         G_packetBuffer.nb_packets - 1u);
 #endif

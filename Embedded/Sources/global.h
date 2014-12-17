@@ -25,15 +25,17 @@
 /* Enable functions */
 #define ENABLE_KEYBOARD
 #define ENABLE_SUPERVISOR
-#define ENABLE_CALCUL_ORDER
+//#define ENABLE_CALCUL_ORDER
 //#define ENABLE_CONFIG_VIDEO
-//#define ENABLE_DRONE_CONTROL_KEYBOARD
+#define ENABLE_DRONE_CONTROL_KEYBOARD
 
 /* Debug */
 //#define DEBUG_NAVDATA
 //#define DEBUG_MISSION
 //#define PRINT_UDP_DATA_SENT
+//#define PRINT_UDP_DATA_RECEIVED
 #define PRINT_TCP_DATA_RECEIVED
+#define PRINT_TCP_DATA_SENT
 
 /**********************************************************************************/
 /* Constants						      			                              */
