@@ -9,35 +9,35 @@
 #define IMG_HEIGHT		720
 
 // Valeurs seuils de détection des couleurs
-#define C_R_MIN_R 150
+#define C_R_MIN_R 90
 #define C_R_MIN_G 0
 #define C_R_MIN_B 0
 #define C_R_MAX_R 255
-#define C_R_MAX_G 70
-#define C_R_MAX_B 70
+#define C_R_MAX_G 60
+#define C_R_MAX_B 60
 
 #define C_G_MIN_R 0
-#define C_G_MIN_G 70
+#define C_G_MIN_G 100
 #define C_G_MIN_B 0
-#define C_G_MAX_R 40
+#define C_G_MAX_R 60
 #define C_G_MAX_G 255
-#define C_G_MAX_B 65
+#define C_G_MAX_B 70
 
 #define C_B_MIN_R 0
 #define C_B_MIN_G 0
-#define C_B_MIN_B 70
-#define C_B_MAX_R 45
-#define C_B_MAX_G 45
+#define C_B_MIN_B 90
+#define C_B_MAX_R 70
+#define C_B_MAX_G 70
 #define C_B_MAX_B 255
 
 // Paramétrages supplémentaires de la détection des couleurs
-#define C_MIN_PIXELS		15
+#define C_MIN_PIXELS		10
 #define C_DOWNSCALING_STEP	5
 #define C_WINDOW_LEFT		280
 #define C_WINDOW_RIGHT		280
 #define C_WINDOW_TOP		0
 #define C_WINDOW_BOTTOM		0
-#define C_DIST_TO_TARGET	360
+#define C_DIST_TO_TARGET	300
 
 typedef struct {
 	int abs;
@@ -47,7 +47,7 @@ typedef struct {
 // Tableau contenant les couleurs des cases
 static char playgroundColors[9] = {
 	'R', 'G', 'R',
-	'G', 'B', 'V',
+	'G', 'B', 'G',
 	'R', 'G', 'R'};
 
 T_Position getPosition(int I_currentSquare, int I_destSquare);

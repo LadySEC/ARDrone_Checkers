@@ -12,14 +12,15 @@
 #include "calcul_order.h"
 #include "keyboard.h"
 #include "detect_tag.h"
+#include "../../Common/log.h"
 
 /**********************************************************************************/
 /* Constants 							  		  */
 /**********************************************************************************/
 /*** it represents the size between the camera position on the drone and it takeoff base */
-int const offset_y 	= 35;
+int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = (2 * _CALCUL_PERIOD / 3);
+int const I_offset_time = 3 * (_CALCUL_PERIOD / 4);
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -54,7 +55,7 @@ int statemission = 0;
 void* calcul_order_thread(void* arg)
 {
 	int 		cpt_mission 	= 0;
-	int		num_square	= 0;
+	int			num_square	= 0;
 	T_Position 	pos_tag;
 
     	/* Make this thread periodic */
@@ -67,16 +68,15 @@ void* calcul_order_thread(void* arg)
 		if(getSquare() != 0)
 		{
 			/* check the square number sent by the supervisor */
-			num_square = getSquare();
-
+			if (getSquare() != 0) {
+				num_square = getSquare();
+			}
+			
 			if(cpt_mission == 0)
 			{
-			#ifdef DEBUG_MISSION
-				printf("\n\r\r----- MISSION - * Begin the mission *");
-				printf("\n\r\r-----         - Temps AT_commande = %d",I_offset_time);
-				printf("\n\r\r-----         - Angle roll        = %f",getDynamicParameter(ROLL_ANGLE));
-				printf("\n\r\r-----         - Angle pitch       = %f",getDynamicParameter(PITCH_ANGLE));
-			#endif
+				printf("----- MISSION - * Begin the mission *\n\r");
+				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
+				statemission = 1;
 			}
 			else
 			{
@@ -96,38 +96,32 @@ void* calcul_order_thread(void* arg)
 						pos_tag = W_getPosition(num_square, 5);
 					}
 
-				#ifdef DEBUG_MISSION
-					printf("\n\r\r----- MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
-				#endif
+					printf("----- MISSION - x = %d, y = %d\n\r",pos_tag.abs,pos_tag.ord);
 
 					/* Sent AT_command according to the (x;y) */
 					posTag_ATcommand(pos_tag.abs,pos_tag.ord);					
 				}
 				else
 				{
-				#ifdef DEBUG_MISSION
-					printf("\n\r\rMISSION - You have to take off !");	
-				#endif				
+					printf("MISSION - You have to take off !\n\r");					
 				}
 			}
 			cpt_mission ++;	
 		}
 		else
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - aucune mission");
-		#endif
+			printf("----- MISSION - aucune mission\n\r");
 			statemission = 0;
 			cpt_mission = 0;	
 		}	
 		
-	#ifdef DEBUG_MISSION
-		printf("\n\r\r----- MISSION - cpt = %d\n",cpt_mission);
-	#endif
+		printf("----- MISSION - cpt = %d\n\r",cpt_mission);
 
         	/* Wait until the next period is achieved */
         	wait_period (&info);
     	}
+
+    	printf("Ending calcul_order_thread\n\r");
 
     	return(NULL);
 }
@@ -140,42 +134,30 @@ void posTag_ATcommand(int x,int y)
 		if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))	  //-120-offset_y <= Y <= 120-offset_y, CENTRE
 		{
 			if(round_mission == 0)
-			{			
-	
+			{
+				printf("----- MISSION - [END1] je suis arrive a la Case\n\r");
+				
+				ATcommand_process(LANDING);
+				printf("              - LANDING\n\r");
+				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
+				while(ATcommand_FlyingState() != FALSE);
+					
 				// The first round of this mission is finished 
-				//round_mission = 1;
-
+				round_mission = 1;
+				
 				/* Reset the mode mission ('M') for the keyboard.c */
-				stop_mission();
+				//stop_mission();
 
 				/* For the supervisor */
 				statemission = 0;
 
-			#ifdef DEBUG_MISSION
-				printf("\n\r\r----- MISSION - [END1] je suis arrive a la Case");
-			#endif
-
-				/* For a perfect take off :) */
-				ATcommand_moveDelay(HOVERING_BUFF, 	_CALCUL_PERIOD);
-		            	ATcommand_process(LANDING);
-
-		    #ifdef DEBUG_MISSION
-			    printf("\n\r\r              - LANDING");
-			#endif
-
 			}
 			else
 			{
-			#ifdef DEBUG_MISSION
-				printf("\n\r\r----- MISSION - [END2] je suis arrive a la Base");
-			#endif
-		            	
-		            	ATcommand_moveDelay(HOVERING_BUFF, 	_CALCUL_PERIOD);
-		            	ATcommand_process(LANDING);
-
-		    #ifdef DEBUG_MISSION
-			    printf("\n\r\r              - LANDING");
-			#endif
+				ATcommand_process(LANDING);
+				printf("              - LANDING\n\r");
+				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
+				while(ATcommand_FlyingState() != FALSE);
 
 				/* Reset the mode mission ('M') for the keyboard.c */
 				stop_mission();
@@ -185,93 +167,58 @@ void posTag_ATcommand(int x,int y)
 
 				/* For the supervisor */
 				statemission = 0;
-			}	
+			}
 		}
-
 		if(y < (-POS_TOLERANCE-offset_y))			  	  //Y < -120-offset_y
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en haut");
-		#endif
-
-            ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
+			printf("----- MISSION - je vais en haut\n\r");
+						ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 		}
-
 		if(y > (POS_TOLERANCE-offset_y))			  	  //Y > 120-offset_y
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en bas");	
-		#endif
-                        
-            ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
+			printf("----- MISSION - je vais en bas\n\r");	
+						ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}
 	}
 	if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))		//-120-offset_y <= Y <= 120-offset_y, CENTRE
 	{
 		if(x < -POS_TOLERANCE)				  //X < -120 
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en gauche");	
-		#endif
-
-            ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
+			printf("----- MISSION - je vais en gauche\n\r");	
+						ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
 		}
-
 		if(x > POS_TOLERANCE)				  //X > 120
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en droite");	
-		#endif
-
-            ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
+			printf("----- MISSION - je vais en droite\n\r");	
+						ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
 		}
 	}
 	if(x < -POS_TOLERANCE)					//X < -120 
 	{
 		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en gauche/haut");
-		#endif
-
-            ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
-            ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
-            ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
+			printf("----- MISSION - je vais en gauche/haut\n\r");
+						ATcommand_moveDelay(PITCH_DOWN_ROLL_LEFT, 	I_offset_time);
 
 		}
 		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en gauche/bas");
-		#endif
-
-            ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
-            ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
-            ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
-		}	
+			printf("----- MISSION - je vais en gauche/bas\n\r");
+						ATcommand_moveDelay(PITCH_UP_ROLL_LEFT,		I_offset_time);
+		}
 	}
 	if(x > POS_TOLERANCE)					//X > 120
 	{
 		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y 
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en droite/haut");
-		#endif
-
-            ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
-            ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
-            ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
+			printf("----- MISSION - je vais en droite/haut\n\r");
+						ATcommand_moveDelay(PITCH_DOWN_ROLL_RIGHT, 	I_offset_time);
 		}
 		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
 		{
-		#ifdef DEBUG_MISSION
-			printf("\n\r\r----- MISSION - je vais en droite/bas");
-		#endif
-			
-            ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
-            ATcommand_moveDelay(HOVERING_BUFF, 	I_offset_time);
-            ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
-		}	
+			printf("----- MISSION - je vais en droite/bas\n\r");
+						ATcommand_moveDelay(PITCH_UP_ROLL_RIGHT, 	I_offset_time);
+		}
 	}
 }
 

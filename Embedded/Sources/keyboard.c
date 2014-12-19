@@ -108,6 +108,7 @@ void*  kbd_thread_drone_controller(void * args)
     unsigned int    key_selected    = 0;
     unsigned int    counter;
 
+    LOG_WriteLevel(LOG_INFO, "keyboard : thread set to aperiodic");
     /* Activate the terminal for raw mode */
     keyboard_rawMode(TRUE);
     /* Infinite loop */
@@ -140,7 +141,7 @@ void*  kbd_thread_drone_controller(void * args)
                             /* Take off */
                             ATcommand_process(TAKEOFF);
                             /* Wait the flying state */
-			                printf("\n\r\rINFO : TAKEOFF (ENTER)");
+			                LOG_WriteLevel(LOG_INFO, "keyboard : ENTER_KEY pressed -> TAKEOFF");
                             while(ATcommand_FlyingState() != TRUE);
                         }
                         else
@@ -148,7 +149,7 @@ void*  kbd_thread_drone_controller(void * args)
                             /* Landing */
                             ATcommand_process(LANDING);
                             /* Wait the landing state */
-			                printf("\n\r\rINFO : LANDING (ENTER)");
+			                LOG_WriteLevel(LOG_INFO, "keyboard : ENTER_KEY pressed -> LANDING");
                             while(ATcommand_FlyingState() != FALSE);
 
                         #ifdef ENABLE_CONFIG_VIDEO
@@ -236,7 +237,8 @@ void*  kbd_thread_drone_controller(void * args)
 
                 case X_KEY :
                     /* Exit */
-                    printf("\n\rExit pushed");
+                    LOG_WriteLevel(LOG_INFO, "keyboard : X_KEY pressed -> EXIT");
+                    supervisor_setDisconnection(TRUE);
                     break;
 
                 case SPACE_KEY :

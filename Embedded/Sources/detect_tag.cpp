@@ -206,13 +206,9 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 					tmpPos.ord += 360 + C_WINDOW_TOP;
 					if (distManhattan(pixelPos, tmpPos) < C_DIST_TO_TARGET) {
 						pixelsTarget.push_back(pixelPos);
-printf("DETECTION\r\n");
-						LOG_WriteLevel(LOG_DEBUG, (char*)"detect_tag : Color %c detected (phaseApproche)", playgroundColors[I_destSquare-1]);
 					}
 				} else {
 					pixelsTarget.push_back(pixelPos);
-printf("DETECTION\r\n");
-					LOG_WriteLevel(LOG_DEBUG, (char*)"detect_tag : Color %c detected", playgroundColors[I_destSquare-1]);
 				}
 			}
 		}
