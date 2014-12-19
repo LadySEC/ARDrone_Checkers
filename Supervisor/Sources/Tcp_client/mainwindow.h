@@ -28,11 +28,14 @@ public slots:
 
     void start_mission ();
     void stop_mission();
-    void pause_mission();
+    //void pause_mission();
+    void emergency_landing();
+    void reset_after_emergency() ;
 
     void send_takeoff() ;
     void send_landing() ;
     void send_exit() ;
+    void send_emergency(quint8 value) ;
 
     void update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray data) ;
 
@@ -89,6 +92,17 @@ private:
      * The user is not allowed to stop or pause the mission if the mission is not started.
      */
     void forbid_pause_stop_mission();
+
+
+    /** Allow the user to give to the drone the order to land in emergency or to reset from an emergency state.
+     */
+    void allow_emergency() ;
+
+    /** Forbid the user to stop or pause the mission.
+     * The user is not allowed to stop or pause the mission if the mission is not started.
+     */
+    void forbid_emergency();
+
 
     void display_position() ;
     void hide_position() ;

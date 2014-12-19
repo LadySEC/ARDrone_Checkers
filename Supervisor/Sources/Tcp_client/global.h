@@ -17,6 +17,11 @@
     static const QString DRONE_IMAGE_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/drone.png";
     static const QString PATH_TO_CIRCLE = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/black_circle.png" ;
     static const QString PATH_TO_CROSS = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/black_cross.png" ;
+    static const QString EMERGENCY_BUTTON_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/emergency.jpg" ;
+    static const QString START_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/start.jpg" ;
+    static const QString STOP_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/stop.jpg" ;
+    static const QString RESET_PATH = "/home/fabrice/ARDrone_Checkers/Supervisor/Sources/Tcp_client/tags/reset.jpg" ;
+
 
 #elif defined(_WIN32) || defined(WIN32)   /* _Win32 is usually defined by compilers targeting 32 or   64 bit Windows systems */
     static const QString ICON_RED_RECTANGLE_PATH = "..\\..\\..\\tags\\red_rectangle.jpg";
@@ -31,6 +36,10 @@
     static const QString DRONE_IMAGE_PATH = "..\\..\\tags\\drone.png";
     static const QString PATH_TO_CIRCLE = "..\\..\\tags\\black_circle.png" ;
     static const QString PATH_TO_CROSS = "..\\..\\tags\\black_cross.png" ;
+    static const QString EMERGENCY_BUTTON_PATH = "..\\..\\..\\tags\\emergency.jpg" ;
+    static const QString START_PATH = "..\\..\\..\\tags\\start.jpg" ;
+    static const QString STOP_PATH = "..\\..\\..\\tags\\stop.jpg" ;
+    static const QString RESET_PATH = "..\\..\\..\\tags\\reset.jpg" ;
 
 #endif
 
@@ -46,7 +55,8 @@ typedef enum
     mission_started,
     mission_paused,
     mission_ready,
-    mission_init
+    mission_init,
+    mission_stopped_emergency
     
 } mission_state ;
 

@@ -13,4 +13,6 @@ QString mission_state_to_QString(mission_state current_state)
         return "Mission started" ;
     else if (current_state == mission_stopped)
         return "Mission stopped" ;
+    else if (current_state == mission_stopped_emergency)
+        return "EMERGENCY LANDING" ;
 }
