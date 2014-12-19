@@ -12,7 +12,6 @@
 #include "calcul_order.h"
 #include "keyboard.h"
 #include "detect_tag.h"
-#include "../../Common/log.h"
 
 /**********************************************************************************/
 /* Constants 							  		  */
@@ -20,7 +19,7 @@
 /*** it represents the size between the camera position on the drone and it takeoff base */
 int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = 3 * (_CALCUL_PERIOD / 4);
+int const I_offset_time = (_CALCUL_PERIOD);
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -29,6 +28,8 @@ int const I_offset_time = 3 * (_CALCUL_PERIOD / 4);
 /*	0 : The drone are going toward the case 				*/
 /*	1 : The drone are returning toward the base 				*/
 int round_mission = 0;
+
+int 		cpt_mission 	= 0;
 
 /*** Informed the mission's status 						*/
 /*	0 : The drone did not finshed the mission asked by the supervisor 	*/
@@ -55,8 +56,7 @@ int statemission = 0;
 
 void* calcul_order_thread(void* arg)
 {
-	int 		cpt_mission 	= 0;
-	int		num_square	= 0;
+	int			num_square	= 0;
 	T_Position 	pos_tag;
 
     	/* Make this thread periodic */
@@ -69,10 +69,8 @@ void* calcul_order_thread(void* arg)
 		if(getSquare() != 0)
 		{
 			/* check the square number sent by the supervisor */
-			if (getSquare() != 0) {
-				num_square = getSquare();
-			}
-			
+			num_square = getSquare();
+						
 			if(cpt_mission == 0)
 			{
 				statemission = 1;
@@ -96,11 +94,13 @@ void* calcul_order_thread(void* arg)
 								/* stabilisation over the BASE */
 								printf("----- MISSION - stabilisation\n\r");
 								pos_tag = W_getPosition(5, 5);
+								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 							break;
 
 							case 2 :
 								/* Base -> Case */
 								pos_tag = W_getPosition(5,num_square);
+								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 							break;
 	
 							default :
@@ -113,12 +113,11 @@ void* calcul_order_thread(void* arg)
 					{
 						/* Case -> Base */
 						pos_tag = W_getPosition(num_square, 5);
+						posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 					}
 
 					printf("----- MISSION - x = %d, y = %d\n\r",pos_tag.abs,pos_tag.ord);
-
-					/* Sent AT_command according to the (x;y) */
-					posTag_ATcommand(pos_tag.abs,pos_tag.ord);					
+					
 				}
 				else
 				{
@@ -166,8 +165,9 @@ void posTag_ATcommand(int x,int y)
 					break;
 
 					case 2 :
-						statemission  = 2;
-						round_mission = 1;  
+						process_end_mission(0);
+						//statemission  = 2;
+						//round_mission = 1;
 					break;
 
 					default :
@@ -254,4 +254,6 @@ void process_end_mission(int value_statemission)
 
 	/* For the supervisor */
 	statemission = value_statemission;
+	
+	cpt_mission = 0;
 }

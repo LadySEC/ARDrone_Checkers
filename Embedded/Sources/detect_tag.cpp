@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "global.h"
-#include "../../Common/log.h"
 
 using namespace std;
 using namespace cv;
