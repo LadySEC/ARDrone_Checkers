@@ -35,13 +35,14 @@ typedef enum
 	NAVDATA_TCP = 	'N',
 	TARGET_TCP	=	'G',
 	TAKEOFF_TCP	=	'T',
-	STOP_TCP	= 	'R',
+	MISSION_TCP	= 	'M',
 	BATTERY_TCP	=	'B',
 	ANGLES_TCP	= 	'A',
 	SPEEDS_TCP	=	'S',
 	ALTITUDE_TCP=	'H',
 	DECON_TCP	= 	'D',
-	EMERGENCY_TCP=	'E'
+	EMERGENCY_TCP=	'E',
+	TIME_TCP 	= 	'Y'
 }T_TCP_DATA;
 
 /**********************************************************************************/

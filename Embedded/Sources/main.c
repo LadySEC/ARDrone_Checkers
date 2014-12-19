@@ -142,8 +142,6 @@ int main (int argc, char *argv[])
         /* Cancel the keyboard management */ 
         pthread_cancel(th_keyboard);
         LOG_WriteLevel(LOG_INFO, "main : th_keyboard canceled");
-        /* Disable the raw mode */
-        keyboard_rawMode(FALSE);
     #endif
 #else
     #ifdef ENABLE_KEYBOARD
@@ -169,6 +167,8 @@ int main (int argc, char *argv[])
 
 
     LOG_WriteLevel(LOG_INFO, "main : end");
+    /* Disable the raw mode */
+    keyboard_rawMode(FALSE);
 
     /* Stop the logs */
     LOG_End();

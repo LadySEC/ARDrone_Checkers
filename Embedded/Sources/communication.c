@@ -38,6 +38,10 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 	int 				flags;
 
 
+	/* Initialization */
+	communication->server = NULL;
+	communication->client = NULL;
+
 	/* Save the protocol */
 	communication->protocol = I_protocol;
 	/* Generate a socket */
@@ -69,11 +73,14 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			    if( bind(communication->server->id, (struct sockaddr*)&communication->server->parameters, sizeof(communication->server->parameters)) == -1)
 			    {
 			        perror("\n\rbind()");
+			        /* Desallocation */
+			        free(communication->server);
+			        communication->server = NULL;
 			    }
 			    else
 			    {
 		    		/* Waiting for a communication */
-	    			if(listen(communication->server->id, 10u) == -1)		//3 ?
+	    			if(listen(communication->server->id, 10u) == -1)
 	    			{
 	    				perror("\n\rlisten()");
 	    			}
@@ -128,17 +135,33 @@ T_comm* communication_initiate(T_protocol I_protocol, const char* I_IP_addr_clie
 			    if( bind(communication->client->id, (struct sockaddr*)&communication->client->parameters, sizeof(communication->client->parameters)) == -1)
 			    {
 			        perror("\n\rbind()");
+			        /* Desallocation */
+			        free(communication->client);
+			        communication->client = NULL;
 			    }
 		   	}
 			break;
 	}
 
-    /* Set the socket as non-blocking */
-    if((I_state ==  NON_BLOCKING) && (communication->client->id != -1))
-   	{
-   		flags 		= fcntl(communication->client->id, F_GETFL);
-		fcntl(communication->client->id, F_SETFL, flags | O_NONBLOCK);
-   	}
+	/* Test if an error occured */
+	if((communication->client == NULL) || (communication->server == NULL))
+	{
+		LOG_WriteLevel(LOG_INFO, "communication : bind error");
+		free(communication);
+		communication = NULL;
+		LOG_WriteLevel(LOG_ERROR, "communication : communication establishment aborted");
+	}
+	else
+	{
+		/* Set the socket as non-blocking */
+	    if((I_state ==  NON_BLOCKING) && (communication->client->id != -1))
+	   	{
+	   		flags 		= fcntl(communication->client->id, F_GETFL);
+			fcntl(communication->client->id, F_SETFL, flags | O_NONBLOCK);
+	   	}
+	}
+
+    
 
     return(communication);
 }
@@ -307,7 +330,6 @@ T_reception_state socket_readPacket(T_protocol I_protocol, int I_receiver_id, st
 		    }
 			break;
 	}
-
     
 	if (lenght_message < 0)
 	{

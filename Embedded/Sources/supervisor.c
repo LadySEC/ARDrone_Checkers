@@ -50,7 +50,7 @@ T_error supervisor_initiate(void)
     // Supervisor socket with non blocking reception
     G_comm_SPVSR 	= communication_initiate(TCP, NULL, NULL, SPVSR_CLIENT_PORT, SPVSR_CLIENT_PORT, NON_BLOCKING);
 
-    if(G_comm_SPVSR->client->id == -1)
+    if(G_comm_SPVSR == NULL)
     {
         error = ERROR;
     }
@@ -81,7 +81,7 @@ void supervisor_close(void)
     LOG_WriteLevel(LOG_INFO, "supervisor : communication closed");
 }
 
-void supervisor_sendData(T_TCP_DATA I_data, char* arg)
+void supervisor_sendData(T_TCP_DATA I_data)
 {
     char    frame[15u];
     int     tmp;
@@ -105,7 +105,7 @@ void supervisor_sendData(T_TCP_DATA I_data, char* arg)
         //Tested
         case TARGET_TCP:
             frame[1u] = 2u;
-            frame[2u] = arg[0u];
+            frame[2u] = G_square;
             break;
 
         //Tested
@@ -133,6 +133,11 @@ void supervisor_sendData(T_TCP_DATA I_data, char* arg)
             tmp       = (int)ATcommand_navdata()->vy;
             memcpy(&frame[6u], &tmp, 4u);
             break;
+
+        case MISSION_TCP:
+            frame[1u] = 1u;
+            frame[2u] = (unsigned char)G_mission_started;
+            break;
     }
 
     /* Send */
@@ -159,6 +164,8 @@ void* supervisor_thread_interact(void* arg)
     char                test[2u];
     T_reception_state   state;
     char                order_string[50u];
+    unsigned long*      timeStamp;
+    char                date[50u];
 
 #ifdef PRINT_TCP_DATA_RECEIVED
     T_bool              print = TRUE;
@@ -191,19 +198,19 @@ void* supervisor_thread_interact(void* arg)
         {
             /* End of mission */
             LOG_WriteLevel(LOG_INFO, "supervisor : end of mission detected");
-            /* Share it */
-            test[0] = G_square;
-            supervisor_sendData(TARGET_TCP,test);
+            /* Share the target square */
+            supervisor_sendData(TARGET_TCP);
             /* Initialization */
             G_square      = 0u;
             G_mission_started = FALSE;
         }
         // Others data
-        supervisor_sendData(NAVDATA_TCP,NULL);
-        supervisor_sendData(BATTERY_TCP,NULL);
-        supervisor_sendData(ANGLES_TCP,NULL);
-        supervisor_sendData(ALTITUDE_TCP,NULL);
-        supervisor_sendData(SPEEDS_TCP,NULL);
+        supervisor_sendData(NAVDATA_TCP);
+        supervisor_sendData(BATTERY_TCP);
+        supervisor_sendData(ANGLES_TCP);
+        supervisor_sendData(ALTITUDE_TCP);
+        supervisor_sendData(SPEEDS_TCP);
+        supervisor_sendData(MISSION_TCP);
 
         /* Read an process orders from the supervisor */
         memset((char *) &G_orders, 0, sizeof(G_orders));
@@ -265,25 +272,12 @@ void* supervisor_thread_interact(void* arg)
 
                     /* incomplete */
                     case TARGET_TCP:
-
                         /* Do nothing for the moment */
                         G_square = G_orders[2u];
                         /* Start the mission */
                         G_mission_started = TRUE;
                         /* Update order to print */
                         sprintf(order_string, "REACH SQUARE %d", G_orders[2u]);
-                        break;
-
-                    /* incomplete */
-                    case STOP_TCP:
-                        if(G_orders[2u] == 1u)
-                        {
-                            strcpy(order_string, "RESUME GAME");
-                        }
-                        else
-                        {
-                            strcpy(order_string, "PAUSE GAME");
-                        }
                         break;
 
                     case DECON_TCP:
@@ -297,6 +291,13 @@ void* supervisor_thread_interact(void* arg)
                     case EMERGENCY_TCP:
                         ATcommand_process(EMERGENCY);
                         strcpy(order_string, "EMERGENCY");
+                        break;
+
+                    case TIME_TCP:
+                        timeStamp = (unsigned long*)&G_orders[2u];
+                        /* Change the date */
+                        sprintf(date, "date --set='@%d'", *timeStamp);
+                        system(date);
                         break;
 
                     default:
