@@ -20,7 +20,7 @@
 /*** it represents the size between the camera position on the drone and it takeoff base */
 int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = 2 * (_CALCUL_PERIOD / 3);
+int const I_offset_time = 3 * (_CALCUL_PERIOD / 4);
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -68,12 +68,15 @@ void* calcul_order_thread(void* arg)
 		if(getSquare() != 0)
 		{
 			/* check the square number sent by the supervisor */
-			num_square = getSquare();
-
+			if (getSquare() != 0) {
+				num_square = getSquare();
+			}
+			
 			if(cpt_mission == 0)
 			{
 				printf("----- MISSION - * Begin the mission *\n\r");
 				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
+				statemission = 1;
 			}
 			else
 			{
@@ -132,18 +135,18 @@ void posTag_ATcommand(int x,int y)
 		{
 			if(round_mission == 0)
 			{
-
 				printf("----- MISSION - [END1] je suis arrive a la Case\n\r");
-
+				
 				ATcommand_process(LANDING);
 				printf("              - LANDING\n\r");
-				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing\n");
+				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
+				while(ATcommand_FlyingState() != FALSE);
 					
 				// The first round of this mission is finished 
-				//round_mission = 1;
+				round_mission = 1;
 				
 				/* Reset the mode mission ('M') for the keyboard.c */
-				stop_mission();
+				//stop_mission();
 
 				/* For the supervisor */
 				statemission = 0;
@@ -153,7 +156,8 @@ void posTag_ATcommand(int x,int y)
 			{
 				ATcommand_process(LANDING);
 				printf("              - LANDING\n\r");
-				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing\n");
+				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
+				while(ATcommand_FlyingState() != FALSE);
 
 				/* Reset the mode mission ('M') for the keyboard.c */
 				stop_mission();
@@ -163,7 +167,7 @@ void posTag_ATcommand(int x,int y)
 
 				/* For the supervisor */
 				statemission = 0;
-			}	
+			}
 		}
 		if(y < (-POS_TOLERANCE-offset_y))			  	  //Y < -120-offset_y
 		{
