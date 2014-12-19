@@ -32,6 +32,7 @@ int round_mission = 0;
 
 /*** Informed the mission's status 						*/
 /*	0 : The drone did not finshed the mission asked by the supervisor 	*/
+/*	2 : The drone tookoff and it  is going to stabilised over the base	*/
 /*	1 : The drone fished the mission asked by he supervisor 		*/
 int statemission = 0;
 
@@ -55,7 +56,7 @@ int statemission = 0;
 void* calcul_order_thread(void* arg)
 {
 	int 		cpt_mission 	= 0;
-	int			num_square	= 0;
+	int		num_square	= 0;
 	T_Position 	pos_tag;
 
     	/* Make this thread periodic */
@@ -74,25 +75,43 @@ void* calcul_order_thread(void* arg)
 			
 			if(cpt_mission == 0)
 			{
-				printf("----- MISSION - * Begin the mission *\n\r");
-				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
 				statemission = 1;
+				printf("----- MISSION - Begin the mission\n\r");
+				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
+				
 			}
 			else
 			{
 				if(ATcommand_FlyingState() == TRUE)
 				{
-					/* For the supervisor */
-					statemission = 1;
+					if (round_mission == 0) 
+					{
+						switch (statemission)
+						{
+							case 0 :
+								process_end_mission(0);
+							break;
+	
+							case 1 :
+								/* stabilisation over the BASE */
+								printf("----- MISSION - stabilisation\n\r");
+								pos_tag = W_getPosition(5, 5);
+							break;
 
-					if (round_mission == 0)
-					{
-						/* direction : case */
-						pos_tag = W_getPosition(5, num_square);
+							case 2 :
+								/* Base -> Case */
+								pos_tag = W_getPosition(5,num_square);
+							break;
+	
+							default :
+								printf("----- MISSION - error state mission\n\r");
+								process_end_mission(0);
+							break;
+						}
 					}
-					else
+					else 		
 					{
-						/* direction : base */
+						/* Case -> Base */
 						pos_tag = W_getPosition(num_square, 5);
 					}
 
@@ -126,98 +145,91 @@ void* calcul_order_thread(void* arg)
     	return(NULL);
 }
 
-
+/* This function give the command according to the drone's position, updated 'roundmission' and 'statemission' */
 void posTag_ATcommand(int x,int y)
 {
-	if(x >= -POS_TOLERANCE && x <= POS_TOLERANCE)		//-120 <= X <= 120, CENTRE
+	if(x >= -POS_TOLERANCE && x <= POS_TOLERANCE)	
 	{
-		if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))	  //-120-offset_y <= Y <= 120-offset_y, CENTRE
+		if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))	  
 		{
-			if(round_mission == 0)
-			{
-				printf("----- MISSION - [END1] je suis arrive a la Case\n\r");
-				
-				ATcommand_process(LANDING);
-				printf("              - LANDING\n\r");
-				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
-				while(ATcommand_FlyingState() != FALSE);
-					
-				// The first round of this mission is finished 
-				round_mission = 1;
-				
-				/* Reset the mode mission ('M') for the keyboard.c */
-				//stop_mission();
+			if(round_mission == 0) 	//Base -> Case
+			{	
+				switch (statemission)
+				{
+					case 0 :
+						process_end_mission(0);
+					break;
 
-				/* For the supervisor */
-				statemission = 0;
+					case 1 :
+						statemission  = 2;
+						round_mission = 0; 
+					break;
 
+					case 2 :
+						statemission  = 2;
+						round_mission = 1;  
+					break;
+
+					default :
+						printf("----- MISSION - error state mission\n\r");
+						process_end_mission(0);
+					break;
+				}
 			}
-			else
+			else 			//Case -> Base
 			{
-				ATcommand_process(LANDING);
-				printf("              - LANDING\n\r");
-				LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
-				while(ATcommand_FlyingState() != FALSE);
-
-				/* Reset the mode mission ('M') for the keyboard.c */
-				stop_mission();
-
-				/* The second round of this mission is finished */
-				round_mission = 0;
-
-				/* For the supervisor */
-				statemission = 0;
+				process_end_mission(0); 
 			}
 		}
-		if(y < (-POS_TOLERANCE-offset_y))			  	  //Y < -120-offset_y
+		if(y < (-POS_TOLERANCE-offset_y))			  	  
 		{
 			printf("----- MISSION - je vais en haut\n\r");
-						ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
+			ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 		}
-		if(y > (POS_TOLERANCE-offset_y))			  	  //Y > 120-offset_y
+		if(y > (POS_TOLERANCE-offset_y))			  	 
 		{
 			printf("----- MISSION - je vais en bas\n\r");	
-						ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
+			ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}
 	}
-	if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))		//-120-offset_y <= Y <= 120-offset_y, CENTRE
+	if(y >= (-POS_TOLERANCE-offset_y) && y <= (POS_TOLERANCE-offset_y))		
 	{
-		if(x < -POS_TOLERANCE)				  //X < -120 
+		if(x < -POS_TOLERANCE)				  
 		{
 			printf("----- MISSION - je vais en gauche\n\r");	
-						ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
+			ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
 		}
-		if(x > POS_TOLERANCE)				  //X > 120
+		if(x > POS_TOLERANCE)				 
 		{
 			printf("----- MISSION - je vais en droite\n\r");	
-						ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
+			ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
 		}
 	}
-	if(x < -POS_TOLERANCE)					//X < -120 
+	if(x < -POS_TOLERANCE)					
 	{
-		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y
+		if(y < (-POS_TOLERANCE-offset_y))				  
 		{
 			printf("----- MISSION - je vais en gauche/haut\n\r");
-						ATcommand_moveDelay(PITCH_DOWN_ROLL_LEFT, 	I_offset_time);
+			ATcommand_moveDelay(PITCH_DOWN_ROLL_LEFT, 	I_offset_time);
 
 		}
-		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
+		if(y > (POS_TOLERANCE-offset_y))				  
 		{
 			printf("----- MISSION - je vais en gauche/bas\n\r");
-						ATcommand_moveDelay(PITCH_UP_ROLL_LEFT,		I_offset_time);
+			ATcommand_moveDelay(PITCH_UP_ROLL_LEFT,		I_offset_time);
 		}
 	}
-	if(x > POS_TOLERANCE)					//X > 120
+	if(x > POS_TOLERANCE)					
 	{
-		if(y < (-POS_TOLERANCE-offset_y))				  //Y < -120-offset_y 
+		if(y < (-POS_TOLERANCE-offset_y))				   
 		{
 			printf("----- MISSION - je vais en droite/haut\n\r");
-						ATcommand_moveDelay(PITCH_DOWN_ROLL_RIGHT, 	I_offset_time);
+			ATcommand_moveDelay(PITCH_DOWN_ROLL_RIGHT, 	I_offset_time);
 		}
-		if(y > (POS_TOLERANCE-offset_y))				  //Y > 120-offset_y
+		if(y > (POS_TOLERANCE-offset_y))				  
 		{
 			printf("----- MISSION - je vais en droite/bas\n\r");
-						ATcommand_moveDelay(PITCH_UP_ROLL_RIGHT, 	I_offset_time);
+			ATcommand_moveDelay(PITCH_UP_ROLL_RIGHT, 	I_offset_time);
 		}
 	}
 }
@@ -225,4 +237,21 @@ void posTag_ATcommand(int x,int y)
 int get_stateMission(void)
 {
 	return statemission;
+}
+
+void process_end_mission(int value_statemission)
+{
+	ATcommand_process(LANDING);
+	printf("              - LANDING\n\r");
+	LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
+	while(ATcommand_FlyingState() != FALSE);
+
+	/* Reset the mode mission ('M') for the keyboard.c */
+	stop_mission();
+
+	/* The second round of this mission is finished */
+	round_mission = 0;
+
+	/* For the supervisor */
+	statemission = value_statemission;
 }

@@ -30,10 +30,13 @@
 /**********************************************************************************/
 /* Prototypes				        	      			  */
 /**********************************************************************************/
-void 	posTag_ATcommand(int x,int y);
+void 	posTag_ATcommand	(int x,int y);
+void 	process_end_mission	(int value_statemission);
+
 /**********************************************************************************/
 /* Threads						     		  	  */
 /**********************************************************************************/
-void* 	calcul_order_thread(void* arg);
-int	get_stateMission(void);
+void* 	calcul_order_thread	(void* arg);
+int	get_stateMission	(void);
+
 #endif //! _SUPERVISOR_H_
