@@ -5,6 +5,9 @@
 #include "client.h"
 #include "global.h"
 #include <QDebug>
+#include <QTime>
+#include <QDate>
+#include "unixTime.h"
 
 namespace Ui {
 class MainWindow;
@@ -50,6 +53,8 @@ public slots:
     void send_G_C_1() ;
     void send_G_C_2() ;
     void send_G_C_3() ;
+
+    void send_date();
 
 signals :
     void change_battery_value(int new_value);
@@ -111,6 +116,9 @@ private:
 
     void set_icons_playground_without_communication();
     void set_icons_playground_with_communication();
+
+    void set_icons_scenario_not_enable();
+    void set_icons_scenario_enable();
 
     void mark_square_found(int square) ;
 

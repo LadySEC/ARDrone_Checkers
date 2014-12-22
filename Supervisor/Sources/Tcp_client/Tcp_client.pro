@@ -18,10 +18,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         client.cpp \
-    global.cpp
+    global.cpp \
+    unixTime.cpp
 
 HEADERS  += mainwindow.h \
             client.h \
-            global.h
+            global.h \
+    unixTime.h
 
 FORMS    += mainwindow.ui

@@ -34,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->button_stop->setIcon(QIcon(STOP_PATH));
     ui->button_stop->setIconSize(QSize(70,70));
 
-
     /*
     ui->label_Vertical_Speed->setVisible(false);
     ui->label_Horizontal_Speed->setVisible(false);
@@ -108,10 +107,10 @@ void MainWindow::open_connexion()
 }
 
 
-
-
 void MainWindow::mark_connexion()
 {
+    send_date();
+
     ui->label_Connected->setText("Connected !");
     ui->button_connect->setEnabled(false);
     ui->button_disconnect->setEnabled(true);
@@ -121,6 +120,7 @@ void MainWindow::mark_connexion()
     allow_start_mission();  
     state_of_mission = mission_ready;
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
+
 
 }
 
@@ -134,6 +134,7 @@ void MainWindow::unmark_connexion()
 
     forbid_start_mission();
     display_no_communication();
+    set_icons_scenario_not_enable();
     set_icons_playground_without_communication();
 }
 
@@ -212,7 +213,7 @@ void MainWindow::reset_after_emergency()
         */
         forbid_emergency() ;
 
-        ui->button_emergency->setIcon(QIcon(RESET_PATH));
+        ui->button_emergency->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
         QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency()));
         QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing())) ;
     }
@@ -323,10 +324,6 @@ void MainWindow::send_takeoff()
         message.append(0x01) ;
         message.append(0x01);
         C.recoit_texte(message);
-        /*
-        state_of_mission = mission_init ;
-        ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-        */
     }
 }
 
@@ -360,10 +357,10 @@ void MainWindow::send_emergency(quint8 value)
 
 void MainWindow::send_exit()
 {
-    if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
+    /*if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
     {
         send_landing();
-    }
+    }*/
     QByteArray message ;
     message.append('D') ;
     message.append(0x01) ;
@@ -526,6 +523,60 @@ void MainWindow::send_G_C_3()
 }
 
 
+void MainWindow::send_date()
+{
+
+    quint8 day_week = QDate::currentDate().dayOfWeek() ;
+    if (day_week ==7)
+        day_week = 0 ;
+
+    initUnixTimeStamp((unsigned char) QTime::currentTime().second(), (unsigned char) QTime::currentTime().minute(),
+                      (unsigned char) QTime::currentTime().hour(), (unsigned char) QDate::currentDate().day()-1, (unsigned char) QDate::currentDate().month()-1,
+                      (unsigned int) QDate::currentDate().year());
+
+    quint64 timeStamp = calendar_date_to_timestamp(getCalendarDate());
+
+    /*
+    qDebug() << getCalendarDate()->date << getCalendarDate()->month << getCalendarDate()->year << getCalendarDate()->hour << "h " << getCalendarDate()->minute << "min " << getCalendarDate()->second << "sec "<< endl ;
+    qDebug() << timeStamp << endl ;
+    qDebug() << QString::number(timeStamp, 16) << endl ;
+    */
+
+
+    QByteArray frame ;
+    int i = 0 ;
+    do
+    {
+        frame.append(timeStamp >> (i*8));
+        i++;
+    } while ( (timeStamp >> (i*8)) != 0x0 );
+
+
+
+    QByteArray message ;
+    message.clear();
+    message.append('Y') ;
+    message.append(frame.size());
+
+    int j = 0 ;
+    while (j < frame.size())
+    {
+        j++ ;
+        message.append(frame.at(frame.size() - j));
+    }
+
+    /*
+    qDebug() << "frame : " << frame.toHex() << endl ;
+    qDebug() << "frameToSend : " << frameToSend.toHex() << endl ;
+    */
+
+
+    qDebug() << "Message : " << message.toHex() << endl ;
+
+    C.recoit_texte(message);
+
+
+}
 
 /**
  * ********************************
@@ -658,6 +709,10 @@ void MainWindow::display_no_communication()
 
     ui->label_Value_Mission_Status->setText(NO_COMMUNICATION);
 
+    ui->button_emergency->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
+    QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency()));
+    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing())) ;
+
     hide_position();
 
 }
@@ -773,4 +828,30 @@ void MainWindow::set_icons_playground_without_communication()
     ui->button_B_1->setStyleSheet("background-color: grey;");
     ui->button_C_2->setStyleSheet("background-color: grey;");
 
+
+}
+
+
+void MainWindow::set_icons_scenario_not_enable()
+{
+     if (ui->button_emergency->isEnabled())
+         ui->button_emergency->setEnabled(false);
+
+     if (ui->button_stop->isEnabled())
+         ui->button_stop->setEnabled(false);
+
+     if (ui->button_start->isEnabled())
+         ui->button_start->setEnabled(false);
+}
+
+void MainWindow::set_icons_scenario_enable()
+{
+     if (!ui->button_emergency->isEnabled())
+         ui->button_emergency->setEnabled(true);
+
+     if (!ui->button_stop->isEnabled())
+         ui->button_stop->setEnabled(true);
+
+     if (!ui->button_start->isEnabled())
+         ui->button_start->setEnabled(true);
 }
