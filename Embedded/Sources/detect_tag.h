@@ -42,6 +42,7 @@
 typedef struct {
 	int abs;
 	int ord;
+	int bIsFound;
 } T_Position;
 
 // Tableau contenant les couleurs des cases

@@ -116,45 +116,45 @@ T_Position getSquarePosition(int I_currentSquare, int I_destSquare) {
 	T_Position squarePos = {0, 0};
 	if(I_destSquare == 5){
 		switch(I_currentSquare) {
-			case 1 : squarePos = {360,360};
+			case 1 : squarePos = {360,360,0};
 			break;
-			case 2 : squarePos = {0,360};
+			case 2 : squarePos = {0,360,0};
 			break;
-			case 3 : squarePos = {-360,360};
+			case 3 : squarePos = {-360,360,0};
 			break;
-			case 4 : squarePos = {360,0};
+			case 4 : squarePos = {360,0,0};
 			break;
-			case 5 : squarePos = {0,0};
+			case 5 : squarePos = {0,0,0};
 			break;
-			case 6 : squarePos = {-360,0};
+			case 6 : squarePos = {-360,0,0};
 			break;
-			case 7 : squarePos = {360,-360};
+			case 7 : squarePos = {360,-360,0};
 			break;
-			case 8 : squarePos = {0,-360};
+			case 8 : squarePos = {0,-360,0};
 			break;
-			case 9 : squarePos = {-360,-360};
+			case 9 : squarePos = {-360,-360,0};
 			break;
 		}
 	}
 	else{
 		switch(I_destSquare) {
-			case 1 : squarePos = {-360,-360};
+			case 1 : squarePos = {-360,-360,0};
 			break;
-			case 2 : squarePos = {0,-360};
+			case 2 : squarePos = {0,-360,0};
 			break;
-			case 3 : squarePos = {360,-360};
+			case 3 : squarePos = {360,-360,0};
 			break;
-			case 4 : squarePos = {-360,0};
+			case 4 : squarePos = {-360,0,0};
 			break;
-			case 5 : squarePos = {0,0};
+			case 5 : squarePos = {0,0,0};
 			break;
-			case 6 : squarePos = {360,0};
+			case 6 : squarePos = {360,0,0};
 			break;
-			case 7 : squarePos = {-360,360};
+			case 7 : squarePos = {-360,360,0};
 			break;
-			case 8 : squarePos = {0,360};
+			case 8 : squarePos = {0,360,0};
 			break;
-			case 9 : squarePos = {360,360};
+			case 9 : squarePos = {360,360,0};
 			break;
 		}
 	}
@@ -168,7 +168,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	static int	oldCurrentSquare = 0;
 	static int	oldDestSquare = 0;
 	long long	posX, posY;
-	T_Position	squarePos = {0, 0};
+	T_Position	squarePos = {0, 0, 0};
 	T_Position	pixelPos;
 	T_Position	tmpPos;
 	Vec4b		pixelYUV;
@@ -227,8 +227,10 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 		}
 		posX /= pixelsTarget.size();
 		posY /= pixelsTarget.size();
+		// On positionne le tag bIsFound dans la structure de la position pour indiquer que le tag a bien été trouvé
 		squarePos = {(int)posX - C_WINDOW_LEFT - IMG_HEIGHT/2,
-					 (int)posY - C_WINDOW_TOP  - IMG_HEIGHT/2};
+					 (int)posY - C_WINDOW_TOP  - IMG_HEIGHT/2,
+					 (int)1};
 	// Sinon, on donne la direction de la case de destination
 	} else {
 		squarePos = getSquarePosition(I_currentSquare, I_destSquare);
