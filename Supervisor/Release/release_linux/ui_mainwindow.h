@@ -24,6 +24,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -56,11 +57,6 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_Searched_Square;
     QLabel *label_Value_Searched_Square;
-    QWidget *layoutWidget4;
-    QHBoxLayout *horizontalLayout_5;
-    QPushButton *button_start;
-    QPushButton *button_stop;
-    QPushButton *button_emergency;
     QFrame *line_2;
     QFrame *line_3;
     QFrame *line_4;
@@ -71,7 +67,7 @@ public:
     QLabel *label_Line_1;
     QLabel *label_Line_2;
     QLabel *label_Line_3;
-    QWidget *layoutWidget5;
+    QWidget *layoutWidget4;
     QGridLayout *gridLayout;
     QPushButton *button_A_2;
     QPushButton *button_B_2;
@@ -87,7 +83,7 @@ public:
     QPushButton *button_B_3;
     QPushButton *button_C_3;
     QLabel *label_Connected;
-    QWidget *layoutWidget6;
+    QWidget *layoutWidget5;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_13;
     QLabel *label_Flight_Status;
@@ -119,6 +115,19 @@ public:
     QLabel *label_Psi_Angle;
     QLabel *label_Value_Psi_Angle;
     QPushButton *pushButton_image;
+    QTabWidget *tabWidget;
+    QWidget *tab;
+    QWidget *layoutWidget6;
+    QHBoxLayout *horizontalLayout_5;
+    QPushButton *button_start;
+    QPushButton *button_stop;
+    QPushButton *button_emergency;
+    QWidget *tab_2;
+    QWidget *layoutWidget_2;
+    QHBoxLayout *horizontalLayout_14;
+    QPushButton *scenario_pushButton;
+    QPushButton *button_stop_scenario;
+    QPushButton *button_emergency_scenario;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -248,106 +257,74 @@ public:
 
         horizontalLayout_4->addWidget(label_Value_Searched_Square);
 
-        layoutWidget4 = new QWidget(centralWidget);
-        layoutWidget4->setObjectName(QStringLiteral("layoutWidget4"));
-        layoutWidget4->setGeometry(QRect(490, 10, 411, 72));
-        horizontalLayout_5 = new QHBoxLayout(layoutWidget4);
-        horizontalLayout_5->setSpacing(6);
-        horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
-        horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
-        button_start = new QPushButton(layoutWidget4);
-        button_start->setObjectName(QStringLiteral("button_start"));
-        button_start->setEnabled(false);
-        button_start->setMinimumSize(QSize(70, 70));
-        button_start->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_5->addWidget(button_start);
-
-        button_stop = new QPushButton(layoutWidget4);
-        button_stop->setObjectName(QStringLiteral("button_stop"));
-        button_stop->setEnabled(false);
-        button_stop->setMinimumSize(QSize(70, 70));
-        button_stop->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_5->addWidget(button_stop);
-
-        button_emergency = new QPushButton(layoutWidget4);
-        button_emergency->setObjectName(QStringLiteral("button_emergency"));
-        button_emergency->setEnabled(false);
-        button_emergency->setMinimumSize(QSize(70, 70));
-        button_emergency->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_5->addWidget(button_emergency);
-
         line_2 = new QFrame(centralWidget);
         line_2->setObjectName(QStringLiteral("line_2"));
-        line_2->setGeometry(QRect(600, 130, 20, 461));
+        line_2->setGeometry(QRect(630, 140, 20, 461));
         line_2->setFrameShape(QFrame::VLine);
         line_2->setFrameShadow(QFrame::Sunken);
         line_3 = new QFrame(centralWidget);
         line_3->setObjectName(QStringLiteral("line_3"));
-        line_3->setGeometry(QRect(760, 130, 20, 461));
+        line_3->setGeometry(QRect(790, 140, 20, 461));
         line_3->setFrameShape(QFrame::VLine);
         line_3->setFrameShadow(QFrame::Sunken);
         line_4 = new QFrame(centralWidget);
         line_4->setObjectName(QStringLiteral("line_4"));
-        line_4->setGeometry(QRect(440, 420, 501, 20));
+        line_4->setGeometry(QRect(470, 430, 501, 20));
         line_4->setFrameShape(QFrame::HLine);
         line_4->setFrameShadow(QFrame::Sunken);
         line_5 = new QFrame(centralWidget);
         line_5->setObjectName(QStringLiteral("line_5"));
-        line_5->setGeometry(QRect(440, 280, 501, 20));
+        line_5->setGeometry(QRect(470, 290, 501, 20));
         line_5->setFrameShape(QFrame::HLine);
         line_5->setFrameShadow(QFrame::Sunken);
         label_Column_A = new QLabel(centralWidget);
         label_Column_A->setObjectName(QStringLiteral("label_Column_A"));
-        label_Column_A->setGeometry(QRect(530, 140, 21, 17));
+        label_Column_A->setGeometry(QRect(560, 150, 21, 17));
         label_Column_B = new QLabel(centralWidget);
         label_Column_B->setObjectName(QStringLiteral("label_Column_B"));
-        label_Column_B->setGeometry(QRect(690, 140, 21, 17));
+        label_Column_B->setGeometry(QRect(720, 150, 21, 17));
         label_Square_C = new QLabel(centralWidget);
         label_Square_C->setObjectName(QStringLiteral("label_Square_C"));
-        label_Square_C->setGeometry(QRect(820, 140, 21, 17));
+        label_Square_C->setGeometry(QRect(850, 150, 21, 17));
         label_Line_1 = new QLabel(centralWidget);
         label_Line_1->setObjectName(QStringLiteral("label_Line_1"));
-        label_Line_1->setGeometry(QRect(440, 240, 21, 17));
+        label_Line_1->setGeometry(QRect(470, 250, 21, 17));
         label_Line_2 = new QLabel(centralWidget);
         label_Line_2->setObjectName(QStringLiteral("label_Line_2"));
-        label_Line_2->setGeometry(QRect(440, 350, 16, 17));
+        label_Line_2->setGeometry(QRect(470, 360, 16, 17));
         label_Line_3 = new QLabel(centralWidget);
         label_Line_3->setObjectName(QStringLiteral("label_Line_3"));
-        label_Line_3->setGeometry(QRect(440, 470, 16, 17));
-        layoutWidget5 = new QWidget(centralWidget);
-        layoutWidget5->setObjectName(QStringLiteral("layoutWidget5"));
-        layoutWidget5->setGeometry(QRect(480, 170, 421, 381));
-        gridLayout = new QGridLayout(layoutWidget5);
+        label_Line_3->setGeometry(QRect(470, 480, 16, 17));
+        layoutWidget4 = new QWidget(centralWidget);
+        layoutWidget4->setObjectName(QStringLiteral("layoutWidget4"));
+        layoutWidget4->setGeometry(QRect(510, 180, 421, 381));
+        gridLayout = new QGridLayout(layoutWidget4);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
-        button_A_2 = new QPushButton(layoutWidget5);
+        button_A_2 = new QPushButton(layoutWidget4);
         button_A_2->setObjectName(QStringLiteral("button_A_2"));
         button_A_2->setEnabled(false);
         button_A_2->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_A_2, 4, 0, 1, 1);
 
-        button_B_2 = new QPushButton(layoutWidget5);
+        button_B_2 = new QPushButton(layoutWidget4);
         button_B_2->setObjectName(QStringLiteral("button_B_2"));
         button_B_2->setEnabled(false);
         button_B_2->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_B_2, 4, 2, 1, 1);
 
-        button_C_1 = new QPushButton(layoutWidget5);
+        button_C_1 = new QPushButton(layoutWidget4);
         button_C_1->setObjectName(QStringLiteral("button_C_1"));
         button_C_1->setEnabled(false);
         button_C_1->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_C_1, 0, 4, 1, 1);
 
-        button_B_1 = new QPushButton(layoutWidget5);
+        button_B_1 = new QPushButton(layoutWidget4);
         button_B_1->setObjectName(QStringLiteral("button_B_1"));
         button_B_1->setEnabled(false);
         button_B_1->setMinimumSize(QSize(100, 100));
@@ -366,7 +343,7 @@ public:
 
         gridLayout->addItem(horizontalSpacer, 0, 1, 1, 1);
 
-        button_C_2 = new QPushButton(layoutWidget5);
+        button_C_2 = new QPushButton(layoutWidget4);
         button_C_2->setObjectName(QStringLiteral("button_C_2"));
         button_C_2->setEnabled(false);
         button_C_2->setMinimumSize(QSize(100, 100));
@@ -377,28 +354,28 @@ public:
 
         gridLayout->addItem(horizontalSpacer_2, 0, 3, 1, 1);
 
-        button_A_1 = new QPushButton(layoutWidget5);
+        button_A_1 = new QPushButton(layoutWidget4);
         button_A_1->setObjectName(QStringLiteral("button_A_1"));
         button_A_1->setEnabled(false);
         button_A_1->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_A_1, 0, 0, 1, 1);
 
-        button_A_3 = new QPushButton(layoutWidget5);
+        button_A_3 = new QPushButton(layoutWidget4);
         button_A_3->setObjectName(QStringLiteral("button_A_3"));
         button_A_3->setEnabled(false);
         button_A_3->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_A_3, 6, 0, 1, 1);
 
-        button_B_3 = new QPushButton(layoutWidget5);
+        button_B_3 = new QPushButton(layoutWidget4);
         button_B_3->setObjectName(QStringLiteral("button_B_3"));
         button_B_3->setEnabled(false);
         button_B_3->setMinimumSize(QSize(100, 100));
 
         gridLayout->addWidget(button_B_3, 6, 2, 1, 1);
 
-        button_C_3 = new QPushButton(layoutWidget5);
+        button_C_3 = new QPushButton(layoutWidget4);
         button_C_3->setObjectName(QStringLiteral("button_C_3"));
         button_C_3->setEnabled(false);
         button_C_3->setMinimumSize(QSize(100, 100));
@@ -408,10 +385,10 @@ public:
         label_Connected = new QLabel(centralWidget);
         label_Connected->setObjectName(QStringLiteral("label_Connected"));
         label_Connected->setGeometry(QRect(320, 20, 131, 22));
-        layoutWidget6 = new QWidget(centralWidget);
-        layoutWidget6->setObjectName(QStringLiteral("layoutWidget6"));
-        layoutWidget6->setGeometry(QRect(20, 140, 348, 257));
-        verticalLayout_5 = new QVBoxLayout(layoutWidget6);
+        layoutWidget5 = new QWidget(centralWidget);
+        layoutWidget5->setObjectName(QStringLiteral("layoutWidget5"));
+        layoutWidget5->setGeometry(QRect(20, 140, 348, 257));
+        verticalLayout_5 = new QVBoxLayout(layoutWidget5);
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setContentsMargins(11, 11, 11, 11);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
@@ -419,12 +396,12 @@ public:
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setSpacing(6);
         horizontalLayout_13->setObjectName(QStringLiteral("horizontalLayout_13"));
-        label_Flight_Status = new QLabel(layoutWidget6);
+        label_Flight_Status = new QLabel(layoutWidget5);
         label_Flight_Status->setObjectName(QStringLiteral("label_Flight_Status"));
 
         horizontalLayout_13->addWidget(label_Flight_Status);
 
-        label_value_flight_status = new QLabel(layoutWidget6);
+        label_value_flight_status = new QLabel(layoutWidget5);
         label_value_flight_status->setObjectName(QStringLiteral("label_value_flight_status"));
 
         horizontalLayout_13->addWidget(label_value_flight_status);
@@ -435,17 +412,17 @@ public:
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(6);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
-        label_Battery_Level = new QLabel(layoutWidget6);
+        label_Battery_Level = new QLabel(layoutWidget5);
         label_Battery_Level->setObjectName(QStringLiteral("label_Battery_Level"));
 
         horizontalLayout_6->addWidget(label_Battery_Level);
 
-        label_Value_Battery = new QLabel(layoutWidget6);
+        label_Value_Battery = new QLabel(layoutWidget5);
         label_Value_Battery->setObjectName(QStringLiteral("label_Value_Battery"));
 
         horizontalLayout_6->addWidget(label_Value_Battery);
 
-        battery_progressBar = new QProgressBar(layoutWidget6);
+        battery_progressBar = new QProgressBar(layoutWidget5);
         battery_progressBar->setObjectName(QStringLiteral("battery_progressBar"));
         battery_progressBar->setEnabled(true);
         battery_progressBar->setMinimumSize(QSize(150, 10));
@@ -466,12 +443,12 @@ public:
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setSpacing(6);
         horizontalLayout_12->setObjectName(QStringLiteral("horizontalLayout_12"));
-        label_Altitude = new QLabel(layoutWidget6);
+        label_Altitude = new QLabel(layoutWidget5);
         label_Altitude->setObjectName(QStringLiteral("label_Altitude"));
 
         horizontalLayout_12->addWidget(label_Altitude);
 
-        label_Value_Altitude = new QLabel(layoutWidget6);
+        label_Value_Altitude = new QLabel(layoutWidget5);
         label_Value_Altitude->setObjectName(QStringLiteral("label_Value_Altitude"));
 
         horizontalLayout_12->addWidget(label_Value_Altitude);
@@ -482,12 +459,12 @@ public:
         horizontalLayout_11 = new QHBoxLayout();
         horizontalLayout_11->setSpacing(6);
         horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
-        label_Horizontal_Speed = new QLabel(layoutWidget6);
+        label_Horizontal_Speed = new QLabel(layoutWidget5);
         label_Horizontal_Speed->setObjectName(QStringLiteral("label_Horizontal_Speed"));
 
         horizontalLayout_11->addWidget(label_Horizontal_Speed);
 
-        label_Value_Vertical_Speed = new QLabel(layoutWidget6);
+        label_Value_Vertical_Speed = new QLabel(layoutWidget5);
         label_Value_Vertical_Speed->setObjectName(QStringLiteral("label_Value_Vertical_Speed"));
 
         horizontalLayout_11->addWidget(label_Value_Vertical_Speed);
@@ -498,12 +475,12 @@ public:
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
-        label_Vertical_Speed = new QLabel(layoutWidget6);
+        label_Vertical_Speed = new QLabel(layoutWidget5);
         label_Vertical_Speed->setObjectName(QStringLiteral("label_Vertical_Speed"));
 
         horizontalLayout_10->addWidget(label_Vertical_Speed);
 
-        label_Value_Horizontal_Speed = new QLabel(layoutWidget6);
+        label_Value_Horizontal_Speed = new QLabel(layoutWidget5);
         label_Value_Horizontal_Speed->setObjectName(QStringLiteral("label_Value_Horizontal_Speed"));
 
         horizontalLayout_10->addWidget(label_Value_Horizontal_Speed);
@@ -524,12 +501,12 @@ public:
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setSpacing(6);
         horizontalLayout_9->setObjectName(QStringLiteral("horizontalLayout_9"));
-        label_Theta_Angle = new QLabel(layoutWidget6);
+        label_Theta_Angle = new QLabel(layoutWidget5);
         label_Theta_Angle->setObjectName(QStringLiteral("label_Theta_Angle"));
 
         horizontalLayout_9->addWidget(label_Theta_Angle);
 
-        label_Value_Theta_Angle = new QLabel(layoutWidget6);
+        label_Value_Theta_Angle = new QLabel(layoutWidget5);
         label_Value_Theta_Angle->setObjectName(QStringLiteral("label_Value_Theta_Angle"));
 
         horizontalLayout_9->addWidget(label_Value_Theta_Angle);
@@ -540,12 +517,12 @@ public:
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
-        label_Phi_Angle = new QLabel(layoutWidget6);
+        label_Phi_Angle = new QLabel(layoutWidget5);
         label_Phi_Angle->setObjectName(QStringLiteral("label_Phi_Angle"));
 
         horizontalLayout_8->addWidget(label_Phi_Angle);
 
-        label_Value_Phi_Angle = new QLabel(layoutWidget6);
+        label_Value_Phi_Angle = new QLabel(layoutWidget5);
         label_Value_Phi_Angle->setObjectName(QStringLiteral("label_Value_Phi_Angle"));
 
         horizontalLayout_8->addWidget(label_Value_Phi_Angle);
@@ -556,12 +533,12 @@ public:
         horizontalLayout_7 = new QHBoxLayout();
         horizontalLayout_7->setSpacing(6);
         horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
-        label_Psi_Angle = new QLabel(layoutWidget6);
+        label_Psi_Angle = new QLabel(layoutWidget5);
         label_Psi_Angle->setObjectName(QStringLiteral("label_Psi_Angle"));
 
         horizontalLayout_7->addWidget(label_Psi_Angle);
 
-        label_Value_Psi_Angle = new QLabel(layoutWidget6);
+        label_Value_Psi_Angle = new QLabel(layoutWidget5);
         label_Value_Psi_Angle->setObjectName(QStringLiteral("label_Value_Psi_Angle"));
 
         horizontalLayout_7->addWidget(label_Value_Psi_Angle);
@@ -576,8 +553,80 @@ public:
         pushButton_image->setObjectName(QStringLiteral("pushButton_image"));
         pushButton_image->setGeometry(QRect(10, 0, 100, 100));
         pushButton_image->setMinimumSize(QSize(100, 100));
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tabWidget->setGeometry(QRect(480, 10, 491, 121));
+        tab = new QWidget();
+        tab->setObjectName(QStringLiteral("tab"));
+        layoutWidget6 = new QWidget(tab);
+        layoutWidget6->setObjectName(QStringLiteral("layoutWidget6"));
+        layoutWidget6->setGeometry(QRect(40, 0, 411, 81));
+        horizontalLayout_5 = new QHBoxLayout(layoutWidget6);
+        horizontalLayout_5->setSpacing(6);
+        horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
+        horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
+        button_start = new QPushButton(layoutWidget6);
+        button_start->setObjectName(QStringLiteral("button_start"));
+        button_start->setEnabled(false);
+        button_start->setMinimumSize(QSize(70, 70));
+        button_start->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_5->addWidget(button_start);
+
+        button_stop = new QPushButton(layoutWidget6);
+        button_stop->setObjectName(QStringLiteral("button_stop"));
+        button_stop->setEnabled(false);
+        button_stop->setMinimumSize(QSize(70, 70));
+        button_stop->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_5->addWidget(button_stop);
+
+        button_emergency = new QPushButton(layoutWidget6);
+        button_emergency->setObjectName(QStringLiteral("button_emergency"));
+        button_emergency->setEnabled(false);
+        button_emergency->setMinimumSize(QSize(70, 70));
+        button_emergency->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_5->addWidget(button_emergency);
+
+        tabWidget->addTab(tab, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        layoutWidget_2 = new QWidget(tab_2);
+        layoutWidget_2->setObjectName(QStringLiteral("layoutWidget_2"));
+        layoutWidget_2->setGeometry(QRect(40, 0, 411, 81));
+        horizontalLayout_14 = new QHBoxLayout(layoutWidget_2);
+        horizontalLayout_14->setSpacing(6);
+        horizontalLayout_14->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_14->setObjectName(QStringLiteral("horizontalLayout_14"));
+        horizontalLayout_14->setContentsMargins(0, 0, 0, 0);
+        scenario_pushButton = new QPushButton(layoutWidget_2);
+        scenario_pushButton->setObjectName(QStringLiteral("scenario_pushButton"));
+        scenario_pushButton->setEnabled(false);
+        scenario_pushButton->setMinimumSize(QSize(70, 70));
+        scenario_pushButton->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_14->addWidget(scenario_pushButton);
+
+        button_stop_scenario = new QPushButton(layoutWidget_2);
+        button_stop_scenario->setObjectName(QStringLiteral("button_stop_scenario"));
+        button_stop_scenario->setEnabled(false);
+        button_stop_scenario->setMinimumSize(QSize(70, 70));
+        button_stop_scenario->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_14->addWidget(button_stop_scenario);
+
+        button_emergency_scenario = new QPushButton(layoutWidget_2);
+        button_emergency_scenario->setObjectName(QStringLiteral("button_emergency_scenario"));
+        button_emergency_scenario->setEnabled(false);
+        button_emergency_scenario->setMinimumSize(QSize(70, 70));
+        button_emergency_scenario->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_14->addWidget(button_emergency_scenario);
+
+        tabWidget->addTab(tab_2, QString());
         MainWindow->setCentralWidget(centralWidget);
-        layoutWidget->raise();
         layoutWidget->raise();
         layoutWidget->raise();
         layoutWidget->raise();
@@ -598,6 +647,7 @@ public:
         label_Line_3->raise();
         label_Connected->raise();
         pushButton_image->raise();
+        tabWidget->raise();
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1009, 25));
@@ -613,6 +663,9 @@ public:
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         retranslateUi(MainWindow);
+
+        tabWidget->setCurrentIndex(1);
+
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -631,9 +684,6 @@ public:
         label_Value_Mission_Status->setText(QString());
         label_Searched_Square->setText(QApplication::translate("MainWindow", "Searched Square :", 0));
         label_Value_Searched_Square->setText(QString());
-        button_start->setText(QString());
-        button_stop->setText(QString());
-        button_emergency->setText(QString());
         label_Column_A->setText(QApplication::translate("MainWindow", "A", 0));
         label_Column_B->setText(QApplication::translate("MainWindow", "B", 0));
         label_Square_C->setText(QApplication::translate("MainWindow", "C", 0));
@@ -667,6 +717,14 @@ public:
         label_Psi_Angle->setText(QApplication::translate("MainWindow", "Psi angle :", 0));
         label_Value_Psi_Angle->setText(QString());
         pushButton_image->setText(QString());
+        button_start->setText(QString());
+        button_stop->setText(QString());
+        button_emergency->setText(QString());
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Manual Mode", 0));
+        scenario_pushButton->setText(QString());
+        button_stop_scenario->setText(QString());
+        button_emergency_scenario->setText(QString());
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Scenario Mode", 0));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
     } // retranslateUi
 
