@@ -49,6 +49,9 @@ static QString NO_COMMUNICATION = "No communication" ;
 static QString STATE_IN_FLIGHT = "Drone flying" ;
 static QString STATE_LANDED = "Drone landed" ;
 
+static int NUM_PORT_CLIENT = 4000 ;
+static QString ADDR_IP_CLIENT = "192.168.1.1";
+
 typedef enum
 {
     mission_stopped,
@@ -62,7 +65,14 @@ typedef enum
 
 QString mission_state_to_QString(mission_state current_state) ;
 
-static int NUM_PORT_CLIENT = 4000 ;
-static QString ADDR_IP_CLIENT = "192.168.1.1";
+
+typedef enum
+{
+    drone_flying ,
+    drone_landed
+
+} state_of_flight;
+
+QString flight_status_to_QString(state_of_flight flight) ;
 
 #endif // GLOBAL_H

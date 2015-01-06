@@ -56,6 +56,8 @@ public slots:
 
     void send_date();
 
+    //void slot_change_flight_status(int flying_state) ;
+
 signals :
     void change_battery_value(int new_value);
     void change_altitude_value(QString new_value);
@@ -122,12 +124,19 @@ private:
 
     void mark_square_found(int square) ;
 
+    void change_flight_status(int flying_state) ;
+
+
     mission_state state_of_mission ;
 
     int joueur ;
 
     Ui::MainWindow *ui;
     client C ;
+
+    int battery_level ;
+    state_of_flight flight_state ;
+    int emergency_status;
 };
 
 #endif // MAINWINDOW_H

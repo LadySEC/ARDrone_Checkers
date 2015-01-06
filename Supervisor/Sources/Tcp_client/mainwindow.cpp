@@ -120,8 +120,6 @@ void MainWindow::mark_connexion()
     allow_start_mission();  
     state_of_mission = mission_ready;
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-
-
 }
 
 void MainWindow::unmark_connexion()
@@ -237,16 +235,27 @@ void MainWindow::pause_mission()
 }
 */
 
+
 void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray data)
 {
 
     if (mnemo == 'N')
     {
-        if (data.at(3) & 0x01)
-            ui->label_value_flight_status->setText("Drone flying");
-        else
-            ui->label_value_flight_status->setText("Drone landed");
+        switch (data.at(3) & 0x01)
+        {
+        case 0x01 :
+            flight_state = drone_flying ;
+            break ;
+        case 0x00 :
+            flight_state = drone_landed;
+            break ;
+        }
 
+        ui->label_value_flight_status->setText(flight_status_to_QString(flight_state));
+
+        battery_level = (data.at(1) & 0x01) ;
+
+        emergency_status = (data.at(0) & 0x80);
     }
     else if (mnemo == 'H')
     {
@@ -312,6 +321,8 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
     }
 
 }
+
+
 
 /** ORDERS SENT TO THE DRONE */
 

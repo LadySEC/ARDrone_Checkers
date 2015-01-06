@@ -48,12 +48,14 @@ OBJECTS_DIR   = ./
 SOURCES       = ../../Sources/Tcp_client/main.cpp \
 		../../Sources/Tcp_client/mainwindow.cpp \
 		../../Sources/Tcp_client/client.cpp \
-		../../Sources/Tcp_client/global.cpp moc_mainwindow.cpp \
+		../../Sources/Tcp_client/global.cpp \
+		../../Sources/Tcp_client/unixTime.cpp moc_mainwindow.cpp \
 		moc_client.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		client.o \
 		global.o \
+		unixTime.o \
 		moc_mainwindow.o \
 		moc_client.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -289,7 +291,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/Tcp_client1.0.0 || mkdir -p .tmp/Tcp_client1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.h ../../Sources/Tcp_client/client.h ../../Sources/Tcp_client/global.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/client.cpp ../../Sources/Tcp_client/global.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.h ../../Sources/Tcp_client/client.h ../../Sources/Tcp_client/global.h ../../Sources/Tcp_client/unixTime.h .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/client.cpp ../../Sources/Tcp_client/global.cpp ../../Sources/Tcp_client/unixTime.cpp .tmp/Tcp_client1.0.0/ && $(COPY_FILE) --parents ../../Sources/Tcp_client/mainwindow.ui .tmp/Tcp_client1.0.0/ && (cd `dirname .tmp/Tcp_client1.0.0` && $(TAR) Tcp_client1.0.0.tar Tcp_client1.0.0 && $(COMPRESS) Tcp_client1.0.0.tar) && $(MOVE) `dirname .tmp/Tcp_client1.0.0`/Tcp_client1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/Tcp_client1.0.0
 
 
 clean:compiler_clean 
@@ -440,6 +442,10 @@ moc_mainwindow.cpp: /usr/include/qt5/QtWidgets/QMainWindow \
 		/usr/include/qt5/QtCore/QDebug \
 		../../Sources/Tcp_client/global.h \
 		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/QDate \
+		../../Sources/Tcp_client/unixTime.h \
 		../../Sources/Tcp_client/mainwindow.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/i386-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/i686-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/i686-linux-gnu/4.8/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include ../../Sources/Tcp_client/mainwindow.h -o moc_mainwindow.cpp
 
@@ -710,13 +716,22 @@ main.o: ../../Sources/Tcp_client/main.cpp ../../Sources/Tcp_client/mainwindow.h 
 		/usr/include/qt5/QtCore/QDebug \
 		../../Sources/Tcp_client/global.h \
 		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/QDate \
+		../../Sources/Tcp_client/unixTime.h \
 		/usr/include/qt5/QtWidgets/QLineEdit \
 		/usr/include/qt5/QtWidgets/qlineedit.h \
 		/usr/include/qt5/QtWidgets/qframe.h \
 		/usr/include/qt5/QtGui/qtextcursor.h \
 		/usr/include/qt5/QtGui/qtextformat.h \
 		/usr/include/qt5/QtGui/qpen.h \
-		/usr/include/qt5/QtGui/qtextoption.h
+		/usr/include/qt5/QtGui/qtextoption.h \
+		/usr/include/qt5/QtCore/QtPlugin \
+		/usr/include/qt5/QtCore/qplugin.h \
+		/usr/include/qt5/QtCore/qpointer.h \
+		/usr/include/qt5/QtCore/qjsonobject.h \
+		/usr/include/qt5/QtCore/qjsonvalue.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../Sources/Tcp_client/main.cpp
 
 mainwindow.o: ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/mainwindow.h \
@@ -845,6 +860,10 @@ mainwindow.o: ../../Sources/Tcp_client/mainwindow.cpp ../../Sources/Tcp_client/m
 		/usr/include/qt5/QtCore/QDebug \
 		../../Sources/Tcp_client/global.h \
 		/usr/include/qt5/QtCore/QString \
+		/usr/include/qt5/QtCore/QTime \
+		/usr/include/qt5/QtCore/qdatetime.h \
+		/usr/include/qt5/QtCore/QDate \
+		../../Sources/Tcp_client/unixTime.h \
 		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../Sources/Tcp_client/mainwindow.cpp
 
@@ -1017,6 +1036,9 @@ global.o: ../../Sources/Tcp_client/global.cpp ../../Sources/Tcp_client/global.h 
 		/usr/include/qt5/QtCore/qarraydata.h \
 		/usr/include/qt5/QtCore/qstringbuilder.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o global.o ../../Sources/Tcp_client/global.cpp
+
+unixTime.o: ../../Sources/Tcp_client/unixTime.cpp ../../Sources/Tcp_client/unixTime.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o unixTime.o ../../Sources/Tcp_client/unixTime.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

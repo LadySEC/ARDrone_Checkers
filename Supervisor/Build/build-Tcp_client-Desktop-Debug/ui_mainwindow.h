@@ -59,8 +59,8 @@ public:
     QWidget *layoutWidget4;
     QHBoxLayout *horizontalLayout_5;
     QPushButton *button_start;
-    QPushButton *button_pause;
     QPushButton *button_stop;
+    QPushButton *button_emergency;
     QFrame *line_2;
     QFrame *line_3;
     QFrame *line_4;
@@ -122,6 +122,7 @@ public:
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
+    QToolBar *toolBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -163,10 +164,10 @@ public:
         line->setFrameShadow(QFrame::Sunken);
         label_title = new QLabel(centralWidget);
         label_title->setObjectName(QStringLiteral("label_title"));
-        label_title->setGeometry(QRect(580, 620, 301, 17));
+        label_title->setGeometry(QRect(690, 630, 301, 17));
         layoutWidget1 = new QWidget(centralWidget);
         layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(770, 70, 136, 66));
+        layoutWidget1->setGeometry(QRect(180, 490, 136, 66));
         verticalLayout_3 = new QVBoxLayout(layoutWidget1);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -210,7 +211,7 @@ public:
 
         layoutWidget2 = new QWidget(centralWidget);
         layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(460, 50, 300, 29));
+        layoutWidget2->setGeometry(QRect(20, 430, 300, 29));
         horizontalLayout_3 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_3->setSpacing(6);
         horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -229,7 +230,7 @@ public:
 
         layoutWidget3 = new QWidget(centralWidget);
         layoutWidget3->setObjectName(QStringLiteral("layoutWidget3"));
-        layoutWidget3->setGeometry(QRect(460, 80, 301, 29));
+        layoutWidget3->setGeometry(QRect(20, 460, 301, 29));
         horizontalLayout_4 = new QHBoxLayout(layoutWidget3);
         horizontalLayout_4->setSpacing(6);
         horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
@@ -249,7 +250,7 @@ public:
 
         layoutWidget4 = new QWidget(centralWidget);
         layoutWidget4->setObjectName(QStringLiteral("layoutWidget4"));
-        layoutWidget4->setGeometry(QRect(460, 0, 471, 31));
+        layoutWidget4->setGeometry(QRect(490, 10, 411, 72));
         horizontalLayout_5 = new QHBoxLayout(layoutWidget4);
         horizontalLayout_5->setSpacing(6);
         horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
@@ -258,68 +259,68 @@ public:
         button_start = new QPushButton(layoutWidget4);
         button_start->setObjectName(QStringLiteral("button_start"));
         button_start->setEnabled(false);
-        button_start->setMinimumSize(QSize(0, 0));
-        button_start->setMaximumSize(QSize(150, 150));
+        button_start->setMinimumSize(QSize(70, 70));
+        button_start->setMaximumSize(QSize(70, 70));
 
         horizontalLayout_5->addWidget(button_start);
-
-        button_pause = new QPushButton(layoutWidget4);
-        button_pause->setObjectName(QStringLiteral("button_pause"));
-        button_pause->setEnabled(false);
-        button_pause->setMinimumSize(QSize(0, 0));
-        button_pause->setMaximumSize(QSize(150, 150));
-
-        horizontalLayout_5->addWidget(button_pause);
 
         button_stop = new QPushButton(layoutWidget4);
         button_stop->setObjectName(QStringLiteral("button_stop"));
         button_stop->setEnabled(false);
-        button_stop->setMinimumSize(QSize(0, 0));
-        button_stop->setMaximumSize(QSize(150, 150));
+        button_stop->setMinimumSize(QSize(70, 70));
+        button_stop->setMaximumSize(QSize(70, 70));
 
         horizontalLayout_5->addWidget(button_stop);
 
+        button_emergency = new QPushButton(layoutWidget4);
+        button_emergency->setObjectName(QStringLiteral("button_emergency"));
+        button_emergency->setEnabled(false);
+        button_emergency->setMinimumSize(QSize(70, 70));
+        button_emergency->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_5->addWidget(button_emergency);
+
         line_2 = new QFrame(centralWidget);
         line_2->setObjectName(QStringLiteral("line_2"));
-        line_2->setGeometry(QRect(620, 150, 20, 461));
+        line_2->setGeometry(QRect(600, 130, 20, 461));
         line_2->setFrameShape(QFrame::VLine);
         line_2->setFrameShadow(QFrame::Sunken);
         line_3 = new QFrame(centralWidget);
         line_3->setObjectName(QStringLiteral("line_3"));
-        line_3->setGeometry(QRect(780, 150, 20, 461));
+        line_3->setGeometry(QRect(760, 130, 20, 461));
         line_3->setFrameShape(QFrame::VLine);
         line_3->setFrameShadow(QFrame::Sunken);
         line_4 = new QFrame(centralWidget);
         line_4->setObjectName(QStringLiteral("line_4"));
-        line_4->setGeometry(QRect(460, 440, 501, 20));
+        line_4->setGeometry(QRect(440, 420, 501, 20));
         line_4->setFrameShape(QFrame::HLine);
         line_4->setFrameShadow(QFrame::Sunken);
         line_5 = new QFrame(centralWidget);
         line_5->setObjectName(QStringLiteral("line_5"));
-        line_5->setGeometry(QRect(460, 300, 501, 20));
+        line_5->setGeometry(QRect(440, 280, 501, 20));
         line_5->setFrameShape(QFrame::HLine);
         line_5->setFrameShadow(QFrame::Sunken);
         label_Column_A = new QLabel(centralWidget);
         label_Column_A->setObjectName(QStringLiteral("label_Column_A"));
-        label_Column_A->setGeometry(QRect(550, 160, 21, 17));
+        label_Column_A->setGeometry(QRect(530, 140, 21, 17));
         label_Column_B = new QLabel(centralWidget);
         label_Column_B->setObjectName(QStringLiteral("label_Column_B"));
-        label_Column_B->setGeometry(QRect(710, 160, 21, 17));
+        label_Column_B->setGeometry(QRect(690, 140, 21, 17));
         label_Square_C = new QLabel(centralWidget);
         label_Square_C->setObjectName(QStringLiteral("label_Square_C"));
-        label_Square_C->setGeometry(QRect(840, 160, 21, 17));
+        label_Square_C->setGeometry(QRect(820, 140, 21, 17));
         label_Line_1 = new QLabel(centralWidget);
         label_Line_1->setObjectName(QStringLiteral("label_Line_1"));
-        label_Line_1->setGeometry(QRect(460, 260, 21, 17));
+        label_Line_1->setGeometry(QRect(440, 240, 21, 17));
         label_Line_2 = new QLabel(centralWidget);
         label_Line_2->setObjectName(QStringLiteral("label_Line_2"));
-        label_Line_2->setGeometry(QRect(460, 370, 16, 17));
+        label_Line_2->setGeometry(QRect(440, 350, 16, 17));
         label_Line_3 = new QLabel(centralWidget);
         label_Line_3->setObjectName(QStringLiteral("label_Line_3"));
-        label_Line_3->setGeometry(QRect(460, 490, 16, 17));
+        label_Line_3->setGeometry(QRect(440, 470, 16, 17));
         layoutWidget5 = new QWidget(centralWidget);
         layoutWidget5->setObjectName(QStringLiteral("layoutWidget5"));
-        layoutWidget5->setGeometry(QRect(500, 190, 421, 381));
+        layoutWidget5->setGeometry(QRect(480, 170, 421, 381));
         gridLayout = new QGridLayout(layoutWidget5);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -607,6 +608,9 @@ public:
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWindow->setStatusBar(statusBar);
+        toolBar = new QToolBar(MainWindow);
+        toolBar->setObjectName(QStringLiteral("toolBar"));
+        MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         retranslateUi(MainWindow);
 
@@ -627,9 +631,9 @@ public:
         label_Value_Mission_Status->setText(QString());
         label_Searched_Square->setText(QApplication::translate("MainWindow", "Searched Square :", 0));
         label_Value_Searched_Square->setText(QString());
-        button_start->setText(QApplication::translate("MainWindow", "Start / Resume", 0));
-        button_pause->setText(QApplication::translate("MainWindow", "Pause", 0));
-        button_stop->setText(QApplication::translate("MainWindow", "Stop", 0));
+        button_start->setText(QString());
+        button_stop->setText(QString());
+        button_emergency->setText(QString());
         label_Column_A->setText(QApplication::translate("MainWindow", "A", 0));
         label_Column_B->setText(QApplication::translate("MainWindow", "B", 0));
         label_Square_C->setText(QApplication::translate("MainWindow", "C", 0));
@@ -663,6 +667,7 @@ public:
         label_Psi_Angle->setText(QApplication::translate("MainWindow", "Psi angle :", 0));
         label_Value_Psi_Angle->setText(QString());
         pushButton_image->setText(QString());
+        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
     } // retranslateUi
 
 };

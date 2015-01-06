@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[31];
-    char stringdata[426];
+    QByteArrayData data[35];
+    char stringdata[483];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -44,22 +44,26 @@ QT_MOC_LITERAL(11, 188, 14),
 QT_MOC_LITERAL(12, 203, 16),
 QT_MOC_LITERAL(13, 220, 13),
 QT_MOC_LITERAL(14, 234, 12),
-QT_MOC_LITERAL(15, 247, 13),
-QT_MOC_LITERAL(16, 261, 12),
-QT_MOC_LITERAL(17, 274, 12),
-QT_MOC_LITERAL(18, 287, 9),
-QT_MOC_LITERAL(19, 297, 17),
-QT_MOC_LITERAL(20, 315, 5),
-QT_MOC_LITERAL(21, 321, 4),
-QT_MOC_LITERAL(22, 326, 10),
-QT_MOC_LITERAL(23, 337, 10),
-QT_MOC_LITERAL(24, 348, 10),
-QT_MOC_LITERAL(25, 359, 10),
-QT_MOC_LITERAL(26, 370, 10),
-QT_MOC_LITERAL(27, 381, 10),
-QT_MOC_LITERAL(28, 392, 10),
-QT_MOC_LITERAL(29, 403, 10),
-QT_MOC_LITERAL(30, 414, 10)
+QT_MOC_LITERAL(15, 247, 17),
+QT_MOC_LITERAL(16, 265, 21),
+QT_MOC_LITERAL(17, 287, 12),
+QT_MOC_LITERAL(18, 300, 12),
+QT_MOC_LITERAL(19, 313, 9),
+QT_MOC_LITERAL(20, 323, 14),
+QT_MOC_LITERAL(21, 338, 5),
+QT_MOC_LITERAL(22, 344, 17),
+QT_MOC_LITERAL(23, 362, 5),
+QT_MOC_LITERAL(24, 368, 4),
+QT_MOC_LITERAL(25, 373, 10),
+QT_MOC_LITERAL(26, 384, 10),
+QT_MOC_LITERAL(27, 395, 10),
+QT_MOC_LITERAL(28, 406, 10),
+QT_MOC_LITERAL(29, 417, 10),
+QT_MOC_LITERAL(30, 428, 10),
+QT_MOC_LITERAL(31, 439, 10),
+QT_MOC_LITERAL(32, 450, 10),
+QT_MOC_LITERAL(33, 461, 10),
+QT_MOC_LITERAL(34, 472, 9)
     },
     "MainWindow\0change_battery_value\0\0"
     "new_value\0change_altitude_value\0"
@@ -68,12 +72,14 @@ QT_MOC_LITERAL(30, 414, 10)
     "change_theta_value\0change_phi_value\0"
     "change_psi_value\0open_connexion\0"
     "mark_connexion\0unmark_connexion\0"
-    "start_mission\0stop_mission\0pause_mission\0"
-    "send_takeoff\0send_landing\0send_exit\0"
-    "update_values_IHM\0mnemo\0data\0send_G_A_1\0"
-    "send_G_A_2\0send_G_A_3\0send_G_B_1\0"
-    "send_G_B_2\0send_G_B_3\0send_G_C_1\0"
-    "send_G_C_2\0send_G_C_3\0"
+    "start_mission\0stop_mission\0emergency_landing\0"
+    "reset_after_emergency\0send_takeoff\0"
+    "send_landing\0send_exit\0send_emergency\0"
+    "value\0update_values_IHM\0mnemo\0data\0"
+    "send_G_A_1\0send_G_A_2\0send_G_A_3\0"
+    "send_G_B_1\0send_G_B_2\0send_G_B_3\0"
+    "send_G_C_1\0send_G_C_2\0send_G_C_3\0"
+    "send_date\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -83,7 +89,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      26,   14, // methods
+      29,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -91,34 +97,37 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  144,    2, 0x06,
-       4,    1,  147,    2, 0x06,
-       5,    1,  150,    2, 0x06,
-       6,    1,  153,    2, 0x06,
-       7,    1,  156,    2, 0x06,
-       8,    1,  159,    2, 0x06,
-       9,    1,  162,    2, 0x06,
+       1,    1,  159,    2, 0x06,
+       4,    1,  162,    2, 0x06,
+       5,    1,  165,    2, 0x06,
+       6,    1,  168,    2, 0x06,
+       7,    1,  171,    2, 0x06,
+       8,    1,  174,    2, 0x06,
+       9,    1,  177,    2, 0x06,
 
  // slots: name, argc, parameters, tag, flags
-      10,    0,  165,    2, 0x0a,
-      11,    0,  166,    2, 0x0a,
-      12,    0,  167,    2, 0x0a,
-      13,    0,  168,    2, 0x0a,
-      14,    0,  169,    2, 0x0a,
-      15,    0,  170,    2, 0x0a,
-      16,    0,  171,    2, 0x0a,
-      17,    0,  172,    2, 0x0a,
-      18,    0,  173,    2, 0x0a,
-      19,    2,  174,    2, 0x0a,
-      22,    0,  179,    2, 0x0a,
-      23,    0,  180,    2, 0x0a,
-      24,    0,  181,    2, 0x0a,
-      25,    0,  182,    2, 0x0a,
-      26,    0,  183,    2, 0x0a,
-      27,    0,  184,    2, 0x0a,
-      28,    0,  185,    2, 0x0a,
-      29,    0,  186,    2, 0x0a,
-      30,    0,  187,    2, 0x0a,
+      10,    0,  180,    2, 0x0a,
+      11,    0,  181,    2, 0x0a,
+      12,    0,  182,    2, 0x0a,
+      13,    0,  183,    2, 0x0a,
+      14,    0,  184,    2, 0x0a,
+      15,    0,  185,    2, 0x0a,
+      16,    0,  186,    2, 0x0a,
+      17,    0,  187,    2, 0x0a,
+      18,    0,  188,    2, 0x0a,
+      19,    0,  189,    2, 0x0a,
+      20,    1,  190,    2, 0x0a,
+      22,    2,  193,    2, 0x0a,
+      25,    0,  198,    2, 0x0a,
+      26,    0,  199,    2, 0x0a,
+      27,    0,  200,    2, 0x0a,
+      28,    0,  201,    2, 0x0a,
+      29,    0,  202,    2, 0x0a,
+      30,    0,  203,    2, 0x0a,
+      31,    0,  204,    2, 0x0a,
+      32,    0,  205,    2, 0x0a,
+      33,    0,  206,    2, 0x0a,
+      34,    0,  207,    2, 0x0a,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int,    3,
@@ -139,7 +148,10 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QChar, QMetaType::QByteArray,   20,   21,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::UChar,   21,
+    QMetaType::Void, QMetaType::QChar, QMetaType::QByteArray,   23,   24,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -170,20 +182,23 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 9: _t->unmark_connexion(); break;
         case 10: _t->start_mission(); break;
         case 11: _t->stop_mission(); break;
-        case 12: _t->pause_mission(); break;
-        case 13: _t->send_takeoff(); break;
-        case 14: _t->send_landing(); break;
-        case 15: _t->send_exit(); break;
-        case 16: _t->update_values_IHM((*reinterpret_cast< QChar(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
-        case 17: _t->send_G_A_1(); break;
-        case 18: _t->send_G_A_2(); break;
-        case 19: _t->send_G_A_3(); break;
-        case 20: _t->send_G_B_1(); break;
-        case 21: _t->send_G_B_2(); break;
-        case 22: _t->send_G_B_3(); break;
-        case 23: _t->send_G_C_1(); break;
-        case 24: _t->send_G_C_2(); break;
-        case 25: _t->send_G_C_3(); break;
+        case 12: _t->emergency_landing(); break;
+        case 13: _t->reset_after_emergency(); break;
+        case 14: _t->send_takeoff(); break;
+        case 15: _t->send_landing(); break;
+        case 16: _t->send_exit(); break;
+        case 17: _t->send_emergency((*reinterpret_cast< quint8(*)>(_a[1]))); break;
+        case 18: _t->update_values_IHM((*reinterpret_cast< QChar(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
+        case 19: _t->send_G_A_1(); break;
+        case 20: _t->send_G_A_2(); break;
+        case 21: _t->send_G_A_3(); break;
+        case 22: _t->send_G_B_1(); break;
+        case 23: _t->send_G_B_2(); break;
+        case 24: _t->send_G_B_3(); break;
+        case 25: _t->send_G_C_1(); break;
+        case 26: _t->send_G_C_2(); break;
+        case 27: _t->send_G_C_3(); break;
+        case 28: _t->send_date(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -259,13 +274,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 26)
+        if (_id < 29)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 26;
+        _id -= 29;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 26)
+        if (_id < 29)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 26;
+        _id -= 29;
     }
     return _id;
 }
