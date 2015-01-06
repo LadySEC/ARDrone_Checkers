@@ -164,14 +164,14 @@ void* supervisor_thread_interact(void* arg)
     char                test[2u];
     T_reception_state   state;
     char                order_string[50u];
-    unsigned long*      timeStamp;
+    unsigned long       timeStamp;
     char                date[50u];
+    unsigned char       index;
 
 #ifdef PRINT_TCP_DATA_RECEIVED
     T_bool              print = TRUE;
     char                frame_received[(RECV_BUFF_SIZE*3u) + 1u];
     char                byte_ascii[20u];
-    unsigned char       index;
     unsigned char       index_frame = 0u;
 #endif
 
@@ -294,9 +294,15 @@ void* supervisor_thread_interact(void* arg)
                         break;
 
                     case TIME_TCP:
-                        timeStamp = (unsigned long*)&G_orders[2u];
+                        timeStamp = 0ul;
+                        for(index = 0u; index < 4u; index++)
+                        {
+                            timeStamp |= ((unsigned long)G_orders[2u + index]) << (8u*(3u - index));
+                        }
+                        LOG_WriteLevel(LOG_DEBUG, "timeStamp = %x, %d", timeStamp, timeStamp);
+
                         /* Change the date */
-                        sprintf(date, "date --set='@%d'", *timeStamp);
+                        sprintf(date, "date --set='@%d'", timeStamp);
                         system(date);
                         break;
 
