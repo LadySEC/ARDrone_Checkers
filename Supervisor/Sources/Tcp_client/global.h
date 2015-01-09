@@ -28,12 +28,12 @@
     static const QString DRONE_IMAGE_PATH = "..\\..\\tags\\drone.png";
     static const QString PATH_TO_CIRCLE = "..\\..\\tags\\black_circle.png" ;
     static const QString PATH_TO_CROSS = "..\\..\\tags\\black_cross.png" ;
-    static const QString EMERGENCY_BUTTON_PATH = "..\\..\\tags\\emergency.jpg" ;
+    static const QString EMERGENCY_BUTTON_PATH = "..\\..\\tags\\emergency.png" ;
     static const QString START_PATH = "..\\..\\tags\\drone_takeoff.png";
     static const QString STOP_PATH = "..\\..\\tags\\drone_landing.png" ;
-    static const QString RESET_PATH = "..\\..\\tags\\reset.jpg" ;
-    static const QString START_SCENARIO_PATH = "..\\..\\tags\\start.jpg" ;
-    static const QString STOP_SCENARIO_PATH = "..\\..\\tags\\stop.jpg" ;
+    static const QString RESET_PATH = "..\\..\\tags\\reset.png" ;
+    static const QString START_SCENARIO_PATH = "..\\..\\tags\\start.png" ;
+    static const QString STOP_SCENARIO_PATH = "..\\..\\tags\\stop.png" ;
 
 #endif
 
