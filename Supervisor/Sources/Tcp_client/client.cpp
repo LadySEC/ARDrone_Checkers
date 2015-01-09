@@ -29,9 +29,28 @@ void client::recoit_texte(QString t)
 
 void client::recoit_texte(QByteArray message)
 {
+    unsigned char i;
+
     QTextStream texte(&soc); // on associe un flux à la socket
-    texte << message ;        // on écrit dans le flux le texte saisi dans l'IHM
-    qDebug() << " MESSAGE TO SEND TO THE DRONE : " << message.toHex() << endl ;
+    //texte << message ;        // on écrit dans le flux le texte saisi dans l'IHM
+
+    for(i = 0; i < 3; i++)
+    {
+        texte << message.at(i);
+        qDebug() << message.toHex().at(i*2) << message.toHex().at(i*2 +1)  ;
+    }
+    if (message.size() > 3)
+    {
+        for(i = 3; i < message.size(); i++)
+        {
+            texte << message.at(i);
+            qDebug() << message.toHex().at(i*2) << message.toHex().at(i*2 +1)  ;
+        }
+    }
+
+
+
+    qDebug() << "size : " << message.size() <<  " MESSAGE TO SEND TO THE DRONE : " << message.toHex() << endl ;
 }
 
 
@@ -66,23 +85,23 @@ void client::lecture()
     int numOc = 0 ;
     int taille ;
     QByteArray mess ;
-    qDebug() << "message : " << ligne.toHex();
+   // qDebug() << "message : " << ligne.toHex();
 
     while (numOc < ligne.size())
     {
         mess.clear();
         QChar mnemo = ligne.at(numOc) ;
-        qDebug() << "mnemo : " << mnemo ;
+        //qDebug() << "mnemo : " << mnemo ;
         numOc++ ;
         taille = ligne.at(numOc) ;
-        qDebug() << "Nombre d'octets : " << taille ;
+        //qDebug() << "Nombre d'octets : " << taille ;
         numOc++ ;
 
         for (int j = 0 ; j < taille ; j++)
         {
             mess.append(ligne.at(numOc+j))  ;
         }
-        qDebug() << mess.toHex() << endl ;
+        //qDebug() << mess.toHex() << endl ;
 
         emit(data_to_IHM(mnemo/*, taille*/, mess));
 

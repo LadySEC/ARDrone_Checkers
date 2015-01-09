@@ -24,7 +24,6 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -115,19 +114,12 @@ public:
     QLabel *label_Psi_Angle;
     QLabel *label_Value_Psi_Angle;
     QPushButton *pushButton_image;
-    QTabWidget *tabWidget;
-    QWidget *tab;
     QWidget *layoutWidget6;
     QHBoxLayout *horizontalLayout_5;
     QPushButton *button_start;
+    QPushButton *scenario_pushButton;
     QPushButton *button_stop;
     QPushButton *button_emergency;
-    QWidget *tab_2;
-    QWidget *layoutWidget_2;
-    QHBoxLayout *horizontalLayout_14;
-    QPushButton *scenario_pushButton;
-    QPushButton *button_stop_scenario;
-    QPushButton *button_emergency_scenario;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -553,14 +545,9 @@ public:
         pushButton_image->setObjectName(QStringLiteral("pushButton_image"));
         pushButton_image->setGeometry(QRect(10, 0, 100, 100));
         pushButton_image->setMinimumSize(QSize(100, 100));
-        tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        tabWidget->setGeometry(QRect(480, 10, 491, 121));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        layoutWidget6 = new QWidget(tab);
+        layoutWidget6 = new QWidget(centralWidget);
         layoutWidget6->setObjectName(QStringLiteral("layoutWidget6"));
-        layoutWidget6->setGeometry(QRect(40, 0, 411, 81));
+        layoutWidget6->setGeometry(QRect(510, 20, 411, 81));
         horizontalLayout_5 = new QHBoxLayout(layoutWidget6);
         horizontalLayout_5->setSpacing(6);
         horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
@@ -573,6 +560,14 @@ public:
         button_start->setMaximumSize(QSize(70, 70));
 
         horizontalLayout_5->addWidget(button_start);
+
+        scenario_pushButton = new QPushButton(layoutWidget6);
+        scenario_pushButton->setObjectName(QStringLiteral("scenario_pushButton"));
+        scenario_pushButton->setEnabled(false);
+        scenario_pushButton->setMinimumSize(QSize(70, 70));
+        scenario_pushButton->setMaximumSize(QSize(70, 70));
+
+        horizontalLayout_5->addWidget(scenario_pushButton);
 
         button_stop = new QPushButton(layoutWidget6);
         button_stop->setObjectName(QStringLiteral("button_stop"));
@@ -590,42 +585,6 @@ public:
 
         horizontalLayout_5->addWidget(button_emergency);
 
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QStringLiteral("tab_2"));
-        layoutWidget_2 = new QWidget(tab_2);
-        layoutWidget_2->setObjectName(QStringLiteral("layoutWidget_2"));
-        layoutWidget_2->setGeometry(QRect(40, 0, 411, 81));
-        horizontalLayout_14 = new QHBoxLayout(layoutWidget_2);
-        horizontalLayout_14->setSpacing(6);
-        horizontalLayout_14->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_14->setObjectName(QStringLiteral("horizontalLayout_14"));
-        horizontalLayout_14->setContentsMargins(0, 0, 0, 0);
-        scenario_pushButton = new QPushButton(layoutWidget_2);
-        scenario_pushButton->setObjectName(QStringLiteral("scenario_pushButton"));
-        scenario_pushButton->setEnabled(false);
-        scenario_pushButton->setMinimumSize(QSize(70, 70));
-        scenario_pushButton->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_14->addWidget(scenario_pushButton);
-
-        button_stop_scenario = new QPushButton(layoutWidget_2);
-        button_stop_scenario->setObjectName(QStringLiteral("button_stop_scenario"));
-        button_stop_scenario->setEnabled(false);
-        button_stop_scenario->setMinimumSize(QSize(70, 70));
-        button_stop_scenario->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_14->addWidget(button_stop_scenario);
-
-        button_emergency_scenario = new QPushButton(layoutWidget_2);
-        button_emergency_scenario->setObjectName(QStringLiteral("button_emergency_scenario"));
-        button_emergency_scenario->setEnabled(false);
-        button_emergency_scenario->setMinimumSize(QSize(70, 70));
-        button_emergency_scenario->setMaximumSize(QSize(70, 70));
-
-        horizontalLayout_14->addWidget(button_emergency_scenario);
-
-        tabWidget->addTab(tab_2, QString());
         MainWindow->setCentralWidget(centralWidget);
         layoutWidget->raise();
         layoutWidget->raise();
@@ -647,7 +606,7 @@ public:
         label_Line_3->raise();
         label_Connected->raise();
         pushButton_image->raise();
-        tabWidget->raise();
+        layoutWidget->raise();
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1009, 25));
@@ -663,9 +622,6 @@ public:
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         retranslateUi(MainWindow);
-
-        tabWidget->setCurrentIndex(1);
-
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -718,13 +674,9 @@ public:
         label_Value_Psi_Angle->setText(QString());
         pushButton_image->setText(QString());
         button_start->setText(QString());
+        scenario_pushButton->setText(QString());
         button_stop->setText(QString());
         button_emergency->setText(QString());
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Manual Mode", 0));
-        scenario_pushButton->setText(QString());
-        button_stop_scenario->setText(QString());
-        button_emergency_scenario->setText(QString());
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Scenario Mode", 0));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
     } // retranslateUi
 

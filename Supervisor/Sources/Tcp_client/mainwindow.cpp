@@ -34,6 +34,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->button_stop->setIcon(QIcon(STOP_PATH));
     ui->button_stop->setIconSize(QSize(70,70));
 
+    //ui->button_emergency_scenario->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
+    //ui->button_emergency_scenario->setIconSize(QSize(70,70));
+    ui->scenario_pushButton->setIcon(QIcon(START_SCENARIO_PATH));
+    ui->scenario_pushButton->setIconSize(QSize(70,70));
+    //ui->button_stop_scenario->setIcon(QIcon(STOP_SCENARIO_PATH));
+    //ui->button_stop_scenario->setIconSize(QSize(70,70));
+
     /*
     ui->label_Vertical_Speed->setVisible(false);
     ui->label_Horizontal_Speed->setVisible(false);
@@ -46,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     set_icons_playground_without_communication();
 
     joueur = 0;
+    num_scenario = 3 ;
+    scenario_mode = false ;
 }
 
 MainWindow::~MainWindow()
@@ -55,6 +64,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::link_connect()
 {
+
+    QObject::connect(ui->scenario_pushButton, SIGNAL(clicked()), this, SLOT(begin_scenario()));
+
     QObject::connect( &C, SIGNAL(data_to_IHM(QChar/*,int*/,QByteArray)), this, SLOT(update_values_IHM(QChar/*,int*/,QByteArray)));
 
     QObject::connect( this, SIGNAL(change_battery_value(int)), ui->battery_progressBar, SLOT(setValue(int)));
@@ -100,6 +112,26 @@ void MainWindow::link_connect()
  * PUBLIC SLOTS
  * **************************/
 
+
+void MainWindow::begin_scenario()
+{
+    scenario_mode = true ;
+    send_takeoff();
+    switch (num_scenario)
+    {
+    case 1 :
+        send_G_A_1();
+        break ;
+    case 2 :
+        send_G_A_2();
+        break ;
+    case 3 :
+        send_G_A_1();
+        break ;
+    }
+
+
+}
 
 void MainWindow::open_connexion()
 {
@@ -151,6 +183,8 @@ void MainWindow::start_mission()
         allow_emergency();
         allow_pause_stop_mission();
         allow_orders_to_squares();
+        ui->scenario_pushButton->setEnabled(true);
+
     }
 }
 
@@ -170,6 +204,8 @@ void MainWindow::stop_mission()
         forbid_pause_stop_mission();
         forbid_emergency() ;
         forbid_orders_to_squares();
+        ui->scenario_pushButton->setEnabled(false);
+
     }
 }
 
@@ -187,6 +223,8 @@ void MainWindow::emergency_landing()
 
         forbid_pause_stop_mission();
         forbid_orders_to_squares();
+        ui->scenario_pushButton->setEnabled(false);
+
 
         ui->button_emergency->setIcon(QIcon(RESET_PATH));
         QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing()));
@@ -285,6 +323,65 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
     {
         int square = data.at(0);
         mark_square_found(square);
+
+        if (scenario_mode)
+        {
+            switch (num_scenario)
+            {
+            case 1 :
+                if (data.at(0) == 0x1)
+                    send_G_B_2();
+                else if (data.at(0) == 0x5)
+                    send_G_C_3();
+                else if (data.at(0) == 0x9)
+                    send_G_C_2();
+                else if (data.at(0) == 0x6)
+                    send_G_A_2();
+                else if (data.at(0) == 0x4)
+                    send_G_A_3();
+                else if (data.at(0) == 0x7)
+                    send_G_C_1();
+                else if (data.at(0) == 0x3)
+                    send_G_B_1();
+                else if (data.at(0) == 0x2)
+                    send_G_B_3();
+                else if (data.at(0) == 0x8)
+                    end_scenario(num_scenario) ;
+                break ;
+
+            case 2 :
+                if (data.at(0) == 0x2)
+                    send_G_A_3();
+                else if (data.at(0) == 0x7)
+                    send_G_C_2();
+                else if (data.at(0) == 0x6)
+                    send_G_B_2();
+                else if (data.at(0) == 0x5)
+                    send_G_C_1();
+                else if (data.at(0) == 0x3)
+                    send_G_C_3();
+                else if (data.at(0) == 0x9)
+                    send_G_A_1();
+                else if (data.at(0) == 0x1)
+                    end_scenario(num_scenario);
+                break ;
+
+            case 3 :
+                QThread::sleep(2);
+                if (data.at(0) == 1)
+                    send_G_B_1();
+                if (data.at(0) == 2)
+                    send_G_A_2();
+                if (data.at(0) == 4)
+                    send_G_B_2();
+                if (data.at(0) == 5)
+                    end_scenario(num_scenario);
+                break ;
+            }
+
+
+
+        }
 
     }
     else if (mnemo == 'A')
@@ -595,12 +692,38 @@ void MainWindow::send_date()
  * *******************************/
 
 
+
+
+void MainWindow::end_scenario(int scenario)
+{
+    bool ok = false ;
+    switch (scenario)
+    {
+    case 1 :
+        ok = QMessageBox::critical(this, "No winner...", "No one won this game, try again another time !");
+        num_scenario = 2 ;
+        break ;
+    case 2 :
+        ui->button_A_1->setStyleSheet("background-color: green;");
+        ui->button_B_1->setStyleSheet("background-color: green;");
+        ui->button_C_1->setStyleSheet("background-color: green;");
+
+        ok = QMessageBox::information(this, "We have a winner !", "Congratulation to the circles' handler !");
+        num_scenario = 1 ;
+        break ;
+    case 3 :
+        ok = QMessageBox::critical(this, "No winner...", "No one won this game, try again another time !");
+        break ;
+    }
+}
+
 /** ******************
  * START MISSION
  * ******************/
 void MainWindow::allow_start_mission()
 {
     ui->button_start->setEnabled(true);
+    //ui->scenario_pushButton->setEnabled(true);
 }
 
 void MainWindow::forbid_start_mission()
@@ -734,6 +857,7 @@ void MainWindow::display_no_communication()
 
 void MainWindow::mark_square_found(int square)
 {
+    state_of_mission = mission_init ;
     QString path_to_marking_image ;
     if (joueur == 0)
     {
@@ -839,6 +963,15 @@ void MainWindow::set_icons_playground_without_communication()
     ui->button_B_1->setStyleSheet("background-color: grey;");
     ui->button_C_2->setStyleSheet("background-color: grey;");
 
+    ui->button_A_1->setIcon(QIcon());
+    ui->button_B_2->setIcon(QIcon());
+    ui->button_C_3->setIcon(QIcon());
+    ui->button_A_2->setIcon(QIcon());
+    ui->button_B_3->setIcon(QIcon());
+    ui->button_C_1->setIcon(QIcon());
+    ui->button_A_3->setIcon(QIcon());
+    ui->button_B_1->setIcon(QIcon());
+    ui->button_C_2->setIcon(QIcon());
 
 }
 

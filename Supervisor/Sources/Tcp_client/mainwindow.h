@@ -8,6 +8,8 @@
 #include <QTime>
 #include <QDate>
 #include "unixTime.h"
+#include <QMessageBox>
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +26,8 @@ public:
 
 
 public slots:
+
+    void begin_scenario() ;
     void open_connexion();
 
     void mark_connexion() ;
@@ -68,6 +72,10 @@ signals :
     void change_psi_value(QString new_value);
 
 private:
+
+    void end_scenario(int scenario) ;
+
+
 
     /** Allow the user to ask for the drone to look for a tag.
      * Only available if the mission is started (if the drone has taken off)
@@ -137,6 +145,9 @@ private:
     int battery_level ;
     state_of_flight flight_state ;
     int emergency_status;
+
+    int num_scenario ;
+    bool scenario_mode ;
 };
 
 #endif // MAINWINDOW_H
