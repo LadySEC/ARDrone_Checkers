@@ -24,7 +24,7 @@
 /* Sockets */
 #define SPVSR_CLIENT_PORT	4000u
 /* Temporisations */
-#define INTERACT_TEMPO		(unsigned int)1000000
+#define INTERACT_TEMPO		(unsigned int)1500000
 #define	RECV_BUFF_SIZE		512u
 
 /**********************************************************************************/

@@ -31,17 +31,17 @@
 
 /* Debug */
 //#define DEBUG_NAVDATA
-//#define DEBUG_MISSION
+#define DEBUG_MISSION
 //#define PRINT_UDP_DATA_SENT
 //#define PRINT_UDP_DATA_RECEIVED
-#define PRINT_TCP_DATA_RECEIVED
-#define PRINT_TCP_DATA_SENT
+//#define PRINT_TCP_DATA_RECEIVED
+//#define PRINT_TCP_DATA_SENT
 
 /**********************************************************************************/
 /* Constants						      			                              */
 /**********************************************************************************/
 
-#define POS_TOLERANCE	120
+#define POS_TOLERANCE	130
 #define POS_MAX			360
 
 /**********************************************************************************/

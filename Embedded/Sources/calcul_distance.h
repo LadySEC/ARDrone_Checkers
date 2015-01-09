@@ -1,28 +1,26 @@
 
 /**
- * \file 	calcul_order.c
- * \brief 	Make the calculation for the next drone orders
+ * \file 	calcul_distance.c
+ * \brief 	Make the calculation for the drone distance
  * \author 	Lady team
  * \version 1.0
- * \date 	23 november 2014
+ * \date 	25 decembre 2014
  *
  */
 
-#ifndef _CALCUL_ORDER_H_
-#define _CALCUL_ORDER_H_
+#ifndef _CALCUL_DISTANCE_H_
+#define _CALCUL_DISTANCE_H_
 
 /**********************************************************************************/
 /* Libraries	                        			      		  */
 /**********************************************************************************/
 #include "global.h"
-#include "communication.h"
 #include "at_command.h"
-#include "supervisor.h"
+#include "detect_tag.h"
 /**********************************************************************************/
 /* Constants						      			  */
 /**********************************************************************************/
-/* Temporisations */
-#define _CALCUL_PERIOD          (unsigned int)1400000
+
 /**********************************************************************************/
 /* Types					      				  */
 /**********************************************************************************/
@@ -30,13 +28,12 @@
 /**********************************************************************************/
 /* Prototypes				        	      			  */
 /**********************************************************************************/
-void 	posTag_ATcommand	(int x,int y);
-void 	process_end_mission	(int value_statemission);
+
+T_Position drone_pos(int RAZ,int Period);
+int float2int(float, float);
 
 /**********************************************************************************/
 /* Threads						     		  	  */
 /**********************************************************************************/
-void* 	calcul_order_thread	(void* arg);
-int	get_stateMission	(void);
 
-#endif //! _SUPERVISOR_H_
+#endif //! _CALCUL_DISTANCE_H_
