@@ -49,6 +49,8 @@
 #define MOVE_TEMPO_INIT			800000.0f
 #define ANGLE_DEFAULT_INC		0.02f	
 #define TEMPO_DEFAUL_INC		50000.0f
+/* Other */
+#define LOW_BATTERY_LEVEL		15u
 
 /**********************************************************************************/
 /* Types													      				  */

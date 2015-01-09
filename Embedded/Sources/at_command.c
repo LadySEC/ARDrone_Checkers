@@ -592,7 +592,11 @@ T_bool ATcommand_enoughBattery(void)
 {
     T_bool enough;
 
+<<<<<<< HEAD
     if(G_navdata.vbat_flying_percentage > 15u)
+=======
+    if(G_navdata.vbat_flying_percentage > LOW_BATTERY_LEVEL)
+>>>>>>> ee50abc19c315f154bf6a81363abfcb88c36c392
     {
         enough = TRUE;
     }
