@@ -9,29 +9,29 @@
 #define IMG_HEIGHT		720
 
 // Valeurs seuils de détection des couleurs
-#define C_R_MIN_R 90
+#define C_R_MIN_R 130
 #define C_R_MIN_G 0
 #define C_R_MIN_B 0
 #define C_R_MAX_R 255
-#define C_R_MAX_G 60
-#define C_R_MAX_B 60
+#define C_R_MAX_G 70	
+#define C_R_MAX_B 80
 
 #define C_G_MIN_R 0
-#define C_G_MIN_G 100
+#define C_G_MIN_G 105
 #define C_G_MIN_B 0
-#define C_G_MAX_R 60
+#define C_G_MAX_R 160
 #define C_G_MAX_G 255
-#define C_G_MAX_B 70
+#define C_G_MAX_B 90
 
 #define C_B_MIN_R 0
 #define C_B_MIN_G 0
-#define C_B_MIN_B 90
-#define C_B_MAX_R 70
-#define C_B_MAX_G 70
+#define C_B_MIN_B 80
+#define C_B_MAX_R 80
+#define C_B_MAX_G 180
 #define C_B_MAX_B 255
 
 // Paramétrages supplémentaires de la détection des couleurs
-#define C_MIN_PIXELS		10
+#define C_MIN_PIXELS		6
 #define C_DOWNSCALING_STEP	5
 #define C_WINDOW_LEFT		280
 #define C_WINDOW_RIGHT		280

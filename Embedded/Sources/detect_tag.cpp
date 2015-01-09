@@ -236,7 +236,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 		squarePos = getSquarePosition(I_currentSquare, I_destSquare);
 	}
 	
-	LOG_WriteLevel(LOG_INFO, (char*)"detect_tag : squarePos : X : %d  -  Y : %d", squarePos.abs, squarePos.ord);
+	LOG_WriteLevel(LOG_INFO, (char*)"detect_tag : squarePos : X : %d  -  Y : %d   -   FOUND = %d", squarePos.abs, squarePos.ord, squarePos.bIsFound);
 
 	freeImage(img);
 	nextImage();

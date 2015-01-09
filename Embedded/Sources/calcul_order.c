@@ -19,7 +19,7 @@
 /*** it represents the size between the camera position on the drone and it takeoff base */
 int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = (_CALCUL_PERIOD);
+int const I_offset_time = (_CALCUL_PERIOD)/3;
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -33,8 +33,8 @@ int 		cpt_mission 	= 0;
 
 /*** Informed the mission's status 						*/
 /*	0 : The drone did not finshed the mission asked by the supervisor 	*/
-/*	2 : The drone tookoff and it  is going to stabilised over the base	*/
-/*	1 : The drone fished the mission asked by he supervisor 		*/
+/*	1 : The drone tookoff and it is going to stabilised over the base	*/
+/*	2 : The drone fished the mission asked by he supervisor 		*/
 int statemission = 0;
 
 /**********************************************************************************/
@@ -58,6 +58,7 @@ void* calcul_order_thread(void* arg)
 {
 	int			num_square	= 0;
 	T_Position 	pos_tag;
+	float 		angle;
 
     	/* Make this thread periodic */
     	struct periodic_info info;
@@ -74,9 +75,11 @@ void* calcul_order_thread(void* arg)
 			if(cpt_mission == 0)
 			{
 				statemission = 1;
+				round_mission = 0;
+				LOG_WriteLevel(LOG_INFO, "calcul_order : BEGIN MISSION");
+
 				printf("----- MISSION - Begin the mission\n\r");
 				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
-				
 			}
 			else
 			{
@@ -88,23 +91,49 @@ void* calcul_order_thread(void* arg)
 						{
 							case 0 :
 								process_end_mission(0);
+								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: case 0 ERROR");
+
 							break;
 	
 							case 1 :
 								/* stabilisation over the BASE */
+								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 1, STABILISATION");
+								angle = getDynamicParameter(PITCH_ANGLE);
+								if(angle >= 0.08){
+									incDynamicParameter(PITCH_ANGLE,-0.02);
+								}
+								angle = getDynamicParameter(ROLL_ANGLE);
+								if (angle >= 0.1){
+									incDynamicParameter(ROLL_ANGLE,-0.02);
+								}
+								
 								printf("----- MISSION - stabilisation\n\r");
 								pos_tag = W_getPosition(5, 5);
-								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
+								if(pos_tag.bIsFound == 1)
+								{
+									posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
+								}
 							break;
 
 							case 2 :
 								/* Base -> Case */
+								if(angle < 0.08){
+									incDynamicParameter(PITCH_ANGLE,0.02);
+								}
+								angle = getDynamicParameter(ROLL_ANGLE);
+								if (angle < 0.1){
+									incDynamicParameter(ROLL_ANGLE,0.02);
+								}
+								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 2, VERS LA CASE round = 0");
+
 								pos_tag = W_getPosition(5,num_square);
 								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 							break;
 	
 							default :
 								printf("----- MISSION - error state mission\n\r");
+								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: DEFAULT ERROR");
+
 								process_end_mission(0);
 							break;
 						}
@@ -113,7 +142,11 @@ void* calcul_order_thread(void* arg)
 					{
 						/* Case -> Base */
 						pos_tag = W_getPosition(num_square, 5);
-						posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
+
+								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
+		
+						LOG_WriteLevel(LOG_INFO, "calcul_order :thread: VERS LA BASE (round = 1)");
+	
 					}
 
 					printf("----- MISSION - x = %d, y = %d\n\r",pos_tag.abs,pos_tag.ord);
@@ -156,28 +189,33 @@ void posTag_ATcommand(int x,int y)
 				switch (statemission)
 				{
 					case 0 :
+						LOG_WriteLevel(LOG_INFO, "calcul_order : posTag_ATcommand : error statemission 0 END MISSION");
 						process_end_mission(0);
 					break;
 
 					case 1 :
+						// On est stable, on part en mission
 						statemission  = 2;
 						round_mission = 0; 
 					break;
 
 					case 2 :
-						process_end_mission(0);
+						//process_end_mission(0);
 						//statemission  = 2;
-						//round_mission = 1;
+						round_mission = 1;
 					break;
 
 					default :
 						printf("----- MISSION - error state mission\n\r");
+						LOG_WriteLevel(LOG_INFO, "calcul_order : posTag_ATcommand : error default END MISSION");
 						process_end_mission(0);
+					
 					break;
 				}
 			}
 			else 			//Case -> Base
 			{
+				LOG_WriteLevel(LOG_INFO, "calcul_order : posTag_ATcommand : round 1, END MISSION");			
 				process_end_mission(0); 
 			}
 		}
@@ -241,14 +279,16 @@ int get_stateMission(void)
 
 void process_end_mission(int value_statemission)
 {
-	ATcommand_process(LANDING);
+	/*ATcommand_process(LANDING);
 	printf("              - LANDING\n\r");
 	LOG_WriteLevel(LOG_INFO, "calcul_order : Square found -> landing");
-	while(ATcommand_FlyingState() != FALSE);
+	while(ATcommand_FlyingState() != FALSE);*/
+	
+	LOG_WriteLevel(LOG_INFO, "calcul_order : G_triggered_mission = FALSE");
 
-	/* Reset the mode mission ('M') for the keyboard.c */
+	/* Reset the mode mission ('M') for the keyboard.c (G_triggered_mission = FALSE )*/
 	stop_mission();
-
+	
 	/* The second round of this mission is finished */
 	round_mission = 0;
 

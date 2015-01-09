@@ -42,9 +42,9 @@
 #define NAV_SERVER_PORT		5554u 													/*!< UDP server port for reading navdata */
 /* Dynamic parameters */
 #define NB_DYNAMIC_PARAMETERS	5u
-#define YAW_ANGLE_INIT			0.015f
-#define PITCH_ANGLE_INIT		0.015f
-#define ROLL_ANGLE_INIT			0.015f
+#define YAW_ANGLE_INIT			0.06f
+#define PITCH_ANGLE_INIT		0.08f
+#define ROLL_ANGLE_INIT			0.1f
 #define VERTICAL_THRUST_INIT	0.05f
 #define MOVE_TEMPO_INIT			800000.0f
 #define ANGLE_DEFAULT_INC		0.02f	
