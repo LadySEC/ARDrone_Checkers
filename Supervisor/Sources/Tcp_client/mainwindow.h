@@ -10,6 +10,7 @@
 #include "unixTime.h"
 #include <QMessageBox>
 #include <QThread>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +28,7 @@ public:
 
 public slots:
 
+    void next_move() ;
     void begin_scenario() ;
     void open_connexion();
 
@@ -148,6 +150,9 @@ private:
 
     int num_scenario ;
     bool scenario_mode ;
+
+    QTimer * timer ;
+    int next_square ;
 };
 
 #endif // MAINWINDOW_H

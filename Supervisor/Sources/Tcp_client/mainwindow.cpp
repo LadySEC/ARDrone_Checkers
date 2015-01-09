@@ -14,6 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    timer = new QTimer();
+    connect(timer,SIGNAL(timeout()), this, SLOT(next_move()));
+    timer->setInterval(2000);
+    timer->setSingleShot(true);
+
+
+
+
     ui->setupUi(this);
 
     this->setWindowIcon(QIcon(DRONE_IMAGE_PATH));
@@ -367,15 +376,10 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
                 break ;
 
             case 3 :
-                QThread::sleep(2);
-                if (data.at(0) == 1)
-                    send_G_B_1();
-                if (data.at(0) == 2)
-                    send_G_A_2();
-                if (data.at(0) == 4)
-                    send_G_B_2();
-                if (data.at(0) == 5)
-                    end_scenario(num_scenario);
+                next_square = data.at(0) ;
+                timer->start() ;
+                //QThread::sleep(2);
+
                 break ;
             }
 
@@ -420,6 +424,17 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
 }
 
 
+void MainWindow::next_move()
+{
+    if (next_square == 1)
+        send_G_B_1();
+    if (next_square == 2)
+        send_G_A_2();
+    if (next_square == 4)
+        send_G_B_2();
+    if (next_square == 5)
+        end_scenario(num_scenario);
+}
 
 /** ORDERS SENT TO THE DRONE */
 
