@@ -60,12 +60,6 @@ static T_bufferState 		consumeBuffer(void);
 /**********************************************************************************/
 /* Procedures														     		  */
 /**********************************************************************************/
-/**
- * \fn 		T_error ATcommand_initiate(void)
- * \brief 	Allows the client to communicate with the Parrot server
- *
- * \return 	ERROR: Something went wrong during the process, NO_ERROR: Success
- */
 T_error ATcommand_initiate(void)
 {
     /* Declarations */
@@ -141,10 +135,6 @@ T_error ATcommand_initiate(void)
     return(error);
 }
 
-/**
- * \fn 		void ATcommand_close(void)
- * \brief 	Closes all communications
- */
 void ATcommand_close(void)
 {
     socket_close(G_comm_AT->client);
@@ -158,13 +148,18 @@ void ATcommand_close(void)
 }
 
 /**
- * \fn 		void ATcommand_generate(char* O_frame, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
- * \brief 	Generates an 8-bit ASCII string from a given command and its arguments
+ * \fn      void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
+ * \brief   Generates an 8-bit ASCII string from a given command and its arguments
  *
- * \param 	O_frame		Output string
- * \param 	I_command	Requested command
- * \param 	I_array		32-bit arguments array
- * \param 	I_strings	String arguments array
+ * \param   O_frame     Output string
+ * \param   I_frameSize Size of the frame
+ * \param   I_command   Requested command to be processed
+ * \param   I_array     32-bit arguments array
+ * \param   I_strings   String arguments array
+ *
+ *  Tasks:
+ *      - Process a given command
+ *      - Generate the corresponding string
  */
 void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
@@ -220,12 +215,6 @@ void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, 
     pthread_mutex_unlock(&G_mutex_seqNum);
 }
 
-/**
- * \fn 		void ATcommand_process(T_ATorders I_order)
- * \brief 	Processes high-level orders 
- *
- * \param 	I_order		Choosen order 
- */
 void ATcommand_process(T_ATorders I_order)
 {
     char 			frame[NB_MAX_BYTES_COMMAND];
@@ -540,11 +529,7 @@ void ATcommand_process(T_ATorders I_order)
     }
 }
 
-/**
- * \fn 		void ATcommand_moveDelay(T_ATorders I_order, int I_us)
- * \brief 	Fills the buffer with the same order corresponding to a given time
- *
- */
+
 void ATcommand_moveDelay(T_ATorders I_order, int I_us)
 {
     unsigned int counter;
@@ -559,12 +544,6 @@ void ATcommand_moveDelay(T_ATorders I_order, int I_us)
 /**********************************************************************************/
 /* Getters														     		  	  */
 /**********************************************************************************/
-/**
- * \fn 		T_bool ATcommand_FlyingState(void)
- * \brief 	Informs if the drone is flying or not
- *
- * \return 	TRUE: The drone is flying, FALSE: the drone is on the ground
- */
 T_bool ATcommand_FlyingState(void)
 {
     T_bool flying;
@@ -581,22 +560,11 @@ T_bool ATcommand_FlyingState(void)
     return(flying);
 }
 
-
-/**
- * \fn 		T_bool ATcommand_enoughBattery(void)
- * \brief 	Informs if there is enough battery level to takeoff
- *
- * \return 	TRUE: There is enough power, FALSE: Not enough battery level
- */
 T_bool ATcommand_enoughBattery(void)
 {
     T_bool enough;
 
-<<<<<<< HEAD
-    if(G_navdata.vbat_flying_percentage > 15u)
-=======
     if(G_navdata.vbat_flying_percentage > LOW_BATTERY_LEVEL)
->>>>>>> ee50abc19c315f154bf6a81363abfcb88c36c392
     {
         enough = TRUE;
     }
@@ -608,12 +576,6 @@ T_bool ATcommand_enoughBattery(void)
     return(enough);
 }
 
-/**
- * \fn 		T_bool ATcommand_navdataError(void)
- * \brief 	Informs if there the watchdog expired
- *
- * \return 	TRUE: Watchdog expired, FALSE: Ok
- */
 T_bool ATcommand_navdataError(void)
 {
     T_bool error;
@@ -630,12 +592,6 @@ T_bool ATcommand_navdataError(void)
     return(error);
 }
 
-/**
- * \fn 		T_navdata_demo* ATcommand_navdata(void)
- * \brief 	Returns the current navdata
- *
- * \Return 	Navdata
- */
 T_navdata_demo* ATcommand_navdata(void)
 {
     return(&G_navdata);
@@ -655,16 +611,6 @@ void incDynamicParameter(T_angle_param I_param, float I_incrementation)
 /**********************************************************************************/
 /* Threads														     		  	  */
 /**********************************************************************************/
-/**
- * \fn 		void* ATcommand_thread_movements(void* arg)
- * \brief 	Thread which manages the drone movements and updates navdata
- *
- * \param 	arg 	Input argument 
- * \return  		Nothing
- * 
- * This periodic thread either reads the buffer content or send an hovering command by default
- * It also checks if a new navdata appeared and reset the watchdog
- */
 void* ATcommand_thread_movements(void* arg)
 {
     /* Make this thread periodic */
