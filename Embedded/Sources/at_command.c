@@ -3,7 +3,7 @@
  * \brief 	Manages all AT commands compatible with the AR-Drone firmware
  * \author 	Lady team
  * \version 1.0
- * \date 	4 December 2014
+ * \date    9 January 2015
  *
  */
 /**********************************************************************************/
@@ -46,16 +46,134 @@ static T_navdata_demo  	G_navdata;
 float                   G_dynamic_parameters[NB_DYNAMIC_PARAMETERS] = {PITCH_ANGLE_INIT, ROLL_ANGLE_INIT, YAW_ANGLE_INIT, VERTICAL_THRUST_INIT, MOVE_TEMPO_INIT};
 
 /**********************************************************************************/
-/* Prototypes														     		  */
+/* Static functions prototypes													  */
 /**********************************************************************************/
-/* Getters */
-T_bool 						ATcommand_FlyingState(void);
-T_bool 						ATcommand_enoughBattery(void);
-/* Static functions */
-static struct T_packet* 	createPacket(T_ATorders order, char* command);
-static void 				deletePacket(struct T_packet* packet);
-static void 				emitPacket(struct T_packet* packet);
-static T_bufferState 		consumeBuffer(void);
+/**
+ * \fn      void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
+ * \brief   Generates an 8-bit ASCII string from a given command and its arguments
+ *
+ * \param   O_frame     Output string
+ * \param   I_frameSize Size of the frame
+ * \param   I_command   Requested command to be processed
+ * \param   I_array     32-bit arguments array
+ * \param   I_strings   String arguments array
+ *
+ *  Tasks:
+ *      - Process a given command
+ *      - Generate the corresponding string
+ */
+static void                 ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR]);
+
+/**
+ * \fn      static struct T_packet* createPacket(T_ATorders I_order, char* command)
+ * \brief   Creates a packet to be buffered
+ *
+ * \param   I_order     Choosen order
+ * \param   I_command   Assciated command
+ *
+ * \return  A pointer to the created packet
+ *
+ *  Tasks:
+ *      - Allocates a new packet
+ *      - Initialises all attributes
+ */
+static struct T_packet*     createPacket(T_ATorders I_order, char* I_command);
+
+/**
+ * \fn      static void deletePacket(struct T_packet* O_packet)
+ * \brief   Deletes a packet
+ *
+ * \param   O_packet    Packet to be deleted
+ */
+static void                 deletePacket(struct T_packet* O_packet);
+
+/**
+ * \fn      static void emitPacket(struct T_packet* IO_packet)
+ * \brief   Fill the buffer with a given packet
+ *
+ * \param   IO_packet   Packet to be buffered
+ */
+static void                 emitPacket(struct T_packet* IO_packet);
+
+/**
+ * \fn      static T_bufferState consumeBuffer(void)
+ * \brief   Manages the FIFO buffer
+ *
+ * \return  BUFFER_EMPTY: All packets are sent, BUFFER_FULL: There is at least one packet to be sent
+ *
+ *  Tasks:
+ *      - Send a command from the first packet
+ *      - Delete the current packet and update the buffer state
+ *      - Or send an hovering command to the Parrot server if the FIFO buffer is empty
+ */
+static T_bufferState        consumeBuffer(void);
+
+/**********************************************************************************/
+/* Getters                                                                        */
+/**********************************************************************************/
+T_bool ATcommand_FlyingState(void)
+{
+    T_bool flying;
+
+    if((G_navdata.ardrone_state & 0x1u) == 0u)
+    {
+        flying = FALSE;
+    }
+    else
+    {
+        flying = TRUE;
+    }
+
+    return(flying);
+}
+
+T_bool ATcommand_enoughBattery(void)
+{
+    T_bool enough;
+
+    if(G_navdata.vbat_flying_percentage > LOW_BATTERY_LEVEL)
+    {
+        enough = TRUE;
+    }
+    else
+    {
+        enough = FALSE;
+    }
+
+    return(enough);
+}
+
+T_bool ATcommand_navdataError(void)
+{
+    T_bool error;
+
+    if(((G_navdata.ardrone_state >> 30u) & 0x1u) == 0u)
+    {
+        error = FALSE;
+    }
+    else
+    {
+        error = TRUE;
+    }
+
+    return(error);
+}
+
+T_navdata_demo* ATcommand_navdata(void)
+{
+    return(&G_navdata);
+}
+
+float getDynamicParameter(T_angle_param I_param)
+{
+    return(G_dynamic_parameters[I_param]);
+}
+
+void incDynamicParameter(T_angle_param I_param, float I_incrementation)
+{
+    G_dynamic_parameters[I_param] += I_incrementation;
+    LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
+}
 
 /**********************************************************************************/
 /* Procedures														     		  */
@@ -145,74 +263,6 @@ void ATcommand_close(void)
     free(G_comm_NAV);
 
     LOG_WriteLevel(LOG_INFO, "at_command : communication closed");
-}
-
-/**
- * \fn      void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
- * \brief   Generates an 8-bit ASCII string from a given command and its arguments
- *
- * \param   O_frame     Output string
- * \param   I_frameSize Size of the frame
- * \param   I_command   Requested command to be processed
- * \param   I_array     32-bit arguments array
- * \param   I_strings   String arguments array
- *
- *  Tasks:
- *      - Process a given command
- *      - Generate the corresponding string
- */
-void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
-{
-    /* Reset the frame */
-    memset((char *) O_frame, 0, I_frameSize);
-    /* Generate correct AT command */
-    switch(I_command)
-    {
-        case REF:
-            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
-            break;
-
-        case PCMD:
-            sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
-                    I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer);
-            break;
-
-        case PCMD_MAG:
-            sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
-                    I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer, I_array[5u].integer, I_array[6u].integer);
-            break;
-
-        case FTRIM:
-            sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
-            break;
-
-        case CONFIG:
-            sprintf(O_frame,"%s=%d,\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
-                    I_strings[0u], I_strings[1u]);
-            break;
-
-        case CONFIG_IDS:
-            sprintf(O_frame,"%s=%d,\"%s\",\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
-                    I_strings[0u], I_strings[1u], I_strings[2u]);
-            break;	
-
-        case COMWDG:
-            sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
-            break;
-
-        case CALIB:
-            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
-            break;		
-
-        case CTRL:
-            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
-            break;	
-    }
-
-    /* Update sequence number */
-    pthread_mutex_lock(&G_mutex_seqNum);
-    G_sequenceNumber++;
-    pthread_mutex_unlock(&G_mutex_seqNum);
 }
 
 void ATcommand_process(T_ATorders I_order)
@@ -529,7 +579,6 @@ void ATcommand_process(T_ATorders I_order)
     }
 }
 
-
 void ATcommand_moveDelay(T_ATorders I_order, int I_us)
 {
     unsigned int counter;
@@ -542,70 +591,147 @@ void ATcommand_moveDelay(T_ATorders I_order, int I_us)
 }
 
 /**********************************************************************************/
-/* Getters														     		  	  */
+/* Static functions                                                               */
 /**********************************************************************************/
-T_bool ATcommand_FlyingState(void)
+static void ATcommand_generate(char* O_frame, int I_frameSize, T_ATcommands I_command, T_word32bits* I_array, char I_strings[NB_MAX_STRING_ARG][NB_MAX_CHAR])
 {
-    T_bool flying;
-
-    if((G_navdata.ardrone_state & 0x1u) == 0u)
+    /* Reset the frame */
+    memset((char *) O_frame, 0, I_frameSize);
+    /* Generate correct AT command */
+    switch(I_command)
     {
-        flying = FALSE;
+        case REF:
+            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
+            break;
+
+        case PCMD:
+            sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
+                    I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer);
+            break;
+
+        case PCMD_MAG:
+            sprintf(O_frame,"%s=%d,%d,%d,%d,%d,%d,%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, 
+                    I_array[0u].integer, I_array[1u].integer, I_array[2u].integer, I_array[3u].integer, I_array[4u].integer, I_array[5u].integer, I_array[6u].integer);
+            break;
+
+        case FTRIM:
+            sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
+            break;
+
+        case CONFIG:
+            sprintf(O_frame,"%s=%d,\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
+                    I_strings[0u], I_strings[1u]);
+            break;
+
+        case CONFIG_IDS:
+            sprintf(O_frame,"%s=%d,\"%s\",\"%s\",\"%s\"\r",C_COMMANDS[I_command], G_sequenceNumber,
+                    I_strings[0u], I_strings[1u], I_strings[2u]);
+            break;  
+
+        case COMWDG:
+            sprintf(O_frame,"%s=%d\r",C_COMMANDS[I_command], G_sequenceNumber);
+            break;
+
+        case CALIB:
+            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
+            break;      
+
+        case CTRL:
+            sprintf(O_frame,"%s=%d,%d\r",C_COMMANDS[I_command], G_sequenceNumber, I_array[0u].integer);
+            break;  
+    }
+
+    /* Update sequence number */
+    pthread_mutex_lock(&G_mutex_seqNum);
+    G_sequenceNumber++;
+    pthread_mutex_unlock(&G_mutex_seqNum);
+}
+
+static struct T_packet* createPacket(T_ATorders I_order, char* I_command)
+{
+    /* Allocation memoire */
+    struct T_packet* packet = (struct T_packet*)malloc(sizeof(struct T_packet));
+
+    /* Initialisation du paquet */
+    packet->order               = I_order;
+    packet->data                = (char*)malloc((sizeof(char)*strlen(I_command)) + 1u);
+    strcpy(packet->data, I_command);
+    packet->next                = NULL;
+    packet->previous            = NULL;
+
+    return(packet);
+}
+
+static void deletePacket(struct T_packet* O_packet)
+{
+    free(O_packet->data);
+    free(O_packet);
+}
+
+static void emitPacket(struct T_packet* IO_packet)
+{
+    if(G_packetBuffer.first == NULL)
+    {
+        G_packetBuffer.first        = IO_packet;
     }
     else
     {
-        flying = TRUE;
+        G_packetBuffer.last->next   = IO_packet;
+        IO_packet->previous         = G_packetBuffer.last;
     }
 
-    return(flying);
+    G_packetBuffer.last = IO_packet;
+    G_packetBuffer.nb_packets++;            
 }
 
-T_bool ATcommand_enoughBattery(void)
+static T_bufferState consumeBuffer(void)
 {
-    T_bool enough;
+    struct T_packet*    tmp_packet;
+    T_bufferState       state;
 
-    if(G_navdata.vbat_flying_percentage > LOW_BATTERY_LEVEL)
+    /* Test if the buffer is empty */
+    if(G_packetBuffer.first == NULL)
     {
-        enough = TRUE;
+        /* Send an hovering command */
+        if(ATcommand_FlyingState() == TRUE)
+        {
+            ATcommand_process(HOVERING);
+        }
+
+        /* Update the state */
+        state = BUFFER_EMPTY;
     }
     else
     {
-        enough = FALSE;
+        /* Read the packet */
+        /* Send the command through the local host */
+#ifdef PRINT_UDP_DATA_SENT
+        LOG_WriteLevel(LOG_DEBUG, "at_command : %s command requested (%d remaining packets)", 
+                        C_ORDERS[G_packetBuffer.first->order],
+                        G_packetBuffer.nb_packets - 1u);
+#endif
+
+        socket_sendString(G_comm_AT->protocol, G_comm_AT->client->id, &G_comm_AT->server->parameters, G_packetBuffer.first->data);
+
+        /* Update the buffer */
+        tmp_packet = G_packetBuffer.first;
+        G_packetBuffer.first = tmp_packet->next;
+        deletePacket(tmp_packet);
+
+        if(G_packetBuffer.first != NULL)
+        {
+            G_packetBuffer.first->previous  = NULL;
+            state                           = BUFFER_EMPTY;
+        }
+        else
+        {
+            state                           = BUFFER_FULL;
+        }
+
+        G_packetBuffer.nb_packets--;
     }
 
-    return(enough);
-}
-
-T_bool ATcommand_navdataError(void)
-{
-    T_bool error;
-
-    if(((G_navdata.ardrone_state >> 30u) & 0x1u) == 0u)
-    {
-        error = FALSE;
-    }
-    else
-    {
-        error = TRUE;
-    }
-
-    return(error);
-}
-
-T_navdata_demo* ATcommand_navdata(void)
-{
-    return(&G_navdata);
-}
-
-float getDynamicParameter(T_angle_param I_param)
-{
-    return(G_dynamic_parameters[I_param]);
-}
-
-void incDynamicParameter(T_angle_param I_param, float I_incrementation)
-{
-    G_dynamic_parameters[I_param] += I_incrementation;
-    LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
+    return(state);
 }
 
 /**********************************************************************************/
@@ -647,99 +773,3 @@ void* ATcommand_thread_movements(void* arg)
     /* Close this thread */
     pthread_exit(NULL);
 }
-
-/**********************************************************************************/
-/* Static procedures														      */
-/**********************************************************************************/
-/* Create a packet */
-static struct T_packet* createPacket(T_ATorders order, char* command)
-{
-    struct T_packet* packet = (struct T_packet*)malloc(sizeof(struct T_packet));	/* Allocation memoire */
-
-    /* Initialisation du paquet */
-    packet->order 				= order;
-    packet->data                = (char*)malloc((sizeof(char)*strlen(command)) + 1u);
-    strcpy(packet->data, command);
-    packet->next             	= NULL;
-    packet->previous            = NULL;
-
-    return(packet);
-}
-
-/* Delete a packet */
-static void deletePacket(struct T_packet* packet)
-{
-    free(packet->data);
-    free(packet);
-}
-
-/* Fill the buffer */
-static void emitPacket(struct T_packet* packet)
-{
-    if(G_packetBuffer.first == NULL)
-    {
-        G_packetBuffer.first 		= packet;
-    }
-    else
-    {
-        G_packetBuffer.last->next 	= packet;
-        packet->previous            = G_packetBuffer.last;
-    }
-
-    G_packetBuffer.last = packet;
-    G_packetBuffer.nb_packets++;			
-}
-
-/* Empty the buffer */
-static T_bufferState consumeBuffer(void)
-{
-    struct T_packet* 	tmp_packet;
-    T_bufferState		state;
-
-    /* Test if the buffer is empty */
-    if(G_packetBuffer.first == NULL)
-    {
-        /* Send an hovering command */
-        if(ATcommand_FlyingState() == TRUE)
-        {
-            ATcommand_process(HOVERING);
-        }
-
-        /* Update the state */
-        state 						= BUFFER_EMPTY;
-    }
-    else
-    {
-        /* Read the packet */
-        /* Send the command through the local host */
-#ifdef PRINT_UDP_DATA_SENT
-        LOG_WriteLevel(LOG_DEBUG, "at_command : %s command requested (%d remaining packets)", 
-                        C_ORDERS[G_packetBuffer.first->order],
-                        G_packetBuffer.nb_packets - 1u);
-#endif
-
-        socket_sendString(G_comm_AT->protocol, G_comm_AT->client->id, &G_comm_AT->server->parameters, G_packetBuffer.first->data);
-
-        /* Update the buffer */
-        tmp_packet = G_packetBuffer.first;
-        G_packetBuffer.first = tmp_packet->next;
-        deletePacket(tmp_packet);
-
-        if(G_packetBuffer.first != NULL)
-        {
-            G_packetBuffer.first->previous 	= NULL;
-            state 							= BUFFER_EMPTY;
-        }
-        else
-        {
-            state 							= BUFFER_FULL;
-        }
-
-        G_packetBuffer.nb_packets--;
-    }
-
-    return(state);
-}
-
-
-

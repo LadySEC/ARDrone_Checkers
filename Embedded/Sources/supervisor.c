@@ -12,10 +12,6 @@
 #include "supervisor.h"
 
 /**********************************************************************************/
-/* Constants 															  		  */
-/**********************************************************************************/
-
-/**********************************************************************************/
 /* Global variables 															  */
 /**********************************************************************************/
 /* Socket */
@@ -30,14 +26,17 @@ T_bool              G_comm_lost         = FALSE;
 T_bool              G_mission_started   = FALSE;
 
 /**********************************************************************************/
-/* Procedures														      		  */
+/* Static functions prototypes                                                    */
 /**********************************************************************************/
 /**
- * \fn 		T_error supervisor_initiate(void)
- * \brief 	Initializes the TCP communication between the client and the supervisor
- *
- * \return 	ERROR: Unable to establish a communication, NO_ERROR: Success
+ * \fn      void supervisor_sendData(T_TCP_DATA I_data)
+ * \brief   Shares requested data through the TCP communication
  */
+static void supervisor_sendData(T_TCP_DATA I_data);
+
+/**********************************************************************************/
+/* Procedures														      		  */
+/**********************************************************************************/
 T_error supervisor_initiate(void)
 {
     T_error error = NO_ERROR;
@@ -66,12 +65,6 @@ T_error supervisor_initiate(void)
     return(error);
 }
 
-/**
- * \fn 		void supervisor_close(void)
- * \brief 	Close the instantiated TCP socket
- *
- * \return 	ERROR: Unable to close the socket, NO_ERROR: Success
- */
 void supervisor_close(void)
 {
     socket_close(G_comm_SPVSR->client);
@@ -81,7 +74,10 @@ void supervisor_close(void)
     LOG_WriteLevel(LOG_INFO, "supervisor : communication closed");
 }
 
-void supervisor_sendData(T_TCP_DATA I_data)
+/**********************************************************************************/
+/* Static functions                                                               */
+/**********************************************************************************/
+static void supervisor_sendData(T_TCP_DATA I_data)
 {
     char    frame[15u];
     int     tmp;
@@ -145,18 +141,29 @@ void supervisor_sendData(T_TCP_DATA I_data)
 }
 
 /**********************************************************************************/
+/* Getters                                                                        */
+/**********************************************************************************/
+unsigned char getSquare(void)
+{
+    return(G_square);
+}
+
+T_bool supervisor_commLost(void)
+{
+    return(G_comm_lost);
+}
+
+/**********************************************************************************/
+/* Setters                                                                        */
+/**********************************************************************************/
+void supervisor_setDisconnection(T_bool value)
+{
+    G_disconnected = value;
+}
+
+/**********************************************************************************/
 /* Threads														      		      */
 /**********************************************************************************/
-/**
- * \fn 		void* supervisor_thread_interact(void* arg)
- * \brief 	Thread whih manages received orders
- *
- * \param 	arg 	Input argument 
- * \return  		Nothing
- *
- * This thread reads received packets from the supervisor
- * And then process them to control the drone 
- */
 void* supervisor_thread_interact(void* arg)
 {
     /* Make this thread periodic */
@@ -349,19 +356,4 @@ void* supervisor_thread_interact(void* arg)
     supervisor_close();
     /* Close this thread */
     pthread_exit(NULL);
-}
-
-unsigned char getSquare(void)
-{
-    return(G_square);
-}
-
-T_bool supervisor_commLost(void)
-{
-    return(G_comm_lost);
-}
-
-void supervisor_setDisconnection(T_bool value)
-{
-    G_disconnected = value;
 }

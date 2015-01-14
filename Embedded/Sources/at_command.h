@@ -21,25 +21,25 @@
 /* Constants													      			  */
 /**********************************************************************************/
 /* AT command configuration */
-#define NB_MAX_BYTES_COMMAND 264u								/*!< Maximum lenght of an AT command string */
-#define NB_MAX_UNION_ARG	8u									/*!< Maximum number of arguments to give progressive commands */
-#define NB_MAX_STRING_ARG	3u 									/*!< Maximum number of string arguments to configure the drone */
-#define NB_MAX_CHAR			30u									/*!< Maximum lenght of a string argument */
-#define NB_AT_COMMANDS		9u									/*!< Number of different AT commands */
-#define NB_MAX_COMMANDS		20u									/*!< Size of the commands buffer */
-#define NB_ORDERS			33u 								/*!< Number of high-level orders available */
+#define NB_MAX_BYTES_COMMAND 	264u							/*!< Maximum lenght of an AT command string */
+#define NB_MAX_UNION_ARG		8u								/*!< Maximum number of arguments to give progressive commands */
+#define NB_MAX_STRING_ARG		3u 								/*!< Maximum number of string arguments to configure the drone */
+#define NB_MAX_CHAR				30u								/*!< Maximum lenght of a string argument */
+#define NB_AT_COMMANDS			9u								/*!< Number of different AT commands */
+#define NB_MAX_COMMANDS			20u								/*!< Size of the commands buffer */
+#define NB_ORDERS				33u 							/*!< Number of high-level orders available */
 /* Temporisations */
-#define BUFFER_TEMPO		(unsigned int)30000					/*!< at_command thread temporisation in us */
-//#define DEFAULT_DELAY		(unsigned int)3*BUFFER_TEMPO
+#define BUFFER_TEMPO			(unsigned int)30000				/*!< at_command thread temporisation in us */
+#define DEFAULT_DELAY 		 	3*BUFFER_TEMPO					/*!< default delay for a basic move */
 /* REF command */
-#define TAKEOFF_COMMAND		290718208 							/*!< Argument for performing a takeoff */
-#define LANDING_COMMAND		290717696 							/*!< Argument for performing a landing */
-#define EMERGENCY_COMMAND 	290717952 							/*!< Argument for shutting-down all motors */
+#define TAKEOFF_COMMAND			290718208 						/*!< Argument for performing a takeoff */
+#define LANDING_COMMAND			290717696 						/*!< Argument for performing a landing */
+#define EMERGENCY_COMMAND 		290717952 						/*!< Argument for shutting-down all motors */
 /* Sockets */
-#define AT_CLIENT_PORT		15213u 								/*!< UDP client port for sending AT commands */
-#define AT_SERVER_PORT		5556u 								/*!< UDP server port */
-#define NAV_CLIENT_PORT		15214u 								/*!< UDP client port for starting navdata emission */
-#define NAV_SERVER_PORT		5554u 								/*!< UDP server port for reading navdata */
+#define AT_CLIENT_PORT			15213u 							/*!< UDP client port for sending AT commands */
+#define AT_SERVER_PORT			5556u 							/*!< UDP server port */
+#define NAV_CLIENT_PORT			15214u 							/*!< UDP client port for starting navdata emission */
+#define NAV_SERVER_PORT			5554u							/*!< UDP server port for reading navdata */
 /* Dynamic parameters */
 #define NB_DYNAMIC_PARAMETERS	5u 								/*!< Number of dynamic parameters */
 #define YAW_ANGLE_INIT			0.06f 							/*!< Initial value of the left/right yaw angle parameter */
@@ -284,7 +284,7 @@ T_navdata_demo* ATcommand_navdata(void);
 float 			getDynamicParameter(T_angle_param I_param);
 
 /**********************************************************************************/
-/* Getters														     		  	  */
+/* Setters														     		  	  */
 /**********************************************************************************/
 /**
  * \fn 		void incDynamicParameter(T_angle_param I_param, float I_incrementation);
