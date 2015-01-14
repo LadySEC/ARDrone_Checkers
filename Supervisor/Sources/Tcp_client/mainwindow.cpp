@@ -7,28 +7,20 @@
  * PUBLIC
  * *****************************/
 
-
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     timer = new QTimer();
-    connect(timer,SIGNAL(timeout()), this, SLOT(next_move()));
+    connect(timer,SIGNAL(timeout()), this, SLOT(slot_next_move()));
     timer->setInterval(2000);
     timer->setSingleShot(true);
-
-
-
 
     ui->setupUi(this);
 
     this->setWindowIcon(QIcon(DRONE_IMAGE_PATH));
     this->setIconSize(QSize(100,100));
     this->setWindowTitle("AR Drone Tic-Tac-Toe : The Game !");
-
     
     state_of_mission = mission_stopped ;
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
@@ -42,25 +34,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->button_start->setIconSize(QSize(70,70));
     ui->button_stop->setIcon(QIcon(STOP_PATH));
     ui->button_stop->setIconSize(QSize(70,70));
-
-    //ui->button_emergency_scenario->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
-    //ui->button_emergency_scenario->setIconSize(QSize(70,70));
     ui->scenario_pushButton->setIcon(QIcon(START_SCENARIO_PATH));
     ui->scenario_pushButton->setIconSize(QSize(70,70));
-    //ui->button_stop_scenario->setIcon(QIcon(STOP_SCENARIO_PATH));
-    //ui->button_stop_scenario->setIconSize(QSize(70,70));
 
-    /*
-    ui->label_Vertical_Speed->setVisible(false);
-    ui->label_Horizontal_Speed->setVisible(false);
-    ui->label_Value_Horizontal_Speed->setVisible(false);
-    ui->label_Value_Vertical_Speed->setVisible(false);
-    */
-
+    /* Initialize the displaying on the interface without communication */
     display_no_communication();
-
     set_icons_playground_without_communication();
 
+    /* Initialize the private attributes of the class */
     joueur = 0;
     num_scenario = 3 ;
     scenario_mode = false ;
@@ -73,84 +54,68 @@ MainWindow::~MainWindow()
 
 void MainWindow::link_connect()
 {
+    QObject::connect( &C, SIGNAL(sig_data_to_IHM(QChar/*,int*/,QByteArray)), this, SLOT(slot_update_values_IHM(QChar/*,int*/,QByteArray)));
 
-    QObject::connect(ui->scenario_pushButton, SIGNAL(clicked()), this, SLOT(begin_scenario()));
+    QObject::connect( this, SIGNAL(sig_change_battery_value(int)), ui->battery_progressBar, SLOT(setValue(int)));
+    QObject::connect(this, SIGNAL(sig_change_altitude_value(QString)), ui->label_Value_Altitude, SLOT(setText(QString)));
+    QObject::connect(this, SIGNAL(sig_change_horizon_speed_value(QString)), ui->label_Value_Horizontal_Speed, SLOT(setText(QString)));
+    QObject::connect(this, SIGNAL(sig_change_vertical_speed_value(QString)), ui->label_Value_Vertical_Speed, SLOT(setText(QString)));
+    QObject::connect(this, SIGNAL(sig_change_phi_value(QString)), ui->label_Value_Phi_Angle, SLOT(setText(QString)));
+    QObject::connect(this, SIGNAL(sig_change_psi_value(QString)), ui->label_Value_Psi_Angle, SLOT(setText(QString)));
+    QObject::connect(this, SIGNAL(sig_change_theta_value(QString)), ui->label_Value_Theta_Angle, SLOT(setText(QString)));
 
-    QObject::connect( &C, SIGNAL(data_to_IHM(QChar/*,int*/,QByteArray)), this, SLOT(update_values_IHM(QChar/*,int*/,QByteArray)));
+    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(slot_open_connexion()));
+    QObject::connect(ui->button_disconnect,SIGNAL(clicked()),this,SLOT(slot_send_exit()));
 
-    QObject::connect( this, SIGNAL(change_battery_value(int)), ui->battery_progressBar, SLOT(setValue(int)));
+    QObject::connect( &C, SIGNAL(sig_socket_connected()), this, SLOT(slot_mark_connexion()) ) ;
+    QObject::connect( &C, SIGNAL(sig_socket_disconnected()), this, SLOT(slot_unmark_connexion()) ) ;
 
-    QObject::connect(this, SIGNAL(change_altitude_value(QString)), ui->label_Value_Altitude, SLOT(setText(QString)));
+    QObject::connect(ui->button_start, SIGNAL(clicked()), this, SLOT(slot_takeoff()));
+    QObject::connect(ui->button_stop, SIGNAL(clicked()), this, SLOT(slot_land()));
+    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_emergency_landing()));
+    QObject::connect(ui->scenario_pushButton, SIGNAL(clicked()), this, SLOT(slot_begin_scenario()));
 
-    QObject::connect(this, SIGNAL(change_horizon_speed_value(QString)), ui->label_Value_Horizontal_Speed, SLOT(setText(QString)));
-    QObject::connect(this, SIGNAL(change_vertical_speed_value(QString)), ui->label_Value_Vertical_Speed, SLOT(setText(QString)));
-
-    QObject::connect(this, SIGNAL(change_phi_value(QString)), ui->label_Value_Phi_Angle, SLOT(setText(QString)));
-    QObject::connect(this, SIGNAL(change_psi_value(QString)), ui->label_Value_Psi_Angle, SLOT(setText(QString)));
-    QObject::connect(this, SIGNAL(change_theta_value(QString)), ui->label_Value_Theta_Angle, SLOT(setText(QString)));
-
-
-    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(open_connexion()));
-    QObject::connect(ui->button_disconnect,SIGNAL(clicked()),this,SLOT(send_exit()));
-
-    QObject::connect( &C, SIGNAL(socket_connected()), this, SLOT(mark_connexion()) ) ;
-    QObject::connect( &C, SIGNAL(socket_disconnected()), this, SLOT(unmark_connexion()) ) ;
-
-    QObject::connect(ui->button_start, SIGNAL(clicked()), this, SLOT(start_mission()));
-    QObject::connect(ui->button_stop, SIGNAL(clicked()), this, SLOT(stop_mission()));
-    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing()));
-    //QObject::connect(ui->button_pause, SIGNAL(clicked()), this, SLOT(pause_mission()));
-
-
-    QObject::connect(ui->button_A_1, SIGNAL(clicked()), this, SLOT(send_G_A_1()));
-    QObject::connect(ui->button_A_2, SIGNAL(clicked()), this, SLOT(send_G_A_2()));
-    QObject::connect(ui->button_A_3, SIGNAL(clicked()), this, SLOT(send_G_A_3()));
-
-    QObject::connect(ui->button_B_1, SIGNAL(clicked()), this, SLOT(send_G_B_1()));
-    QObject::connect(ui->button_B_2, SIGNAL(clicked()), this, SLOT(send_G_B_2()));
-    QObject::connect(ui->button_B_3,SIGNAL(clicked()), this, SLOT(send_G_B_3())) ;
-
-    QObject::connect(ui->button_C_1, SIGNAL(clicked()), this, SLOT(send_G_C_1())) ;
-    QObject::connect(ui->button_C_2, SIGNAL(clicked()), this, SLOT(send_G_C_2())) ;
-    QObject::connect(ui->button_C_3, SIGNAL(clicked()), this, SLOT(send_G_C_3()));
-
+    QObject::connect(ui->button_A_1, SIGNAL(clicked()), this, SLOT(slot_send_G_A_1()));
+    QObject::connect(ui->button_A_2, SIGNAL(clicked()), this, SLOT(slot_send_G_A_2()));
+    QObject::connect(ui->button_A_3, SIGNAL(clicked()), this, SLOT(slot_send_G_A_3()));
+    QObject::connect(ui->button_B_1, SIGNAL(clicked()), this, SLOT(slot_send_G_B_1()));
+    QObject::connect(ui->button_B_2, SIGNAL(clicked()), this, SLOT(slot_send_G_B_2()));
+    QObject::connect(ui->button_B_3, SIGNAL(clicked()), this, SLOT(slot_send_G_B_3()));
+    QObject::connect(ui->button_C_1, SIGNAL(clicked()), this, SLOT(slot_send_G_C_1()));
+    QObject::connect(ui->button_C_2, SIGNAL(clicked()), this, SLOT(slot_send_G_C_2()));
+    QObject::connect(ui->button_C_3, SIGNAL(clicked()), this, SLOT(slot_send_G_C_3()));
 }
-
 
 /** **************************
  * PUBLIC SLOTS
  * **************************/
 
-
-void MainWindow::begin_scenario()
+void MainWindow::slot_begin_scenario()
 {
     scenario_mode = true ;
-    send_takeoff();
+    slot_send_takeoff();
     switch (num_scenario)
     {
     case 1 :
-        send_G_A_1();
+        slot_send_G_A_1();
         break ;
     case 2 :
-        send_G_A_2();
+        slot_send_G_A_2();
         break ;
     case 3 :
-        send_G_A_1();
+        slot_send_G_A_1();
         break ;
     }
-
-
 }
 
-void MainWindow::open_connexion()
+void MainWindow::slot_open_connexion()
 {
     C.connect_server();
 }
 
-
-void MainWindow::mark_connexion()
+void MainWindow::slot_mark_connexion()
 {
-    send_date();
+    slot_send_date();
 
     ui->label_Connected->setText("Connected !");
     ui->button_connect->setEnabled(false);
@@ -163,7 +128,7 @@ void MainWindow::mark_connexion()
     ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 }
 
-void MainWindow::unmark_connexion()
+void MainWindow::slot_unmark_connexion()
 {
     ui->label_Connected->setText("Disconnected...");
     ui->button_connect->setEnabled(true);
@@ -177,113 +142,92 @@ void MainWindow::unmark_connexion()
     set_icons_playground_without_communication();
 }
 
-
 /* Start takeoff, allow the user to give orders to the drone to look for a square */
-void MainWindow::start_mission()
+void MainWindow::slot_takeoff()
 {
     if ((state_of_mission == mission_stopped) || (state_of_mission == mission_paused) ||(state_of_mission == mission_ready))
     {
         forbid_start_mission();
-        send_takeoff();
+        slot_send_takeoff();
         state_of_mission = mission_init;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 
-
         allow_emergency();
-        allow_pause_stop_mission();
+        allow_stop_mission();
         allow_orders_to_squares();
         ui->scenario_pushButton->setEnabled(true);
-
     }
 }
 
-
-
-void MainWindow::stop_mission()
+void MainWindow::slot_land()
 {
     if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
     {
-        send_landing();
+        slot_send_landing();
         allow_start_mission();
         state_of_mission = mission_stopped;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 
         hide_position() ;
 
-        forbid_pause_stop_mission();
+        forbid_stop_mission();
         forbid_emergency() ;
         forbid_orders_to_squares();
         ui->scenario_pushButton->setEnabled(false);
-
     }
 }
 
-
-void MainWindow::emergency_landing()
+void MainWindow::slot_emergency_landing()
 {
     if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
     {
-        send_emergency(0x0) ;
+        slot_send_emergency(0x0) ;
         //allow_resume_after_emergency();
         state_of_mission = mission_stopped_emergency;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 
         hide_position() ;
 
-        forbid_pause_stop_mission();
+        forbid_stop_mission();
         forbid_orders_to_squares();
         ui->scenario_pushButton->setEnabled(false);
 
-
         ui->button_emergency->setIcon(QIcon(RESET_PATH));
-        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing()));
-        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency())) ;
+        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_emergency_landing()));
+        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_reset_after_emergency())) ;
     }
 }
 
-void MainWindow::reset_after_emergency()
+void MainWindow::slot_reset_after_emergency()
 {
     if ((state_of_mission == mission_stopped_emergency))
     {
-        send_emergency(0x1) ;
+        slot_send_emergency(0x1) ;
         allow_start_mission();
         state_of_mission = mission_ready;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
 
-        /*
-        hide_position() ;
-
-        forbid_pause_stop_mission();
-        forbid_orders_to_squares();
-        */
         forbid_emergency() ;
 
         ui->button_emergency->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
-        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency()));
-        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing())) ;
+        QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_reset_after_emergency()));
+        QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_emergency_landing())) ;
     }
 }
 
-/*
-void MainWindow::pause_mission()
+void MainWindow::slot_next_move()
 {
-    if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
-    {
-        send_landing();
-        allow_start_mission();
-        state_of_mission = mission_paused;
-        ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-
-        hide_position() ;
-
-        forbid_pause_stop_mission();
-        forbid_orders_to_squares();
-    }
+    if (next_square == 1)
+        slot_send_G_B_1();
+    if (next_square == 2)
+        slot_send_G_A_2();
+    if (next_square == 4)
+        slot_send_G_B_2();
+    if (next_square == 5)
+        end_scenario(num_scenario);
 }
-*/
 
-
-void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray data)
+void MainWindow::slot_update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray data)
 {
 
     if (mnemo == 'N')
@@ -308,7 +252,7 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
     {
         uint altitude = 0 ;
         altitude += (data.at(0) + (data.at(1)<<8) + (data.at(2) <<16) + (data.at(3)<<24));
-        emit change_altitude_value(QString::number(altitude/10)+ " cm");
+        emit sig_change_altitude_value(QString::number(altitude/10)+ " cm");
 
     }
     else if (mnemo == 'S')
@@ -325,8 +269,8 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
             ver_speed = (  ver_speed +16842753) ;
         }
 
-        emit change_horizon_speed_value(QString::number(hor_speed/1000));
-        emit change_vertical_speed_value(QString::number(ver_speed/1000));
+        emit sig_change_horizon_speed_value(QString::number(hor_speed/1000));
+        emit sig_change_vertical_speed_value(QString::number(ver_speed/1000));
     }
     else if (mnemo == 'G')
     {
@@ -339,38 +283,38 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
             {
             case 1 :
                 if (data.at(0) == 0x1)
-                    send_G_B_2();
+                    slot_send_G_B_2();
                 else if (data.at(0) == 0x5)
-                    send_G_C_3();
+                    slot_send_G_C_3();
                 else if (data.at(0) == 0x9)
-                    send_G_C_2();
+                    slot_send_G_C_2();
                 else if (data.at(0) == 0x6)
-                    send_G_A_2();
+                    slot_send_G_A_2();
                 else if (data.at(0) == 0x4)
-                    send_G_A_3();
+                    slot_send_G_A_3();
                 else if (data.at(0) == 0x7)
-                    send_G_C_1();
+                    slot_send_G_C_1();
                 else if (data.at(0) == 0x3)
-                    send_G_B_1();
+                    slot_send_G_B_1();
                 else if (data.at(0) == 0x2)
-                    send_G_B_3();
+                    slot_send_G_B_3();
                 else if (data.at(0) == 0x8)
                     end_scenario(num_scenario) ;
                 break ;
 
             case 2 :
                 if (data.at(0) == 0x2)
-                    send_G_A_3();
+                    slot_send_G_A_3();
                 else if (data.at(0) == 0x7)
-                    send_G_C_2();
+                    slot_send_G_C_2();
                 else if (data.at(0) == 0x6)
-                    send_G_B_2();
+                    slot_send_G_B_2();
                 else if (data.at(0) == 0x5)
-                    send_G_C_1();
+                    slot_send_G_C_1();
                 else if (data.at(0) == 0x3)
-                    send_G_C_3();
+                    slot_send_G_C_3();
                 else if (data.at(0) == 0x9)
-                    send_G_A_1();
+                    slot_send_G_A_1();
                 else if (data.at(0) == 0x1)
                     end_scenario(num_scenario);
                 break ;
@@ -379,14 +323,9 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
                 next_square = data.at(0) ;
                 timer->start() ;
                 //QThread::sleep(2);
-
                 break ;
             }
-
-
-
         }
-
     }
     else if (mnemo == 'A')
     {
@@ -410,35 +349,21 @@ void MainWindow::update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArray dat
             theta = ( theta +16842753) ;
         }
 
-        emit change_theta_value(QString::number(theta/1000.0) + " °");
-        emit change_phi_value(QString::number(phi/1000.0) + " °");
-        emit change_psi_value(QString::number(psi/1000.0) + " °");
-
-
+        emit sig_change_theta_value(QString::number(theta/1000.0) + " °");
+        emit sig_change_phi_value(QString::number(phi/1000.0) + " °");
+        emit sig_change_psi_value(QString::number(psi/1000.0) + " °");
     }
     else if (mnemo == 'B')
     {
-        emit change_battery_value( data.at(0));
+        emit sig_change_battery_value( data.at(0));
     }
-
 }
 
 
-void MainWindow::next_move()
-{
-    if (next_square == 1)
-        send_G_B_1();
-    if (next_square == 2)
-        send_G_A_2();
-    if (next_square == 4)
-        send_G_B_2();
-    if (next_square == 5)
-        end_scenario(num_scenario);
-}
 
 /** ORDERS SENT TO THE DRONE */
 
-void MainWindow::send_takeoff()
+void MainWindow::slot_send_takeoff()
 {
     if ((state_of_mission == mission_stopped) || (state_of_mission == mission_paused) || (state_of_mission == mission_ready))
     {
@@ -450,7 +375,7 @@ void MainWindow::send_takeoff()
     }
 }
 
-void MainWindow::send_landing()
+void MainWindow::slot_send_landing()
 {
     if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
     {
@@ -460,14 +385,10 @@ void MainWindow::send_landing()
         quint8 value = 0x0 ;
         message.append(value) ;
         C.recoit_texte(message);
-        /*
-        state_of_mission = mission_init ;
-        ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
-        */
     }
 }
 
-void MainWindow::send_emergency(quint8 value)
+void MainWindow::slot_send_emergency(quint8 value)
 {
     {
         QByteArray message ;
@@ -478,12 +399,8 @@ void MainWindow::send_emergency(quint8 value)
     }
 }
 
-void MainWindow::send_exit()
+void MainWindow::slot_send_exit()
 {
-    /*if ((state_of_mission == mission_started) || (state_of_mission == mission_init))
-    {
-        send_landing();
-    }*/
     QByteArray message ;
     message.append('D') ;
     message.append(0x01) ;
@@ -491,8 +408,7 @@ void MainWindow::send_exit()
     C.recoit_texte(message);
 }
 
-
-void MainWindow::send_G_A_1()
+void MainWindow::slot_send_G_A_1()
 {
     if (state_of_mission == mission_init)
     {
@@ -505,11 +421,10 @@ void MainWindow::send_G_A_1()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("A1");
         display_position() ;
-
     }
 }
 
-void MainWindow::send_G_A_2()
+void MainWindow::slot_send_G_A_2()
 {
     if (state_of_mission == mission_init)
     {
@@ -526,7 +441,7 @@ void MainWindow::send_G_A_2()
     }
 }
 
-void MainWindow::send_G_A_3()
+void MainWindow::slot_send_G_A_3()
 {
     if (state_of_mission == mission_init)
     {
@@ -543,7 +458,7 @@ void MainWindow::send_G_A_3()
     }
 }
 
-void MainWindow::send_G_B_1()
+void MainWindow::slot_send_G_B_1()
 {
     if (state_of_mission == mission_init)
     {
@@ -557,11 +472,10 @@ void MainWindow::send_G_B_1()
         ui->label_Value_Searched_Square->setText("B1");
 
         display_position() ;
-
     }
 }
 
-void MainWindow::send_G_B_2()
+void MainWindow::slot_send_G_B_2()
 {
     if (state_of_mission == mission_init)
     {
@@ -574,11 +488,10 @@ void MainWindow::send_G_B_2()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("B2");
         display_position() ;
-
     }
 }
 
-void MainWindow::send_G_B_3()
+void MainWindow::slot_send_G_B_3()
 {
     if (state_of_mission == mission_init)
     {
@@ -591,11 +504,10 @@ void MainWindow::send_G_B_3()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("B3");
         display_position() ;
-
     }
 }
 
-void MainWindow::send_G_C_1()
+void MainWindow::slot_send_G_C_1()
 {
     if (state_of_mission == mission_init)
     {
@@ -611,7 +523,7 @@ void MainWindow::send_G_C_1()
     }
 }
 
-void MainWindow::send_G_C_2()
+void MainWindow::slot_send_G_C_2()
 {
     if (state_of_mission == mission_init)
     {
@@ -624,11 +536,10 @@ void MainWindow::send_G_C_2()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C2");
         display_position() ;
-
     }
 }
 
-void MainWindow::send_G_C_3()
+void MainWindow::slot_send_G_C_3()
 {
     if (state_of_mission == mission_init)
     {
@@ -641,12 +552,10 @@ void MainWindow::send_G_C_3()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C3");
         display_position() ;
-
     }
 }
 
-
-void MainWindow::send_date()
+void MainWindow::slot_send_date()
 {
 
     quint8 day_week = QDate::currentDate().dayOfWeek() ;
@@ -658,13 +567,6 @@ void MainWindow::send_date()
                       (unsigned int) QDate::currentDate().year());
 
     quint64 timeStamp = calendar_date_to_timestamp(getCalendarDate());
-
-    /*
-    qDebug() << getCalendarDate()->date << getCalendarDate()->month << getCalendarDate()->year << getCalendarDate()->hour << "h " << getCalendarDate()->minute << "min " << getCalendarDate()->second << "sec "<< endl ;
-    qDebug() << timeStamp << endl ;
-    qDebug() << QString::number(timeStamp, 16) << endl ;
-    */
-
 
     QByteArray frame ;
     int i = 0 ;
@@ -688,17 +590,9 @@ void MainWindow::send_date()
         message.append(frame.at(frame.size() - j));
     }
 
-    /*
-    qDebug() << "frame : " << frame.toHex() << endl ;
-    qDebug() << "frameToSend : " << frameToSend.toHex() << endl ;
-    */
-
-
     qDebug() << "Message : " << message.toHex() << endl ;
 
     C.recoit_texte(message);
-
-
 }
 
 /**
@@ -706,9 +600,9 @@ void MainWindow::send_date()
  * PRIVATE
  * *******************************/
 
-
-
-
+/** ****************
+ * END A SCENARIO
+ * ****************/
 void MainWindow::end_scenario(int scenario)
 {
     bool ok = false ;
@@ -733,12 +627,11 @@ void MainWindow::end_scenario(int scenario)
 }
 
 /** ******************
- * START MISSION
+ * ALLOW/FORBID START MISSION
  * ******************/
 void MainWindow::allow_start_mission()
 {
     ui->button_start->setEnabled(true);
-    //ui->scenario_pushButton->setEnabled(true);
 }
 
 void MainWindow::forbid_start_mission()
@@ -748,22 +641,20 @@ void MainWindow::forbid_start_mission()
 
 
 /** ******************
- * STOP / PAUSE MISSION
+ * ALLOW/FORBID STOP MISSION
  * ******************/
-void MainWindow::allow_pause_stop_mission()
+void MainWindow::allow_stop_mission()
 {
-    //ui->button_pause->setEnabled(true);
     ui->button_stop->setEnabled(true);
 }
 
-void MainWindow::forbid_pause_stop_mission()
+void MainWindow::forbid_stop_mission()
 {
-    //ui->button_pause->setEnabled(false);
     ui->button_stop->setEnabled(false);
 }
 
 /** ******************
- * EMERGENCY
+ * ALLOW/FORBID EMERGENCY
  * ******************/
 void MainWindow::allow_emergency()
 {
@@ -776,7 +667,7 @@ void MainWindow::forbid_emergency()
 }
 
 /** ******************
- * SENDING ORDERS TO LOOK FOR A SQUARE
+ * ALLOW/FORBID SENDING ORDERS TO LOOK FOR A SQUARE
  * ******************/
 void MainWindow::allow_orders_to_squares()
 {
@@ -810,8 +701,9 @@ void MainWindow::forbid_orders_to_squares()
     set_icons_playground_without_communication() ;
 }
 
-
-
+/** ******************
+ * DISPLAY / HIDE POSITION OF SEARCHED SQUARE
+ * ******************/
 void MainWindow::display_position()
 {
     ui->label_Searched_Square->setVisible(true);
@@ -820,7 +712,6 @@ void MainWindow::display_position()
     ui->label_Current_Ordonnee->setVisible(true);
     ui->label_Ordonnee->setVisible(true);
     ui->label_Abscisse->setVisible(true);
-
 }
 
 void MainWindow::hide_position()
@@ -832,10 +723,11 @@ void MainWindow::hide_position()
     ui->label_Current_Ordonnee->setVisible(false);
     ui->label_Ordonnee->setVisible(false);
     ui->label_Abscisse->setVisible(false);
-
 }
 
-
+/** ******************
+ * DISPLAY NO COMMUNICATION ON THE INTERFACE
+ * ******************/
 void MainWindow::display_no_communication()
 {
     ui->label_value_flight_status->setText(NO_COMMUNICATION);
@@ -859,17 +751,54 @@ void MainWindow::display_no_communication()
     ui->label_Value_Mission_Status->setText(NO_COMMUNICATION);
 
     ui->button_emergency->setIcon(QIcon(EMERGENCY_BUTTON_PATH));
-    QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(reset_after_emergency()));
-    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(emergency_landing())) ;
+    QObject::disconnect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_reset_after_emergency()));
+    QObject::connect(ui->button_emergency, SIGNAL(clicked()), this, SLOT(slot_emergency_landing())) ;
 
     hide_position();
-
 }
 
+/** ******************
+ * SET / UNSET COLORS ON THE PLAYGROUND'S SQUARES
+ * ******************/
+void MainWindow::set_icons_playground_with_communication()
+{
+    ui->button_A_1->setStyleSheet("background-color: red;");
+    ui->button_B_2->setStyleSheet("background-color: blue;");
+    ui->button_C_3->setStyleSheet("background-color: red;");
+    ui->button_A_2->setStyleSheet("background-color: green;");
+    ui->button_B_3->setStyleSheet("background-color: green;");
+    ui->button_C_1->setStyleSheet("background-color: red;");
+    ui->button_A_3->setStyleSheet("background-color: red;");
+    ui->button_B_1->setStyleSheet("background-color: green;");
+    ui->button_C_2->setStyleSheet("background-color: green;");
+}
 
+void MainWindow::set_icons_playground_without_communication()
+{
+    ui->button_A_1->setStyleSheet("background-color: grey;");
+    ui->button_B_2->setStyleSheet("background-color: grey;");
+    ui->button_C_3->setStyleSheet("background-color: grey;");
+    ui->button_A_2->setStyleSheet("background-color: grey;");
+    ui->button_B_3->setStyleSheet("background-color: grey;");
+    ui->button_C_1->setStyleSheet("background-color: grey;");
+    ui->button_A_3->setStyleSheet("background-color: grey;");
+    ui->button_B_1->setStyleSheet("background-color: grey;");
+    ui->button_C_2->setStyleSheet("background-color: grey;");
 
+    ui->button_A_1->setIcon(QIcon());
+    ui->button_B_2->setIcon(QIcon());
+    ui->button_C_3->setIcon(QIcon());
+    ui->button_A_2->setIcon(QIcon());
+    ui->button_B_3->setIcon(QIcon());
+    ui->button_C_1->setIcon(QIcon());
+    ui->button_A_3->setIcon(QIcon());
+    ui->button_B_1->setIcon(QIcon());
+    ui->button_C_2->setIcon(QIcon());
+}
 
-
+/** ******************
+ * MARK A SQUARE
+ * ******************/
 void MainWindow::mark_square_found(int square)
 {
     state_of_mission = mission_init ;
@@ -942,55 +871,11 @@ void MainWindow::mark_square_found(int square)
         ui->button_C_3->setEnabled(false);
         break ;
     }
-
 }
 
-
-
-
-
-
-
-void MainWindow::set_icons_playground_with_communication()
-{
-    ui->button_A_1->setStyleSheet("background-color: red;");
-    ui->button_B_2->setStyleSheet("background-color: blue;");
-    ui->button_C_3->setStyleSheet("background-color: red;");
-    ui->button_A_2->setStyleSheet("background-color: green;");
-    ui->button_B_3->setStyleSheet("background-color: green;");
-    ui->button_C_1->setStyleSheet("background-color: red;");
-    ui->button_A_3->setStyleSheet("background-color: red;");
-    ui->button_B_1->setStyleSheet("background-color: green;");
-    ui->button_C_2->setStyleSheet("background-color: green;");
-
-}
-
-
-void MainWindow::set_icons_playground_without_communication()
-{
-    ui->button_A_1->setStyleSheet("background-color: grey;");
-    ui->button_B_2->setStyleSheet("background-color: grey;");
-    ui->button_C_3->setStyleSheet("background-color: grey;");
-    ui->button_A_2->setStyleSheet("background-color: grey;");
-    ui->button_B_3->setStyleSheet("background-color: grey;");
-    ui->button_C_1->setStyleSheet("background-color: grey;");
-    ui->button_A_3->setStyleSheet("background-color: grey;");
-    ui->button_B_1->setStyleSheet("background-color: grey;");
-    ui->button_C_2->setStyleSheet("background-color: grey;");
-
-    ui->button_A_1->setIcon(QIcon());
-    ui->button_B_2->setIcon(QIcon());
-    ui->button_C_3->setIcon(QIcon());
-    ui->button_A_2->setIcon(QIcon());
-    ui->button_B_3->setIcon(QIcon());
-    ui->button_C_1->setIcon(QIcon());
-    ui->button_A_3->setIcon(QIcon());
-    ui->button_B_1->setIcon(QIcon());
-    ui->button_C_2->setIcon(QIcon());
-
-}
-
-
+/** ******************
+ * SET / UNSET SCENARIO ICONS ENABLE
+ * ******************/
 void MainWindow::set_icons_scenario_not_enable()
 {
      if (ui->button_emergency->isEnabled())

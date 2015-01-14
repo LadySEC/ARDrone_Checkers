@@ -3,12 +3,12 @@
 
 client::client()
 {
-    port = NUM_PORT_CLIENT; // choix arbitraire (>1024)
+    port = NUM_PORT_CLIENT;
     IP = ADDR_IP_CLIENT  ;
-    QObject::connect(&soc,SIGNAL(connected()),this,SLOT(connexion_OK()));
+    QObject::connect(&soc,SIGNAL(connected()),this,SLOT(slot_connexion_OK()));
     // signal émis lors de la connexion au serveur
-    QObject::connect(&soc, SIGNAL(disconnected()), this, SLOT(connexion_stopped()));
-    QObject:: connect(&soc, SIGNAL(readyRead()), this, SLOT(lecture()));
+    QObject::connect(&soc, SIGNAL(disconnected()), this, SLOT(slot_connexion_stopped()));
+    QObject:: connect(&soc, SIGNAL(readyRead()), this, SLOT(slot_lecture()));
     // signal émis lorsque des données sont prêtes à être lues
 }
 
@@ -18,14 +18,6 @@ void client::connect_server()
     soc.connectToHost(IP,port) ;
 }
 
-/*
-void client::recoit_texte(QString t)
-{
-    QTextStream texte(&soc); // on associe un flux à la socket
-    texte << t ;        // on écrit dans le flux le texte saisi dans l'IHM
-    qDebug() << t;
-}
-*/
 
 void client::recoit_texte(QByteArray message)
 {
@@ -55,33 +47,22 @@ void client::recoit_texte(QByteArray message)
 
 
 
-void client::connexion_OK()
+void client::slot_connexion_OK()
 {
-    emit socket_connected(); // on envoie un signal à l'IHM
+    emit sig_socket_connected(); // on envoie un signal à l'IHM
 }
 
-void client::connexion_stopped()
+void client::slot_connexion_stopped()
 {
-    emit socket_disconnected();
+    emit sig_socket_disconnected();
 }
 
-void client::lecture()
+void client::slot_lecture()
 {
     QByteArray ligne;
-
-
-
     if(soc.bytesAvailable() > 0)
         ligne+=soc.readAll();
-/*
-    qDebug() << "Message : " ;
-    QString message = " " ;
-    for (int i = 0 ; i < ligne.size() ; i++)
-    {
-        message += QString("%1").arg(ligne.at(i) , 0, 16) ;
-    }
-    qDebug() << message << endl ;
-*/
+
     int numOc = 0 ;
     int taille ;
     QByteArray mess ;
@@ -103,13 +84,10 @@ void client::lecture()
         }
         //qDebug() << mess.toHex() << endl ;
 
-        emit(data_to_IHM(mnemo/*, taille*/, mess));
+        emit(sig_data_to_IHM(mnemo/*, taille*/, mess));
 
         numOc += taille ;
     }
-
-
-
 
 
 }

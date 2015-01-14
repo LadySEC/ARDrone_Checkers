@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../Sources/Tcp_client/client.h"
+#include "../../../Supervisor/Sources/Tcp_client/client.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_client_t {
-    QByteArrayData data[10];
-    char stringdata[135];
+    QByteArrayData data[13];
+    char stringdata[144];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,20 +30,23 @@ struct qt_meta_stringdata_client_t {
 static const qt_meta_stringdata_client_t qt_meta_stringdata_client = {
     {
 QT_MOC_LITERAL(0, 0, 6),
-QT_MOC_LITERAL(1, 7, 20),
-QT_MOC_LITERAL(2, 28, 0),
-QT_MOC_LITERAL(3, 29, 23),
-QT_MOC_LITERAL(4, 53, 15),
-QT_MOC_LITERAL(5, 69, 5),
-QT_MOC_LITERAL(6, 75, 4),
-QT_MOC_LITERAL(7, 80, 17),
-QT_MOC_LITERAL(8, 98, 22),
-QT_MOC_LITERAL(9, 121, 12)
+QT_MOC_LITERAL(1, 7, 16),
+QT_MOC_LITERAL(2, 24, 0),
+QT_MOC_LITERAL(3, 25, 19),
+QT_MOC_LITERAL(4, 45, 11),
+QT_MOC_LITERAL(5, 57, 5),
+QT_MOC_LITERAL(6, 63, 4),
+QT_MOC_LITERAL(7, 68, 12),
+QT_MOC_LITERAL(8, 81, 7),
+QT_MOC_LITERAL(9, 89, 14),
+QT_MOC_LITERAL(10, 104, 12),
+QT_MOC_LITERAL(11, 117, 17),
+QT_MOC_LITERAL(12, 135, 7)
     },
-    "client\0sig_socket_connected\0\0"
-    "sig_socket_disconnected\0sig_data_to_IHM\0"
-    "mnemo\0data\0slot_connexion_OK\0"
-    "slot_connexion_stopped\0slot_lecture\0"
+    "client\0socket_connected\0\0socket_disconnected\0"
+    "data_to_IHM\0mnemo\0data\0recoit_texte\0"
+    "message\0connect_server\0connexion_OK\0"
+    "connexion_stopped\0lecture\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -53,7 +56,7 @@ static const uint qt_meta_data_client[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -61,14 +64,16 @@ static const uint qt_meta_data_client[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x06,
-       3,    0,   45,    2, 0x06,
-       4,    2,   46,    2, 0x06,
+       1,    0,   54,    2, 0x06,
+       3,    0,   55,    2, 0x06,
+       4,    2,   56,    2, 0x06,
 
  // slots: name, argc, parameters, tag, flags
-       7,    0,   51,    2, 0x08,
-       8,    0,   52,    2, 0x08,
-       9,    0,   53,    2, 0x08,
+       7,    1,   61,    2, 0x0a,
+       9,    0,   64,    2, 0x0a,
+      10,    0,   65,    2, 0x08,
+      11,    0,   66,    2, 0x08,
+      12,    0,   67,    2, 0x08,
 
  // signals: parameters
     QMetaType::Void,
@@ -76,6 +81,8 @@ static const uint qt_meta_data_client[] = {
     QMetaType::Void, QMetaType::QChar, QMetaType::QByteArray,    5,    6,
 
  // slots: parameters
+    QMetaType::Void, QMetaType::QByteArray,    8,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -88,12 +95,14 @@ void client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
     if (_c == QMetaObject::InvokeMetaMethod) {
         client *_t = static_cast<client *>(_o);
         switch (_id) {
-        case 0: _t->sig_socket_connected(); break;
-        case 1: _t->sig_socket_disconnected(); break;
-        case 2: _t->sig_data_to_IHM((*reinterpret_cast< QChar(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
-        case 3: _t->slot_connexion_OK(); break;
-        case 4: _t->slot_connexion_stopped(); break;
-        case 5: _t->slot_lecture(); break;
+        case 0: _t->socket_connected(); break;
+        case 1: _t->socket_disconnected(); break;
+        case 2: _t->data_to_IHM((*reinterpret_cast< QChar(*)>(_a[1])),(*reinterpret_cast< QByteArray(*)>(_a[2]))); break;
+        case 3: _t->recoit_texte((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 4: _t->connect_server(); break;
+        case 5: _t->connexion_OK(); break;
+        case 6: _t->connexion_stopped(); break;
+        case 7: _t->lecture(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -101,19 +110,19 @@ void client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         void **func = reinterpret_cast<void **>(_a[1]);
         {
             typedef void (client::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::sig_socket_connected)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::socket_connected)) {
                 *result = 0;
             }
         }
         {
             typedef void (client::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::sig_socket_disconnected)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::socket_disconnected)) {
                 *result = 1;
             }
         }
         {
             typedef void (client::*_t)(QChar , QByteArray );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::sig_data_to_IHM)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&client::data_to_IHM)) {
                 *result = 2;
             }
         }
@@ -145,31 +154,31 @@ int client::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 6;
+        _id -= 8;
     }
     return _id;
 }
 
 // SIGNAL 0
-void client::sig_socket_connected()
+void client::socket_connected()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, 0);
 }
 
 // SIGNAL 1
-void client::sig_socket_disconnected()
+void client::socket_disconnected()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, 0);
 }
 
 // SIGNAL 2
-void client::sig_data_to_IHM(QChar _t1, QByteArray _t2)
+void client::data_to_IHM(QChar _t1, QByteArray _t2)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
