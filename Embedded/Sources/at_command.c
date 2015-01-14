@@ -169,9 +169,18 @@ float getDynamicParameter(T_angle_param I_param)
     return(G_dynamic_parameters[I_param]);
 }
 
+/**********************************************************************************/
+/* Setters                                                                        */
+/**********************************************************************************/
 void incDynamicParameter(T_angle_param I_param, float I_incrementation)
 {
     G_dynamic_parameters[I_param] += I_incrementation;
+    LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
+}
+
+void setDynamicParameter(T_angle_param I_param, float I_value)
+{
+    G_dynamic_parameters[I_param] = I_value;
     LOG_WriteLevel(LOG_INFO, "at_command : parameter %s = %f", C_DYNAMIC_PARAM[I_param], G_dynamic_parameters[I_param]);
 }
 

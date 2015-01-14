@@ -29,7 +29,7 @@
 /* Types													      				  */
 /**********************************************************************************/
 /**
-* \struct 	T_TCP_DATA
+* \struct 	T_TCP_data
 * \brief 	Defines all TCP mnemonics related to our communication protocol between the client and the GUI
 */
 typedef enum 
@@ -45,7 +45,7 @@ typedef enum
 	DECON_TCP	= 	'D',										/*!< Disconnect and close the supervisor */
 	EMERGENCY_TCP=	'E',										/*!< Send an EMERGENCY order */
 	TIME_TCP 	= 	'Y'											/*!< Retrieve the current timestamp from the GUI to init the date and time (doesn't work properly) */
-}T_TCP_DATA;
+}T_TCP_data;
 
 /**********************************************************************************/
 /* Prototypes													      			  */

@@ -57,7 +57,7 @@
 /**********************************************************************************/
  /**
  * \struct 	T_ATcommands
- * \brief 	Defines all AT commands available
+ * \brief 	Defines all available AT commands
  */
 typedef enum
 {
@@ -154,8 +154,8 @@ typedef struct
   } T_navdata_demo;
 
  /**
- * \struct 	struct T_packet
- * \brief 	Defines a packet for the FIFO buffer
+ * \struct 	T_packet
+ * \brief 	Defines the structure of a packet
  */
 struct T_packet    	
 {
@@ -291,6 +291,12 @@ float 			getDynamicParameter(T_angle_param I_param);
  * \brief 	Increments the desired dynamic parameter by a given value
  */
 void 			incDynamicParameter(T_angle_param I_param, float I_incrementation);
+
+/**
+ * \fn 		void setDynamicParameter(T_angle_param I_param, float I_value);
+ * \brief 	Sets the desired dynamic parameter to the given value
+ */
+void 			setDynamicParameter(T_angle_param I_param, float I_value);
 
 /**********************************************************************************/
 /* Threads														     		  	  */
