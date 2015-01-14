@@ -13,9 +13,9 @@
 /* Libraries														      		  */
 /**********************************************************************************/
 #include "global.h"												/*!< Retrieve all common tools */
-#include <termios.h>											/*!< */
-#include "at_command.h"											/*!< */
-#include "supervisor.h"											/*!< */
+#include <termios.h>											/*!< Enable the user to interact with the terminal */
+#include "at_command.h"											/*!< Send AT commands */
+#include "supervisor.h"											/*!< Close the supervisor's thread if necessary */
 
 /**********************************************************************************/
 /* Types													      				  */
@@ -26,24 +26,24 @@
  */
 typedef enum
 {
-	UP_KEY 				= 0x41u,								/*!< */
-	DOWN_KEY 			= 0x42u,								/*!< */
-	LEFT_KEY 			= 68u,									/*!< */
-	RIGHT_KEY			= 67u,									/*!< */
- 	ENTER_KEY			= 0x0Du,								/*!< */
-	SPACE_KEY			= 32u,									/*!< */
-	CTRL_C_KEY			= 0x03u,								/*!< */
-	L_KEY    			= 108u,									/*!< */
-	D_KEY 				= 100u,									/*!< */
-	Q_KEY 				= 113u,									/*!< */
-	E_KEY 				= 101u,									/*!< */
-	A_KEY  				= 97u,									/*!< */
-	Z_KEY				= 122u,									/*!< */
-	S_KEY 				= 115u,									/*!< */
-	M_KEY				= 109u,									/*!< */
-	W_KEY				= 119u,									/*!< */
-	X_KEY 				= 120u,									/*!< */
-	BACKSPACE_KEY		= 8u 									/*!< */
+	UP_KEY 				= 0x41u,								/*!< Up arrow key: PITCH DOWN order or decresase pitch angle */
+	DOWN_KEY 			= 0x42u,								/*!< Down arrow key: PITCH UP order or incresase pitch angle */
+	LEFT_KEY 			= 68u,									/*!< Left arrow key: YAW LEFT order or decresase yaw angle */
+	RIGHT_KEY			= 67u,									/*!< Right arrow key: YAW RIGHT order or incresase yaw angle  */
+ 	ENTER_KEY			= 0x0Du,								/*!< Enter key: TAKEOFF/LANDING order */
+	SPACE_KEY			= 32u,									/*!< Space key: FLAT TRIM order */
+	CTRL_C_KEY			= 0x03u,								/*!< CTRL+C combination value: not used */
+	L_KEY    			= 108u,									/*!< L key: LED ANIMATION order */
+	D_KEY 				= 100u,									/*!< D key: ROLL RIGHT order or decrease roll angle */
+	Q_KEY 				= 113u,									/*!< Q key: ROLL LEFT order or increase roll angle */
+	E_KEY 				= 101u,									/*!< E key: enable/disable emergency mode */
+	A_KEY  				= 97u,									/*!< A key: not used */
+	Z_KEY				= 122u,									/*!< Z key: VERTICAL UP order or increase vertical thrust */
+	S_KEY 				= 115u,									/*!< S key: VERTICAL DOWN order or decrease vertical thrust */
+	M_KEY				= 109u,									/*!< M key: enable/disable a mission manually (not used) */
+	W_KEY				= 119u,									/*!< W key: not used */
+	X_KEY 				= 120u,									/*!< X key: close the program */
+	BACKSPACE_KEY		= 8u 									/*!< Backspace key: change the WiFi name */
 } T_keys;
 
 /**********************************************************************************/

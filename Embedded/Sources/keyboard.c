@@ -85,6 +85,22 @@ static int keyboard_hit(void)
 }
 
 /**********************************************************************************/
+/* Getters                                                                        */
+/**********************************************************************************/
+T_bool get_mission(void)
+{
+    return G_triggered_mission;
+}
+
+/**********************************************************************************/
+/* Setters                                                                        */
+/**********************************************************************************/
+void stop_mission(void)
+{
+    G_triggered_mission = FALSE;
+}
+
+/**********************************************************************************/
 /* Threads                                                                        */
 /**********************************************************************************/
 void*  kbd_thread_drone_controller(void * args)
@@ -219,7 +235,6 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case W_KEY :
-                    
                     break;
 
                 case X_KEY :
@@ -239,9 +254,6 @@ void*  kbd_thread_drone_controller(void * args)
                     break;
 
                 case A_KEY :
-    	            ATcommand_moveDelay(PITCH_DOWN,     800000);
-    		        ATcommand_moveDelay(HOVERING_BUFF,  3000000);
-    	    	    ATcommand_moveDelay(ROLL_LEFT,      800000);
                     break;
 
                 case L_KEY :
@@ -261,7 +273,7 @@ void*  kbd_thread_drone_controller(void * args)
         		    else 
         		    {
             			G_triggered_mission = TRUE;
-            		    }
+            		}
                     break;
             }
         }
@@ -282,15 +294,3 @@ void*  kbd_thread_drone_controller(void * args)
     pthread_exit(NULL);
 }
 
-/**********************************************************************************/
-/* Getters & Setters                                                              */
-/**********************************************************************************/
-T_bool get_mission(void)
-{
-    return G_triggered_mission;
-}
-
-void stop_mission(void)
-{
-    G_triggered_mission = FALSE;
-}
