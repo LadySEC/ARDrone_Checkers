@@ -67,13 +67,13 @@ int distManhattan(T_Position pos1, T_Position pos2) {
 
 
 char getMainColor(Vec3b I_pixelRGB) {
-	uchar r, g, b;
-	r = I_pixelRGB[0];
-	g = I_pixelRGB[1];
-	b = I_pixelRGB[2];
-	if (r > C_R_MIN_R && r <= C_R_MAX_R && g > C_R_MIN_G && g <= C_R_MAX_G && b > C_R_MIN_B && b < C_R_MAX_B) return 'R';
-	if (r > C_B_MIN_R && r <= C_B_MAX_R && g > C_B_MIN_G && g <= C_B_MAX_G && b > C_B_MIN_B && b < C_B_MAX_B) return 'B';
-	if (r > C_G_MIN_R && r <= C_G_MAX_R && g > C_G_MIN_G && g <= C_G_MAX_G && b > C_G_MIN_B && b < C_G_MAX_B) return 'G';
+	ushort r, g, b;
+	r = (ushort)I_pixelRGB[0];
+	g = (ushort)I_pixelRGB[1];
+	b = (ushort)I_pixelRGB[2];
+	if (r > C_R_MIN_R && r <= C_R_MAX_R && g > C_R_MIN_G && g <= C_R_MAX_G && b > C_R_MIN_B && b < C_R_MAX_B && r > g+C_R_MIN_OFFSET_G && r > b+C_R_MIN_OFFSET_B) return 'R';
+	if (r > C_B_MIN_R && r <= C_B_MAX_R && g > C_B_MIN_G && g <= C_B_MAX_G && b > C_B_MIN_B && b < C_B_MAX_B && b > r+C_B_MIN_OFFSET_R && b > g+C_B_MIN_OFFSET_G) return 'B';
+	if (r > C_G_MIN_R && r <= C_G_MAX_R && g > C_G_MIN_G && g <= C_G_MAX_G && b > C_G_MIN_B && b < C_G_MAX_B && g > r+C_G_MIN_OFFSET_R && g > b+C_G_MIN_OFFSET_B) return 'G';
 	return 'U';
 }
 
@@ -164,6 +164,7 @@ T_Position getSquarePosition(int I_currentSquare, int I_destSquare) {
 
 T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	int 		i,j;
+	int			iDistToTarget;
 	static bool	bPhaseApproche = true;
 	static int	oldCurrentSquare = 0;
 	static int	oldDestSquare = 0;
@@ -201,9 +202,14 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 				// Si on est en approche, on ne garde que les pixels proche de la zone visée
 				if (bPhaseApproche) {
 					tmpPos = getSquarePosition(I_currentSquare, I_destSquare);
-					tmpPos.abs += 360 + C_WINDOW_LEFT;
-					tmpPos.ord += 360 + C_WINDOW_TOP;
-					if (distManhattan(pixelPos, tmpPos) < C_DIST_TO_TARGET) {
+					tmpPos.abs += C_IMG_CENTER_X + C_WINDOW_LEFT;
+					tmpPos.ord += C_IMG_CENTER_Y + C_WINDOW_TOP;
+					if (I_currentSquare == 5 && I_destSquare == 5) {
+						iDistToTarget = IMG_HEIGHT/2;
+					} else {
+						iDistToTarget = C_DIST_TO_TARGET;
+					}
+					if (distManhattan(pixelPos, tmpPos) < iDistToTarget) {
 						pixelsTarget.push_back(pixelPos);
 					}
 				} else {
