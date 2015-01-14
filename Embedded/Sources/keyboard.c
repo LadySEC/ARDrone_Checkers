@@ -3,25 +3,31 @@
  * \brief   Process keyboard entries
  * \author  Lady team
  * \version 1.0
- * \date    4 December 2014
+ * \date    14 January 2015
  *
  */
 #include "keyboard.h"
 
 /**********************************************************************************/
-/* Global variables 								*/
+/* Global variables 								                              */
 /**********************************************************************************/
+/* Mission state */
 T_bool G_triggered_mission      = FALSE;
 
 /**********************************************************************************/
-/* Threads & Procedures								*/
+/* Static functions prototypes                                                    */
 /**********************************************************************************/
 /**
- * \fn      void keyboard_rawMode(T_bool I_enable)
- * \brief   Enables user's keyboard entries in the shell
+ * \fn      static int keyboard_hit(void)
+ * \brief   Scans keyboard keys
  *
- * \param   I_enable    TRUE: enable, FALSE: disable
+ * \return  1: a key has just been pressed, 0: noting has happened
  */
+static int keyboard_hit(void);
+
+/**********************************************************************************/
+/* Procedures								                                      */
+/**********************************************************************************/
 void keyboard_rawMode(T_bool I_enable)
 {
     static struct termios Cooked;
@@ -47,29 +53,6 @@ void keyboard_rawMode(T_bool I_enable)
     Raw_enabled = (int)I_enable;
 }
 
-/**
- * \fn      int keyboard_hit(void)
- * \brief   Informs if a key has just been pressed by the user
- *
- * \return  1: Key pressed, 0: Nothing has happened 
- */
-int keyboard_hit(void)
-{
-    struct timeval Tv = {0, 0};
-    fd_set         Readfds;
-
-    FD_ZERO(&Readfds);
-    FD_SET(STDIN_FILENO, &Readfds);
-
-    return select(STDIN_FILENO + 1, &Readfds, NULL, NULL, &Tv) == 1;
-}
-
-/**
- * \fn      unsigned char keyboard_getchar(void)
- * \brief   Process a special character from a keyboard entry 
- *
- * \return  Character value  
- */
 unsigned char keyboard_getchar(void)
 {
 	unsigned char character = 0;
@@ -88,18 +71,22 @@ unsigned char keyboard_getchar(void)
 }
 
 /**********************************************************************************/
+/* Static functions                                                               */
+/**********************************************************************************/
+static int keyboard_hit(void)
+{
+    struct timeval Tv = {0, 0};
+    fd_set         Readfds;
+
+    FD_ZERO(&Readfds);
+    FD_SET(STDIN_FILENO, &Readfds);
+
+    return select(STDIN_FILENO + 1, &Readfds, NULL, NULL, &Tv) == 1;
+}
+
+/**********************************************************************************/
 /* Threads                                                                        */
 /**********************************************************************************/
-/**
- * \fn      void*  kb_thread_drone_controller(void * args)
- * \brief   Thread that control the drone through the keyboard interface
- *
- * \param   arg     Input argument 
- * \return          Nothing
- *
- * This thread read the keyboards input
- * And then process them to control the drone 
- */
 void*  kbd_thread_drone_controller(void * args)
 {
 
