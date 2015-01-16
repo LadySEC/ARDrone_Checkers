@@ -19,7 +19,7 @@
 /*** it represents the size between the camera position on the drone and it takeoff base */
 int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = (_CALCUL_PERIOD)/3;
+int const I_offset_time = (_CALCUL_PERIOD)/2;
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -56,9 +56,10 @@ int statemission = 0;
 
 void* calcul_order_thread(void* arg)
 {
-	int			num_square	= 0;
-	T_Position 	pos_tag;
-	float 		angle;
+	int				num_square	= 0;
+	T_Position 		pos_tag;
+	float 			angle;
+	T_navdata_demo*	pNavData;
 
     	/* Make this thread periodic */
     	struct periodic_info info;
@@ -83,7 +84,7 @@ void* calcul_order_thread(void* arg)
 			}
 			else
 			{
-				if(ATcommand_FlyingState() == TRUE)
+				if (1)//if(ATcommand_FlyingState() == TRUE)
 				{
 					if (round_mission == 0) 
 					{
@@ -98,17 +99,22 @@ void* calcul_order_thread(void* arg)
 							case 1 :
 								/* stabilisation over the BASE */
 								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 1, STABILISATION");
-								angle = getDynamicParameter(PITCH_ANGLE);
-								if(angle >= 0.08){
-									incDynamicParameter(PITCH_ANGLE,-0.02);
-								}
-								angle = getDynamicParameter(ROLL_ANGLE);
-								if (angle >= 0.1){
-									incDynamicParameter(ROLL_ANGLE,-0.02);
-								}
 								
 								printf("----- MISSION - stabilisation\n\r");
-								pos_tag = W_getPosition(5, 5);
+								
+								pNavData = ATcommand_navdata();
+								
+								if (abs(pNavData->phi/1000.0) < C_MAX_PHI && abs(pNavData->theta/1000.0) < C_MAX_THETA) {
+									pos_tag = W_getPosition(5, 5);
+								} else {
+									pos_tag.abs = 0;
+									pos_tag.ord = 0;
+									pos_tag.bIsFound = 0;
+								}
+								
+								setDynamicParameter(PITCH_ANGLE, 0.05 + 0.1 * abs(pos_tag.ord)/360.0);
+								setDynamicParameter(ROLL_ANGLE, 0.05 + 0.1 * abs(pos_tag.abs)/360.0);
+								
 								if(pos_tag.bIsFound == 1)
 								{
 									posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
@@ -116,17 +122,21 @@ void* calcul_order_thread(void* arg)
 							break;
 
 							case 2 :
-								/* Base -> Case */
-								if(angle < 0.08){
-									incDynamicParameter(PITCH_ANGLE,0.02);
-								}
-								angle = getDynamicParameter(ROLL_ANGLE);
-								if (angle < 0.1){
-									incDynamicParameter(ROLL_ANGLE,0.02);
-								}
+								
 								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 2, VERS LA CASE round = 0");
 
-								pos_tag = W_getPosition(5,num_square);
+								if (abs(pNavData->phi/1000.0) < C_MAX_PHI && abs(pNavData->theta/1000.0) < C_MAX_THETA) {
+									pos_tag = W_getPosition(5,num_square);
+								} else {
+									pos_tag.abs = 0;
+									pos_tag.ord = 0;
+									pos_tag.bIsFound = 0;
+								}
+								
+								/* Base -> Case */
+								setDynamicParameter(PITCH_ANGLE, 0.05 + 0.1 * abs(pos_tag.ord)/360.0);
+								setDynamicParameter(ROLL_ANGLE, 0.05 + 0.1 * abs(pos_tag.abs)/360.0);
+								
 								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 							break;
 	
@@ -141,9 +151,15 @@ void* calcul_order_thread(void* arg)
 					else 		
 					{
 						/* Case -> Base */
-						pos_tag = W_getPosition(num_square, 5);
+						if (abs(pNavData->phi/1000.0) < C_MAX_PHI && abs(pNavData->theta/1000.0) < C_MAX_THETA) {
+							pos_tag = W_getPosition(num_square, 5);
+						} else {
+							pos_tag.abs = 0;
+							pos_tag.ord = 0;
+							pos_tag.bIsFound = 0;
+						}
 
-								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
+						posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 		
 						LOG_WriteLevel(LOG_INFO, "calcul_order :thread: VERS LA BASE (round = 1)");
 	

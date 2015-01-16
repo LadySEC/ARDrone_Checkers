@@ -29,10 +29,10 @@ T_bool              G_mission_started   = FALSE;
 /* Static functions prototypes                                                    */
 /**********************************************************************************/
 /**
- * \fn      void supervisor_sendData(T_TCP_DATA I_data)
+ * \fn      void supervisor_sendData(T_TCP_data I_data)
  * \brief   Shares requested data through the TCP communication
  */
-static void supervisor_sendData(T_TCP_DATA I_data);
+static void supervisor_sendData(T_TCP_data I_data);
 
 /**********************************************************************************/
 /* Procedures														      		  */
@@ -77,7 +77,7 @@ void supervisor_close(void)
 /**********************************************************************************/
 /* Static functions                                                               */
 /**********************************************************************************/
-static void supervisor_sendData(T_TCP_DATA I_data)
+static void supervisor_sendData(T_TCP_data I_data)
 {
     char    frame[15u];
     int     tmp;
@@ -235,7 +235,7 @@ void* supervisor_thread_interact(void* arg)
             #endif
 
                 /* Process the received command */
-                switch((T_TCP_DATA)G_orders[0u])
+                switch((T_TCP_data)G_orders[0u])
                 {
                     case TAKEOFF_TCP:
                         if(G_orders[2u] == 1u)
