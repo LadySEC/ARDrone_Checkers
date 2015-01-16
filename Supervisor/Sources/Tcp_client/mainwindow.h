@@ -226,6 +226,14 @@ private:
      */
     void forbid_emergency();
 
+    /** Allow the user to give the drone the order to start a scenario.
+     */
+    void allow_scenario_start();
+
+    /** Forbid the user to give the drone order to start a scenario.
+     */
+    void forbid_scenario_start() ;
+
     /** Allow the user to ask the drone to look for a tag.
      * Only available if the mission is init (if the drone has taken off)
      */

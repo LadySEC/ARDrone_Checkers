@@ -101,6 +101,7 @@ void MainWindow::slot_begin_scenario()
         slot_send_G_A_1();
         break ;
     }
+    forbid_scenario_start();
 }
 
 void MainWindow::slot_open_connexion()
@@ -150,6 +151,7 @@ void MainWindow::slot_takeoff()
         allow_emergency();
         allow_stop_mission();
         allow_orders_to_squares();
+        allow_scenario_start() ;
         ui->scenario_pushButton->setEnabled(true);
     }
 }
@@ -293,8 +295,8 @@ void MainWindow::slot_update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArra
                     slot_send_G_B_1();
                 else if (data.at(0) == 0x2)
                     slot_send_G_B_3();
-                else if (data.at(0) == 0x8)
-                    end_scenario(num_scenario) ;
+                /*else if (data.at(0) == 0x8)
+                    end_scenario(num_scenario) ;*/
                 break ;
 
             case 2 :
@@ -310,8 +312,8 @@ void MainWindow::slot_update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArra
                     slot_send_G_C_3();
                 else if (data.at(0) == 0x9)
                     slot_send_G_A_1();
-                else if (data.at(0) == 0x1)
-                    end_scenario(num_scenario);
+               /* else if (data.at(0) == 0x1)
+                    end_scenario(num_scenario);*/
                 break ;
 
             case 3 :
@@ -353,8 +355,6 @@ void MainWindow::slot_update_values_IHM(QChar mnemo,/*int sizeOfData,*/QByteArra
         emit sig_change_battery_value( data.at(0));
     }
 }
-
-
 
 /** ORDERS SENT TO THE DRONE */
 
@@ -648,7 +648,7 @@ int MainWindow::check_end_game(void)
         mark_end_game(0, 5 , 8) ;
         ret = squares[0] ;
     }
-    else if ( (squares[2] != 0) && (squares[2] == squares[4]) && (squares[2] == squares[6]) ) /* First transversal */
+    else if ( (squares[2] != 0) && (squares[2] == squares[4]) && (squares[2] == squares[6]) ) /* Second transversal */
     {
         mark_end_game(2, 4 , 6) ;
         ret = squares[2] ;
@@ -659,6 +659,17 @@ int MainWindow::check_end_game(void)
 
 void MainWindow::mark_end_game(int square1, int square2, int square3)
 {
+    ui->button_A_1->setStyleSheet("background-color: white;");
+    ui->button_A_2->setStyleSheet("background-color: white;");
+    ui->button_A_3->setStyleSheet("background-color: white;");
+    ui->button_B_1->setStyleSheet("background-color: white;");
+    ui->button_B_2->setStyleSheet("background-color: white;");
+    ui->button_B_3->setStyleSheet("background-color: white;");
+    ui->button_C_1->setStyleSheet("background-color: white;");
+    ui->button_C_2->setStyleSheet("background-color: white;");
+    ui->button_C_3->setStyleSheet("background-color: white;");
+
+
     if ( (square1 ==0) || (square2 ==0) || (square3 ==0))
         ui->button_A_1->setStyleSheet("background-color: green;");
     if ( (square1 ==1) || (square2 ==1) || (square3 ==1))
@@ -677,6 +688,9 @@ void MainWindow::mark_end_game(int square1, int square2, int square3)
         ui->button_B_3->setStyleSheet("background-color: green;");
     if ( (square1 ==8) || (square2 ==8) || (square3 ==8))
         ui->button_C_3->setStyleSheet("background-color: green;");
+
+
+
 }
 
 /** ****************
@@ -710,12 +724,14 @@ void MainWindow::end_scenario(int scenario)
  * ******************/
 void MainWindow::allow_start_mission()
 {
-    ui->button_start->setEnabled(true);
+    if (!ui->button_start->isEnabled())
+        ui->button_start->setEnabled(true);
 }
 
 void MainWindow::forbid_start_mission()
 {
-    ui->button_start->setEnabled(false);
+    if (ui->button_start->isEnabled())
+        ui->button_start->setEnabled(false);
 }
 
 
@@ -724,12 +740,14 @@ void MainWindow::forbid_start_mission()
  * ******************/
 void MainWindow::allow_stop_mission()
 {
-    ui->button_stop->setEnabled(true);
+    if (!ui->button_stop->isEnabled())
+        ui->button_stop->setEnabled(true);
 }
 
 void MainWindow::forbid_stop_mission()
 {
-    ui->button_stop->setEnabled(false);
+    if (ui->button_stop->isEnabled())
+        ui->button_stop->setEnabled(false);
 }
 
 /** ******************
@@ -737,13 +755,29 @@ void MainWindow::forbid_stop_mission()
  * ******************/
 void MainWindow::allow_emergency()
 {
-    ui->button_emergency->setEnabled(true);
+    if (!ui->button_emergency->isEnabled())
+        ui->button_emergency->setEnabled(true);
 }
 
 void MainWindow::forbid_emergency()
 {
-    ui->button_emergency->setEnabled(false);
+    if (ui->button_emergency->isEnabled())
+        ui->button_emergency->setEnabled(false);
 }
+
+/** ******************
+ * ALLOW/FORBID SENDING ORDER TO START A SCENARIO
+ * ******************/
+void MainWindow::allow_scenario_start()
+{
+    if (!ui->scenario_pushButton->isEnabled())
+        ui->scenario_pushButton->setEnabled(true);
+}
+
+void MainWindow::forbid_scenario_start()
+{
+    if (ui->scenario_pushButton->isEnabled())
+        ui->scenario_pushButton->setEnabled(false);}
 
 /** ******************
  * ALLOW/FORBID SENDING ORDERS TO LOOK FOR A SQUARE
@@ -779,6 +813,8 @@ void MainWindow::forbid_orders_to_squares()
     ui->button_C_3->setEnabled(false);
     set_icons_playground_without_communication() ;
 }
+
+
 
 /** ******************
  * DISPLAY / HIDE POSITION OF SEARCHED SQUARE
@@ -865,7 +901,7 @@ void MainWindow::set_icons_playground_with_communication()
 
     /* Initialize the private attributes of the class */
     joueur = 1 ;
-    num_scenario = 3 ;
+    num_scenario = 1 ;
     scenario_mode = false ;
     for (iter = 0 ; iter < 9 ; iter++)
         squares[iter] = 0 ;
@@ -982,19 +1018,31 @@ void MainWindow::mark_square_found(int square)
         ok = QMessageBox::critical(this, "No winner...", "No one won this game, try again another time !");
 
         if ( ok)
+        {
             set_icons_playground_with_communication();
+            scenario_mode = false ;
+            allow_scenario_start();
+        }
     }
     else if (end == 2)
     {
         ok = QMessageBox::information(this, "We have a winner !", "Congratulation to the circles' handler !");
-        if (ok)
+        if ( ok)
+        {
             set_icons_playground_with_communication();
+            scenario_mode = false ;
+            allow_scenario_start();
+        }
     }
     else if (end == 1)
     {
         ok = QMessageBox::information(this, "We have a winner !", "Congratulation to the crosses' handler !");
-        if (ok)
+        if ( ok)
+        {
             set_icons_playground_with_communication();
+            scenario_mode = false ;
+            allow_scenario_start();
+        }
     }
 
 }
@@ -1004,27 +1052,16 @@ void MainWindow::mark_square_found(int square)
  * ******************/
 void MainWindow::set_icons_scenario_not_enable()
 {
-     if (ui->button_emergency->isEnabled())
-         ui->button_emergency->setEnabled(false);
-
-     if (ui->button_stop->isEnabled())
-         ui->button_stop->setEnabled(false);
-
-     if (ui->button_start->isEnabled())
-         ui->button_start->setEnabled(false);
-
-     if (ui->scenario_pushButton->isEnabled())
-         ui->scenario_pushButton->setEnabled(false);
+     forbid_emergency();
+     forbid_start_mission();
+     forbid_stop_mission();
+     forbid_scenario_start();
 }
 
 void MainWindow::set_icons_scenario_enable()
 {
-     if (!ui->button_emergency->isEnabled())
-         ui->button_emergency->setEnabled(true);
-
-     if (!ui->button_stop->isEnabled())
-         ui->button_stop->setEnabled(true);
-
-     if (!ui->button_start->isEnabled())
-         ui->button_start->setEnabled(true);
+     allow_emergency();
+     allow_start_mission();
+     allow_stop_mission();
+     allow_scenario_start();
 }
