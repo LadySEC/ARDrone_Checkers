@@ -39,12 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* Initialize the displaying on the interface without communication */
     display_no_communication();
-    set_icons_playground_without_communication();
-
-    /* Initialize the private attributes of the class */
-    joueur = 0;
-    num_scenario = 3 ;
-    scenario_mode = false ;
+    set_icons_playground_without_communication();     /* Initialize the private attributes of the class */
 }
 
 MainWindow::~MainWindow()
@@ -437,7 +432,6 @@ void MainWindow::slot_send_G_A_2()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("A2");
         display_position() ;
-
     }
 }
 
@@ -454,7 +448,6 @@ void MainWindow::slot_send_G_A_3()
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("A3");
         display_position() ;
-
     }
 }
 
@@ -487,6 +480,7 @@ void MainWindow::slot_send_G_B_2()
         state_of_mission = mission_started ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("B2");
+
         display_position() ;
     }
 }
@@ -503,6 +497,7 @@ void MainWindow::slot_send_G_B_3()
         state_of_mission = mission_started ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("B3");
+
         display_position() ;
     }
 }
@@ -519,6 +514,7 @@ void MainWindow::slot_send_G_C_1()
         state_of_mission = mission_started ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C1");
+
         display_position() ;
     }
 }
@@ -535,6 +531,7 @@ void MainWindow::slot_send_G_C_2()
         state_of_mission = mission_started ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C2");
+
         display_position() ;
     }
 }
@@ -551,6 +548,7 @@ void MainWindow::slot_send_G_C_3()
         state_of_mission = mission_started ;
         ui->label_Value_Mission_Status->setText(mission_state_to_QString(state_of_mission));
         ui->label_Value_Searched_Square->setText("C3");
+
         display_position() ;
     }
 }
@@ -599,6 +597,87 @@ void MainWindow::slot_send_date()
  * ********************************
  * PRIVATE
  * *******************************/
+
+
+int MainWindow::check_end_game(void)
+{
+    int ret = 0 ;
+
+    bool all_marked = true ;
+    int iter ;
+    for (iter = 0 ; iter < 9 ; iter++)
+    {
+        if (squares[iter] == 0 )
+            all_marked = false ;
+    }
+    if (all_marked == true )
+        ret = 3 ;
+
+    if ( (squares[0] != 0) && (squares[0] == squares[1]) && (squares[0] == squares[2]) ) /* First line */
+    {
+        mark_end_game(0, 1 ,2) ;
+        ret = squares[0] ;
+    }
+    else if ( (squares[3] != 0) &&  (squares[3] == squares[4]) && (squares[3] == squares[5]) ) /* Second line */
+    {
+        mark_end_game(3, 4 , 5) ;
+        ret = squares[3] ;
+    }
+    else if ( (squares[6] != 0) &&  (squares[6] == squares[7]) && (squares[6] == squares[8]) ) /* Third line */
+    {
+        mark_end_game(6, 7, 8) ;
+        ret = squares[6] ;
+    }
+    else if ( (squares[0] != 0) &&  (squares[0] == squares[3]) && (squares[0] == squares[6]) ) /* First column */
+    {
+        mark_end_game(0, 3, 6) ;
+        ret = squares[0] ;
+    }
+    else if ( (squares[1] != 0) && (squares[1] == squares[4]) && (squares[1] == squares[7]) ) /* Second column */
+    {
+        mark_end_game(1, 4 , 7) ;
+        ret = squares[1] ;
+    }
+    else if ( (squares[2] != 0) && (squares[2] == squares[5]) && (squares[2] == squares[8]) ) /* Third column */
+    {
+        mark_end_game(2, 5, 8) ;
+        ret = squares[2] ;
+    }
+    else if ( (squares[0] != 0) && (squares[0] == squares[4]) && (squares[0] == squares[8]) ) /* First transversal */
+    {
+        mark_end_game(0, 5 , 8) ;
+        ret = squares[0] ;
+    }
+    else if ( (squares[2] != 0) && (squares[2] == squares[4]) && (squares[2] == squares[6]) ) /* First transversal */
+    {
+        mark_end_game(2, 4 , 6) ;
+        ret = squares[2] ;
+    }
+
+    return ret ;
+}
+
+void MainWindow::mark_end_game(int square1, int square2, int square3)
+{
+    if ( (square1 ==0) || (square2 ==0) || (square3 ==0))
+        ui->button_A_1->setStyleSheet("background-color: green;");
+    if ( (square1 ==1) || (square2 ==1) || (square3 ==1))
+        ui->button_B_1->setStyleSheet("background-color: green;");
+    if ( (square1 ==2) || (square2 ==2) || (square3 ==2))
+        ui->button_C_1->setStyleSheet("background-color: green;");
+    if ( (square1 ==3) || (square2 ==3) || (square3 ==3))
+        ui->button_A_2->setStyleSheet("background-color: green;");
+    if ( (square1 ==4) || (square2 ==4) || (square3 ==4))
+        ui->button_B_2->setStyleSheet("background-color: green;");
+    if ( (square1 ==5) || (square2 ==5) || (square3 ==5))
+        ui->button_C_2->setStyleSheet("background-color: green;");
+    if ( (square1 ==6) || (square2 ==6) || (square3 ==6))
+        ui->button_A_3->setStyleSheet("background-color: green;");
+    if ( (square1 ==7) || (square2 ==7) || (square3 ==7))
+        ui->button_B_3->setStyleSheet("background-color: green;");
+    if ( (square1 ==8) || (square2 ==8) || (square3 ==8))
+        ui->button_C_3->setStyleSheet("background-color: green;");
+}
 
 /** ****************
  * END A SCENARIO
@@ -762,6 +841,8 @@ void MainWindow::display_no_communication()
  * ******************/
 void MainWindow::set_icons_playground_with_communication()
 {
+    int iter ;
+
     ui->button_A_1->setStyleSheet("background-color: red;");
     ui->button_B_2->setStyleSheet("background-color: blue;");
     ui->button_C_3->setStyleSheet("background-color: red;");
@@ -771,6 +852,23 @@ void MainWindow::set_icons_playground_with_communication()
     ui->button_A_3->setStyleSheet("background-color: red;");
     ui->button_B_1->setStyleSheet("background-color: green;");
     ui->button_C_2->setStyleSheet("background-color: green;");
+
+    ui->button_A_1->setIcon(QIcon());
+    ui->button_B_2->setIcon(QIcon());
+    ui->button_C_3->setIcon(QIcon());
+    ui->button_A_2->setIcon(QIcon());
+    ui->button_B_3->setIcon(QIcon());
+    ui->button_C_1->setIcon(QIcon());
+    ui->button_A_3->setIcon(QIcon());
+    ui->button_B_1->setIcon(QIcon());
+    ui->button_C_2->setIcon(QIcon());
+
+    /* Initialize the private attributes of the class */
+    joueur = 1 ;
+    num_scenario = 3 ;
+    scenario_mode = false ;
+    for (iter = 0 ; iter < 9 ; iter++)
+        squares[iter] = 0 ;
 }
 
 void MainWindow::set_icons_playground_without_communication()
@@ -801,17 +899,23 @@ void MainWindow::set_icons_playground_without_communication()
  * ******************/
 void MainWindow::mark_square_found(int square)
 {
+    bool ok ;
+    int end ;
+
     state_of_mission = mission_init ;
     QString path_to_marking_image ;
-    if (joueur == 0)
+
+    squares[square-1] = joueur ;
+
+    if (joueur == 1)
     {
         path_to_marking_image = PATH_TO_CIRCLE ;
-        joueur = 1 ;
+        joueur = 2 ;
     }
     else
     {
         path_to_marking_image = PATH_TO_CROSS ;
-        joueur = 0 ;
+        joueur = 1 ;
     }
 
     switch (square)
@@ -871,6 +975,28 @@ void MainWindow::mark_square_found(int square)
         ui->button_C_3->setEnabled(false);
         break ;
     }
+
+    end = check_end_game() ;
+    if ( end == 3)
+    {
+        ok = QMessageBox::critical(this, "No winner...", "No one won this game, try again another time !");
+
+        if ( ok)
+            set_icons_playground_with_communication();
+    }
+    else if (end == 2)
+    {
+        ok = QMessageBox::information(this, "We have a winner !", "Congratulation to the circles' handler !");
+        if (ok)
+            set_icons_playground_with_communication();
+    }
+    else if (end == 1)
+    {
+        ok = QMessageBox::information(this, "We have a winner !", "Congratulation to the crosses' handler !");
+        if (ok)
+            set_icons_playground_with_communication();
+    }
+
 }
 
 /** ******************
@@ -886,6 +1012,9 @@ void MainWindow::set_icons_scenario_not_enable()
 
      if (ui->button_start->isEnabled())
          ui->button_start->setEnabled(false);
+
+     if (ui->scenario_pushButton->isEnabled())
+         ui->scenario_pushButton->setEnabled(false);
 }
 
 void MainWindow::set_icons_scenario_enable()

@@ -55,6 +55,8 @@ void client::slot_connexion_OK()
 void client::slot_connexion_stopped()
 {
     emit sig_socket_disconnected();
+    if (soc.isOpen())
+        soc.close();
 }
 
 void client::slot_lecture()

@@ -180,6 +180,16 @@ signals :
 
 private:
 
+    /** When a square has been marked, check if the game is not ended
+     * @return 0 : game not ended
+     * @return 1 : player 1 wins the game
+     * @return 2 : player 2 wins the game
+     * @return 3 : every squares are marked but no winner
+     */
+    int check_end_game(void) ;
+
+    void mark_end_game(int square1, int square2, int square3) ;
+
     /** End a scenario according to the evolution of the game :
      * Display a messageBox with information about the winner of the scenario
      * @param int scenario : 1,2 or 3, according to the played scenario
@@ -284,6 +294,7 @@ private:
     int num_scenario ; /*!< Number of the current scenario to be played : 1, 2 or 3 */
     bool scenario_mode ; /*!< Boolean to know if the drone is playing a scenario or not */
 
+    int squares[9] ; /*!< Table of squares, each case can have 0 (not marked), 1 (marked by player 1) or 2 (marked by player 2) as its value */
     QTimer * timer ; /*!< Timer to create a sleep between 2 missions */
     int next_square ; /*!< Next square to be targetted after a move is ended */
 
