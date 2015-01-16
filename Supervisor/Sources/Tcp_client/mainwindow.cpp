@@ -59,8 +59,10 @@ void MainWindow::link_connect()
     QObject::connect(this, SIGNAL(sig_change_psi_value(QString)), ui->label_Value_Psi_Angle, SLOT(setText(QString)));
     QObject::connect(this, SIGNAL(sig_change_theta_value(QString)), ui->label_Value_Theta_Angle, SLOT(setText(QString)));
 
-    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(slot_open_connexion()));
+    //QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(slot_open_connexion()));
     QObject::connect(ui->button_disconnect,SIGNAL(clicked()),this,SLOT(slot_send_exit()));
+
+    QObject::connect(ui->button_connect,SIGNAL(clicked()),this,SLOT(slot_mark_connexion()));
 
     QObject::connect( &C, SIGNAL(sig_socket_connected()), this, SLOT(slot_mark_connexion()) ) ;
     QObject::connect( &C, SIGNAL(sig_socket_disconnected()), this, SLOT(slot_unmark_connexion()) ) ;
@@ -153,6 +155,14 @@ void MainWindow::slot_takeoff()
         allow_orders_to_squares();
         allow_scenario_start() ;
         ui->scenario_pushButton->setEnabled(true);
+
+        mark_square_found(1) ;
+        mark_square_found(2);
+        mark_square_found(5);
+        mark_square_found(9);
+        mark_square_found(4);
+        mark_square_found(7);
+        mark_square_found(6);
     }
 }
 
