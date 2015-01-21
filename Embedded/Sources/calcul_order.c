@@ -19,7 +19,7 @@
 /*** it represents the size between the camera position on the drone and it takeoff base */
 int const offset_y 	= 0;
 /*** it represents the time when the ATcomman are sending */
-int const I_offset_time = (_CALCUL_PERIOD)/2;
+int const I_offset_time = (_CALCUL_PERIOD)/3;
 
 /**********************************************************************************/
 /* Global variables 								*/
@@ -79,8 +79,8 @@ void* calcul_order_thread(void* arg)
 				round_mission = 0;
 				LOG_WriteLevel(LOG_INFO, "calcul_order : BEGIN MISSION");
 
-				printf("----- MISSION - Begin the mission\n\r");
-				printf("-----         - Temps AT_commande = %d\n\r",I_offset_time);
+				LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - Begin the mission");
+				LOG_WriteLevel(LOG_INFO, "calcul_order : Temps AT_commande = %d",I_offset_time);
 			}
 			else
 			{
@@ -92,15 +92,15 @@ void* calcul_order_thread(void* arg)
 						{
 							case 0 :
 								process_end_mission(0);
-								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: case 0 ERROR");
+								LOG_WriteLevel(LOG_INFO, "calcul_order : thread: case 0 ERROR");
 
 							break;
 	
 							case 1 :
 								/* stabilisation over the BASE */
-								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 1, STABILISATION");
+								LOG_WriteLevel(LOG_INFO, "calcul_order : thread: statemission = 1, STABILISATION");
 								
-								printf("----- MISSION - stabilisation\n\r");
+								LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - stabilisation");
 								
 								pNavData = ATcommand_navdata();
 								
@@ -112,8 +112,8 @@ void* calcul_order_thread(void* arg)
 									pos_tag.bIsFound = 0;
 								}
 								
-								setDynamicParameter(PITCH_ANGLE, 0.05 + 0.1 * abs(pos_tag.ord)/360.0);
-								setDynamicParameter(ROLL_ANGLE, 0.05 + 0.1 * abs(pos_tag.abs)/360.0);
+								setDynamicParameter(PITCH_ANGLE, C_MIN_PITCH + (C_MAX_PITCH - C_MIN_PITCH) * abs(pos_tag.ord)/360.0);
+								setDynamicParameter(ROLL_ANGLE, C_MIN_ROLL + (C_MAX_ROLL - C_MIN_ROLL) * abs(pos_tag.abs)/360.0);
 								
 								if(pos_tag.bIsFound == 1)
 								{
@@ -123,26 +123,21 @@ void* calcul_order_thread(void* arg)
 
 							case 2 :
 								
-								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: statemission = 2, VERS LA CASE round = 0");
+								LOG_WriteLevel(LOG_INFO, "calcul_order : thread: statemission = 2, VERS LA CASE round = 0");
 
 								if (abs(pNavData->phi/1000.0) < C_MAX_PHI && abs(pNavData->theta/1000.0) < C_MAX_THETA) {
 									pos_tag = W_getPosition(5,num_square);
-								} else {
-									pos_tag.abs = 0;
-									pos_tag.ord = 0;
-									pos_tag.bIsFound = 0;
+									/* Base -> Case */
+									setDynamicParameter(PITCH_ANGLE, C_MIN_PITCH + (C_MAX_PITCH - C_MIN_PITCH) * abs(pos_tag.ord)/360.0);
+									setDynamicParameter(ROLL_ANGLE, C_MIN_ROLL + (C_MAX_ROLL - C_MIN_ROLL) * abs(pos_tag.abs)/360.0);
+								
+									posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 								}
 								
-								/* Base -> Case */
-								setDynamicParameter(PITCH_ANGLE, 0.05 + 0.1 * abs(pos_tag.ord)/360.0);
-								setDynamicParameter(ROLL_ANGLE, 0.05 + 0.1 * abs(pos_tag.abs)/360.0);
-								
-								posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 							break;
 	
 							default :
-								printf("----- MISSION - error state mission\n\r");
-								LOG_WriteLevel(LOG_INFO, "calcul_order :thread: DEFAULT ERROR");
+								LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - error state mission");
 
 								process_end_mission(0);
 							break;
@@ -161,34 +156,34 @@ void* calcul_order_thread(void* arg)
 
 						posTag_ATcommand(pos_tag.abs,pos_tag.ord);	
 		
-						LOG_WriteLevel(LOG_INFO, "calcul_order :thread: VERS LA BASE (round = 1)");
+						LOG_WriteLevel(LOG_INFO, "calcul_order : thread: VERS LA BASE (round = 1)");
 	
 					}
 
-					printf("----- MISSION - x = %d, y = %d\n\r",pos_tag.abs,pos_tag.ord);
+					LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - x = %d, y = %d",pos_tag.abs,pos_tag.ord);
 					
 				}
 				else
 				{
-					printf("MISSION - You have to take off !\n\r");					
+					LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - You have to take off !");					
 				}
 			}
 			cpt_mission ++;	
 		}
 		else
 		{
-			printf("----- MISSION - aucune mission\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - aucune mission");
 			statemission = 0;
 			cpt_mission = 0;	
 		}	
 		
-		printf("----- MISSION - cpt = %d\n\r",cpt_mission);
+		LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - cpt = %d",cpt_mission);
 
         	/* Wait until the next period is achieved */
         	wait_period (&info);
     	}
 
-    	printf("Ending calcul_order_thread\n\r");
+    	LOG_WriteLevel(LOG_INFO, "calcul_order : Ending calcul_order_thread");
 
     	return(NULL);
 }
@@ -222,8 +217,7 @@ void posTag_ATcommand(int x,int y)
 					break;
 
 					default :
-						printf("----- MISSION - error state mission\n\r");
-						LOG_WriteLevel(LOG_INFO, "calcul_order : posTag_ATcommand : error default END MISSION");
+						LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - error state mission");
 						process_end_mission(0);
 					
 					break;
@@ -237,12 +231,12 @@ void posTag_ATcommand(int x,int y)
 		}
 		if(y < (-POS_TOLERANCE-offset_y))			  	  
 		{
-			printf("----- MISSION - je vais en haut\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en haut");
 			ATcommand_moveDelay(PITCH_DOWN, 	I_offset_time);
 		}
 		if(y > (POS_TOLERANCE-offset_y))			  	 
 		{
-			printf("----- MISSION - je vais en bas\n\r");	
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en bas");	
 			ATcommand_moveDelay(PITCH_UP, 		I_offset_time);
 		}
 	}
@@ -250,12 +244,12 @@ void posTag_ATcommand(int x,int y)
 	{
 		if(x < -POS_TOLERANCE)				  
 		{
-			printf("----- MISSION - je vais en gauche\n\r");	
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en gauche");	
 			ATcommand_moveDelay(ROLL_LEFT, 		I_offset_time);
 		}
 		if(x > POS_TOLERANCE)				 
 		{
-			printf("----- MISSION - je vais en droite\n\r");	
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en droite");	
 			ATcommand_moveDelay(ROLL_RIGHT, 	I_offset_time);
 		}
 	}
@@ -263,13 +257,13 @@ void posTag_ATcommand(int x,int y)
 	{
 		if(y < (-POS_TOLERANCE-offset_y))				  
 		{
-			printf("----- MISSION - je vais en gauche/haut\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en gauche/haut");
 			ATcommand_moveDelay(PITCH_DOWN_ROLL_LEFT, 	I_offset_time);
 
 		}
 		if(y > (POS_TOLERANCE-offset_y))				  
 		{
-			printf("----- MISSION - je vais en gauche/bas\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en gauche/bas");
 			ATcommand_moveDelay(PITCH_UP_ROLL_LEFT,		I_offset_time);
 		}
 	}
@@ -277,12 +271,12 @@ void posTag_ATcommand(int x,int y)
 	{
 		if(y < (-POS_TOLERANCE-offset_y))				   
 		{
-			printf("----- MISSION - je vais en droite/haut\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en droite/haut");
 			ATcommand_moveDelay(PITCH_DOWN_ROLL_RIGHT, 	I_offset_time);
 		}
 		if(y > (POS_TOLERANCE-offset_y))				  
 		{
-			printf("----- MISSION - je vais en droite/bas\n\r");
+			LOG_WriteLevel(LOG_INFO, "calcul_order : MISSION - je vais en droite/bas");
 			ATcommand_moveDelay(PITCH_UP_ROLL_RIGHT, 	I_offset_time);
 		}
 	}

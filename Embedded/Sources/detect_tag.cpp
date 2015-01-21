@@ -81,12 +81,14 @@ char getMainColor(Vec3b I_pixelRGB) {
 Mat readImageFromFile(char * I_pathToFile) {
 	FILE * f;
 	Mat Img_YUV(IMG_HEIGHT,IMG_WIDTH,CV_8UC2);
+	Mat Img_Rotate(IMG_HEIGHT,IMG_WIDTH,CV_8UC2);
+	Mat Img_RGB;//(IMG_HEIGHT,IMG_WIDTH,CV_8UC4);
 	int Img_Size = IMG_WIDTH * IMG_HEIGHT*2;
     unsigned char* pYUVPixels = new unsigned char[Img_Size];
 
 	f=fopen(I_pathToFile,"rb");
 	if (!f) {
-		LOG_WriteLevel(LOG_ERROR, (char*)"detect_tag: fopen error");
+		LOG_WriteLevel(LOG_ERROR, (char*)"detect_tag : fopen error");
 	}
 	
 	fread(pYUVPixels,Img_Size,1,f);
@@ -94,12 +96,27 @@ Mat readImageFromFile(char * I_pathToFile) {
 	
 	Img_YUV.data = pYUVPixels;
 	
-	return Img_YUV;
+	cvtColor(Img_YUV, Img_RGB, CV_YUV2RGB_Y422);
+	
+	// On tourne l'image à 180° car elle est inversée
+	flip(Img_RGB, Img_Rotate, 0);
+	flip(Img_Rotate, Img_RGB, 1);
+	
+	free(Img_YUV.data);
+	
+	// Code debug vilain permettant de sauvegarder les images en JPG
+	//Mat tmp(IMG_HEIGHT,IMG_WIDTH,CV_8UC4);
+	//cvtColor(Img_YUV, tmp, CV_YUV2RGB_Y422);
+	//circle(tmp, Point(50, 50), 50, Scalar(255,0,0),4,8,0);
+	//imwrite("/tmp/test.jpg", Img_RGB);
+	
+	
+	return Img_RGB;
 }
 
 
 void freeImage(Mat IO_Img) {
-	free(IO_Img.data);
+	//free(IO_Img.data);
 }
 
 
@@ -194,8 +211,8 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	for (i=C_WINDOW_LEFT; i<img.cols-C_WINDOW_RIGHT; i+=C_DOWNSCALING_STEP) {
 		for (j=C_WINDOW_TOP; j<img.rows-C_WINDOW_BOTTOM; j+=C_DOWNSCALING_STEP) {
 			// On récupère un pixel YUV particulier puis on le convertit en RGB
-			pixelYUV = img.at<Vec4b>(j, i);
-			pixelRGB = yuv2rgb(pixelYUV);
+			pixelRGB = img.at<Vec3b>(j, i);
+			//pixelRGB = yuv2rgb(pixelYUV);
 			// On recherche uniquement les pixels de couleur de la case de destination
 			if (getMainColor(pixelRGB) == playgroundColors[I_destSquare-1]) {
 				pixelPos = {i, j};
@@ -204,7 +221,8 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 					tmpPos = getSquarePosition(I_currentSquare, I_destSquare);
 					tmpPos.abs += C_IMG_CENTER_X + C_WINDOW_LEFT;
 					tmpPos.ord += C_IMG_CENTER_Y + C_WINDOW_TOP;
-					if (I_currentSquare == 5 && I_destSquare == 5) {
+					// Dans le cas d'une stabilisation autour de la case centrale, on élargit le champ de vision
+					if (I_destSquare == 5) {
 						iDistToTarget = IMG_HEIGHT/2;
 					} else {
 						iDistToTarget = C_DIST_TO_TARGET;
@@ -222,7 +240,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 	// Si on détecte un nombre suffisant de pixels de la couleur voulue,
 	// on calcule la la position moyenne de ces pixels
 	if (pixelsTarget.size() > C_MIN_PIXELS) {
-		LOG_WriteLevel(LOG_INFO, (char*)"detect_tag : Minimum number of %c pixels reached", playgroundColors[I_destSquare-1]);
+		LOG_WriteLevel(LOG_INFO, (char*)"detect_tag : Minimum number of %c pixels reached (%d pixels found)", playgroundColors[I_destSquare-1], pixelsTarget.size());
 		bPhaseApproche = false;
 		posX = 0;
 		posY = 0;
@@ -239,6 +257,7 @@ T_Position getPosition(int I_currentSquare, int I_destSquare) {
 					 (int)1};
 	// Sinon, on donne la direction de la case de destination
 	} else {
+		LOG_WriteLevel(LOG_INFO, (char*)"detect_tag : Only %d %c pixels found, returning default position (found = 0)", pixelsTarget.size(), playgroundColors[I_destSquare-1]);
 		squarePos = getSquarePosition(I_currentSquare, I_destSquare);
 	}
 	

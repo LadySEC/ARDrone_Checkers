@@ -20,11 +20,15 @@
 #include "supervisor.h"
 /**********************************************************************************/
 /* Constants						      			  */
-#define C_MAX_THETA	4.0
-#define C_MAX_PHI	4.0
+#define C_MAX_THETA	6.0
+#define C_MAX_PHI	6.0
+#define C_MIN_PITCH	0.075
+#define C_MAX_PITCH	0.175
+#define C_MIN_ROLL	0.075
+#define C_MAX_ROLL	0.175
 /**********************************************************************************/
 /* Temporisations */
-#define _CALCUL_PERIOD          (unsigned int)500000
+#define _CALCUL_PERIOD          (unsigned int)600000
 /**********************************************************************************/
 /* Types					      				  */
 /**********************************************************************************/

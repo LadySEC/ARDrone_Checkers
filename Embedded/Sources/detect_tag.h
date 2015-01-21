@@ -13,37 +13,48 @@
 #define C_R_MIN_G 0
 #define C_R_MIN_B 0
 #define C_R_MAX_R 255
-#define C_R_MAX_G 50
-#define C_R_MAX_B 50
-#define	C_R_MIN_OFFSET_G 40
-#define C_R_MIN_OFFSET_B 40
+#define C_R_MAX_G 70
+#define C_R_MAX_B 60
+#define	C_R_MIN_OFFSET_G 10
+#define C_R_MIN_OFFSET_B 20
+
+/*
+#define C_G_MIN_R 0
+#define C_G_MIN_G 65
+#define C_G_MIN_B 0
+#define C_G_MAX_R 50
+#define C_G_MAX_G 255
+#define C_G_MAX_B 65
+#define	C_G_MIN_OFFSET_R 25
+#define C_G_MIN_OFFSET_B 10
+*/
 
 #define C_G_MIN_R 0
-#define C_G_MIN_G 80
+#define C_G_MIN_G 70
 #define C_G_MIN_B 0
-#define C_G_MAX_R 70
+#define C_G_MAX_R 75
 #define C_G_MAX_G 255
-#define C_G_MAX_B 80
+#define C_G_MAX_B 65
 #define	C_G_MIN_OFFSET_R 25
 #define C_G_MIN_OFFSET_B 10
 
 #define C_B_MIN_R 0
 #define C_B_MIN_G 0
-#define C_B_MIN_B 70
-#define C_B_MAX_R 70
-#define C_B_MAX_G 70
+#define C_B_MIN_B 55
+#define C_B_MAX_R 60
+#define C_B_MAX_G 50
 #define C_B_MAX_B 255
-#define	C_B_MIN_OFFSET_R 20
-#define C_B_MIN_OFFSET_G 20
+#define	C_B_MIN_OFFSET_R 15
+#define C_B_MIN_OFFSET_G 15
 
 // Paramétrages supplémentaires de la détection des couleurs
-#define C_MIN_PIXELS		15
+#define C_MIN_PIXELS		10
 #define C_DOWNSCALING_STEP	5
 #define C_WINDOW_LEFT		280
 #define C_WINDOW_RIGHT		280
 #define C_WINDOW_TOP		0
 #define C_WINDOW_BOTTOM		0
-#define C_DIST_TO_TARGET	280
+#define C_DIST_TO_TARGET	360
 
 // Centre de l'image croppée
 #define C_IMG_CENTER_X		((IMG_WIDTH - C_WINDOW_LEFT - C_WINDOW_RIGHT)/2)
